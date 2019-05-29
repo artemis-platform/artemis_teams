@@ -1,0 +1,44 @@
+#login {
+  align-items: center;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  width: 100vw;
+
+  section {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2rem;
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 300;
+      margin: 0 0 1rem 0;
+
+      .emphasis {
+        font-weight: 600;
+      }
+    }
+
+    .message {
+      margin: 0 0 1rem 0;
+    }
+
+    ul.providers {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        margin: 0 0 0.5rem 0;
+      }
+    }
+  }
+}
+
+
