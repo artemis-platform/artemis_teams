@@ -1,7 +1,7 @@
 <header id="app-header">
   <a href="/" id="logo">
-    <svg width="60" height="60" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <image xlink:href="/images/logo.svg" height="60" width="60"/>
+    <svg width="48" height="48" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <image xlink:href="/images/logo.svg" height="48" width="48"/>
     </svg>
     Artemis Teams
   </a>
@@ -16,7 +16,7 @@
         <%= if current_user?(@conn) do %>
           <a href="<%= Routes.user_path(@conn, :show, current_user(@conn)) %>">
             <span>
-              <i class="user icon"></i>
+              <i class="user circle outline icon"></i>
               <%= current_user(@conn).name %>
             </span>
           </a>

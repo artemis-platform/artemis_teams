@@ -1,0 +1,43 @@
+<div id="content-header">
+  <header>
+    <h1>
+      <%= @team.name %>
+    </h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "teams:delete") do %>
+        <%= action "Delete", method: "delete", to: Routes.team_path(@conn, :delete, @team), data: [confirm: "Confirm Delete"] %>
+      <% end %>
+      <%= if has?(@conn, "teams:update") do %>
+        <%= action "Edit", to: Routes.team_path(@conn, :edit, @team), color: "green" %>
+      <% end %>
+    </div>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <ul>
+
+    <li>
+      <strong>Name:</strong>
+      <%= @team.name %>
+    </li>
+
+    <li>
+      <strong>Slug:</strong>
+      <%= @team.slug %>
+    </li>
+
+    <li>
+      <strong>Active:</strong>
+      <%= @team.active %>
+    </li>
+
+  </ul>
+</div>

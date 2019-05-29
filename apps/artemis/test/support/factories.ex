@@ -34,6 +34,14 @@ defmodule Artemis.Factories do
     }
   end
 
+  def team_factory do
+    %Artemis.Team{
+      active: false,
+      name: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
+      slug: sequence(:slug, &"#{Faker.Internet.slug()}-#{&1}")
+    }
+  end
+
   def user_factory do
     %Artemis.User{
       email: sequence(:slug, &"#{Faker.Internet.email()}-#{&1}"),

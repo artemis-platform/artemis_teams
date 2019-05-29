@@ -1,0 +1,59 @@
+<div id="content-header">
+  <header>
+    <h1>Teams</h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "teams:create") do %>
+        <%= action "New", to: Routes.team_path(@conn, :new), color: "blue" %>
+      <% end %>
+    </div>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <%= render_search @conn %>
+
+  <table class="ui table selectable">
+    <thead>
+      <tr>
+        <th><%= sortable_table_header(@conn, "slug", "Slug") %></th>
+        <th><%= sortable_table_header(@conn, "name", "Name") %></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render_table_row_if_empty(@teams.entries) %>
+      <%= for team <- @teams.entries do %>
+        <tr>
+          <td>
+            <%= if has?(@conn, "teams:show") do %>
+              <%= link team.slug, to: Routes.team_path(@conn, :show, team) %>
+            <% else %>
+              <%= team.slug %>
+            <% end %>
+          </td>
+          <td><%= team.name %></td>
+          <td>
+            <%= if has?(@conn, "teams:show") do %>
+              <%= link "Show", to: Routes.team_path(@conn, :show, team) %>
+            <% end %>
+            <%= if has?(@conn, "teams:update") do %>
+              <%= link "Edit", to: Routes.team_path(@conn, :edit, team) %>
+            <% end %>
+            <%= if has?(@conn, "teams:delete") do %>
+              <%= link "Delete", to: Routes.team_path(@conn, :delete, team), method: :delete, data: [confirm: "Are you sure?"] %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= render_pagination @conn, @teams %>
+</div>

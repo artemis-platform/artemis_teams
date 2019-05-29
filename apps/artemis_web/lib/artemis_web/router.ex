@@ -45,6 +45,8 @@ defmodule ArtemisWeb.Router do
     scope "/" do
       pipe_through :require_auth
 
+      resources "/teams", TeamController
+
       resources "/event-logs", EventLogController, only: [:index, :show]
       resources "/features", FeatureController
       resources "/permissions", PermissionController
