@@ -1,0 +1,48 @@
+<div id="content-header">
+  <header>
+    <h1>
+      <%= @standup.date %>
+    </h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "standups:delete") do %>
+        <%= action "Delete", method: "delete", to: Routes.team_standup_path(@conn, :delete, @team, @standup), data: [confirm: "Confirm Delete"] %>
+      <% end %>
+      <%= if has?(@conn, "standups:update") do %>
+        <%= action "Edit", to: Routes.team_standup_path(@conn, :edit, @team, @standup), color: "green" %>
+      <% end %>
+    </div>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <ul>
+
+    <li>
+      <strong>Date:</strong>
+      <%= @standup.date %>
+    </li>
+
+    <li>
+      <strong>Past:</strong>
+      <%= @standup.past %>
+    </li>
+
+    <li>
+      <strong>Future:</strong>
+      <%= @standup.future %>
+    </li>
+
+    <li>
+      <strong>Blockers:</strong>
+      <%= @standup.blockers %>
+    </li>
+
+  </ul>
+</div>

@@ -11,6 +11,9 @@
       <%= if has?(@conn, "teams:update") do %>
         <%= action "Edit", to: Routes.team_path(@conn, :edit, @team), color: "green" %>
       <% end %>
+      <%= if has?(@conn, "standups:list") do %>
+        <%= action "View Standups", to: Routes.team_standup_path(@conn, :index, @team), color: "blue" %>
+      <% end %>
     </div>
   </header>
 </div>

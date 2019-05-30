@@ -1,0 +1,29 @@
+<%= form_for @changeset, @action, [class: "ui form", id: "standup-form"], fn f -> %>
+  <div class="field">
+    <%= label_with_errors f, :date %>
+    <%= text_input f, :date, placeholder: "Date" %>
+  </div>
+
+  <div class="field">
+    <%= label_with_errors f, :past, "Past" %>
+    <%= textarea f, :past %>
+  </div>
+
+  <div class="field">
+    <%= label_with_errors f, :future, "Future" %>
+    <%= textarea f, :future %>
+  </div>
+
+  <div class="field">
+    <%= label_with_errors f, :blockers, "Blockers" %>
+    <%= textarea f, :blockers %>
+  </div>
+
+  <div>
+    <%= if @changeset.action do %>
+      <%= render_notification :error, body: "Error Submitting Form" %>
+    <% end %>
+
+    <%= submit "Save", class: "ui button primary" %>
+  </div>
+<% end %>

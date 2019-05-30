@@ -36,7 +36,7 @@ defmodule Artemis.Factories do
 
   def standup_factory do
     %Artemis.Standup{
-      date: DateTime.utc_now(),
+      date: DateTime.to_date(DateTime.utc_now()),
       blockers: Faker.Lorem.sentence(),
       future: Faker.Lorem.sentence(),
       past: Faker.Lorem.sentence(),
