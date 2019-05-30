@@ -1,22 +1,20 @@
-defmodule Artemis.ListStandups do
+defmodule Artemis.ListTeamUsers do
   use Artemis.Context
 
-  import Artemis.Helpers.Search
   import Ecto.Query
 
   alias Artemis.Repo
-  alias Artemis.Standup
+  alias Artemis.TeamUser
 
-  @default_order "date"
+  @default_order "type"
   @default_page_size 25
   @default_preload [:team, :user]
 
   def call(params \\ %{}, _user) do
     params = default_params(params)
 
-    Standup
+    TeamUser
     |> preload(^Map.get(params, "preload"))
-    |> search_filter(params)
     |> order_query(params)
     |> get_records(params)
   end

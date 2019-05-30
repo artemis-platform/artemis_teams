@@ -1,0 +1,48 @@
+<div id="content-header">
+  <header>
+    <h1>
+      <%= "Team User Details" %>
+    </h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "team-users:delete") do %>
+        <%= action "Remove", method: "delete", to: Routes.team_user_path(@conn, :delete, @team, @team_user), data: [confirm: "Remove user from team?"] %>
+      <% end %>
+      <%= if has?(@conn, "team-users:update") do %>
+        <%= action "Edit", to: Routes.team_user_path(@conn, :edit, @team, @team_user), color: "green" %>
+      <% end %>
+    </div>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <ul>
+
+    <li>
+      <strong>Team:</strong>
+      <%= @team_user.team.name %>
+    </li>
+
+    <li>
+      <strong>Type:</strong>
+      <%= @team_user.type %>
+    </li>
+
+    <li>
+      <strong>Name:</strong>
+      <%= @team_user.user.name %>
+    </li>
+
+    <li>
+      <strong>Email:</strong>
+      <%= @team_user.user.email %>
+    </li>
+
+  </ul>
+</div>

@@ -1,0 +1,21 @@
+<% default_type = "member" %>
+
+<%= form_for @changeset, @action, [class: "ui form", id: "team-user-form"], fn f -> %>
+  <div class="field">
+    <%= label_with_errors f, :user_id %>
+    <%= select f, :user_id, Enum.map(@users, fn user -> {"#{user.name} <#{user.email}>", user.id} end), class: "enhanced search creatable", placeholder: "User" %>
+  </div>
+
+  <div class="field field-type">
+    <%= label_with_errors f, :type %>
+    <%= select f, :type, Enum.map(Artemis.TeamUser.allowed_types(), fn type -> {humanize(type), type} end), selected: (f.data.type || default_type), class: "enhanced search creatable", placeholder: "Type" %>
+  </div>
+
+  <div>
+    <%= if @changeset.action do %>
+      <%= render_notification :error, body: "Error Submitting Form" %>
+    <% end %>
+
+    <%= submit "Save", class: "ui button primary" %>
+  </div>
+<% end %>

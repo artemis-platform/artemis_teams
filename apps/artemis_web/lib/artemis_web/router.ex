@@ -47,6 +47,7 @@ defmodule ArtemisWeb.Router do
 
       resources "/teams", TeamController do
         resources "/standups", StandupController
+        resources "/users", TeamUserController, as: :user
       end
     end
 

@@ -1,12 +1,12 @@
-defmodule Artemis.CreateStandup do
+defmodule Artemis.CreateTeamUser do
   use Artemis.Context
 
   alias Artemis.Repo
-  alias Artemis.Standup
+  alias Artemis.TeamUser
 
   def call!(params, user) do
     case call(params, user) do
-      {:error, _} -> raise(Artemis.Context.Error, "Error creating standup")
+      {:error, _} -> raise(Artemis.Context.Error, "Error creating team user")
       {:ok, result} -> result
     end
   end
@@ -15,13 +15,13 @@ defmodule Artemis.CreateStandup do
     with_transaction(fn ->
       params
       |> insert_record
-      |> Event.broadcast("standup:created", user)
+      |> Event.broadcast("team-user:created", user)
     end)
   end
 
   defp insert_record(params) do
-    %Standup{}
-    |> Standup.changeset(params)
+    %TeamUser{}
+    |> TeamUser.changeset(params)
     |> Repo.insert()
   end
 end

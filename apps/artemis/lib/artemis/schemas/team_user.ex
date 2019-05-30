@@ -1,14 +1,11 @@
-defmodule Artemis.Standup do
+defmodule Artemis.TeamUser do
   use Artemis.Schema
 
-  schema "standups" do
-    field :date, :date
-    field :past, :string
-    field :future, :string
-    field :blockers, :string
+  schema "team_users" do
+    field :type, :string
 
-    belongs_to :team, Artemis.Team
-    belongs_to :user, Artemis.User
+    belongs_to :team, Artemis.Team, on_replace: :delete
+    belongs_to :user, Artemis.User, on_replace: :delete
 
     timestamps()
   end
@@ -17,26 +14,30 @@ defmodule Artemis.Standup do
 
   def updatable_fields,
     do: [
-      :date,
-      :past,
-      :future,
-      :blockers,
+      :type,
       :team_id,
       :user_id
     ]
 
   def required_fields,
     do: [
-      :date,
+      :type,
       :team_id,
       :user_id
     ]
 
   def event_log_fields,
     do: [
-      :date,
+      :type,
       :team_id,
       :user_id
+    ]
+
+  def allowed_types,
+    do: [
+      "admin",
+      "member",
+      "viewer"
     ]
 
   # Changesets
@@ -45,7 +46,8 @@ defmodule Artemis.Standup do
     struct
     |> cast(params, updatable_fields())
     |> validate_required(required_fields())
-    |> unique_constraint(:date, name: :standups_date_team_id_user_id_index)
+    |> validate_inclusion(:type, allowed_types())
+    |> unique_constraint(:date, name: :team_users_team_id_user_id_index)
     |> foreign_key_constraint(:team_id)
     |> foreign_key_constraint(:user_id)
   end

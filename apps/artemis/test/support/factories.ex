@@ -53,6 +53,14 @@ defmodule Artemis.Factories do
     }
   end
 
+  def team_user_factory do
+    %Artemis.TeamUser{
+      type: Enum.random(Artemis.TeamUser.allowed_types()),
+      team: insert(:team),
+      user: insert(:user)
+    }
+  end
+
   def user_factory do
     %Artemis.User{
       email: sequence(:slug, &"#{Faker.Internet.email()}-#{&1}"),

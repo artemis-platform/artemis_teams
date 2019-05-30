@@ -1,8 +1,8 @@
-defmodule Artemis.GetStandup do
+defmodule Artemis.GetTeamUser do
   import Ecto.Query
 
   alias Artemis.Repo
-  alias Artemis.Standup
+  alias Artemis.TeamUser
 
   @default_preload [:team, :user]
 
@@ -19,7 +19,7 @@ defmodule Artemis.GetStandup do
   end
 
   defp get_record(value, options, get_by) do
-    Standup
+    TeamUser
     |> preload(^Keyword.get(options, :preload, @default_preload))
     |> get_by.(value)
   end
