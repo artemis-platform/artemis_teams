@@ -14,6 +14,7 @@ defmodule Artemis.User do
     field :name, :string
 
     has_many :auth_providers, Artemis.AuthProvider, on_delete: :delete_all
+    has_many :standups, Artemis.Standup, on_delete: :delete_all
     has_many :user_roles, Artemis.UserRole, on_delete: :delete_all, on_replace: :delete
     has_many :roles, through: [:user_roles, :role]
     has_many :permissions, through: [:roles, :permissions]

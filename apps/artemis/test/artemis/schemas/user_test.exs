@@ -7,10 +7,16 @@ defmodule Artemis.UserTest do
 
   alias Artemis.AuthProvider
   alias Artemis.Repo
+  alias Artemis.Standup
   alias Artemis.User
   alias Artemis.UserRole
 
-  @preload [:auth_providers, :roles, :user_roles]
+  @preload [
+    :auth_providers,
+    :roles,
+    :standups,
+    :user_roles
+  ]
 
   describe "attributes - constraints" do
     test "email must be unique" do
@@ -81,6 +87,69 @@ defmodule Artemis.UserTest do
 
       Enum.map(user.auth_providers, fn auth_provider ->
         assert Repo.get(AuthProvider, auth_provider.id) == nil
+      end)
+    end
+  end
+
+  describe "associations - standups" do
+    setup do
+      user =
+        :user
+        |> insert
+        |> with_standups
+
+      {:ok, user: Repo.preload(user, @preload)}
+    end
+
+    test "cannot update associations through parent", %{user: user} do
+      new_standup = insert(:standup, user: user)
+
+      user =
+        User
+        |> preload(^@preload)
+        |> Repo.get(user.id)
+
+      assert length(user.standups) == 4
+
+      {:ok, updated} =
+        user
+        |> User.associations_changeset(%{standups: [new_standup]})
+        |> Repo.update()
+
+      updated = Repo.preload(updated, @preload)
+
+      assert length(updated.standups) == 4
+    end
+
+    test "deleting association does not remove record", %{user: user} do
+      assert Repo.get(User, user.id) != nil
+      assert length(user.standups) == 3
+
+      Enum.map(user.standups, &Repo.delete(&1))
+
+      user =
+        User
+        |> preload(^@preload)
+        |> Repo.get(user.id)
+
+      assert Repo.get(User, user.id) != nil
+      assert length(user.standups) == 0
+    end
+
+    test "deleting record deletes associations", %{user: user} do
+      assert Repo.get(User, user.id) != nil
+      assert length(user.standups) == 3
+
+      Enum.map(user.standups, fn standup ->
+        assert Repo.get(Standup, standup.id).user_id == user.id
+      end)
+
+      Repo.delete(user)
+
+      assert Repo.get(User, user.id) == nil
+
+      Enum.map(user.standups, fn standup ->
+        assert Repo.get(Standup, standup.id) == nil
       end)
     end
   end

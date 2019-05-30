@@ -5,7 +5,11 @@ defmodule Artemis.TeamTest do
   import Ecto.Repo
   import Artemis.Factories
 
+  alias Artemis.Repo
+  alias Artemis.Standup
   alias Artemis.Team
+
+  @preload [:standups]
 
   describe "attributes - constraints" do
     test "slug must be unique" do
@@ -28,6 +32,69 @@ defmodule Artemis.TeamTest do
       team = insert(:team, active: true)
 
       assert Team.active?(team) == true
+    end
+  end
+
+  describe "associations - standups" do
+    setup do
+      team =
+        :team
+        |> insert
+        |> with_standups
+
+      {:ok, team: Repo.preload(team, @preload)}
+    end
+
+    test "cannot update associations through parent", %{team: team} do
+      new_standup = insert(:standup, team: team)
+
+      team =
+        Team
+        |> preload(^@preload)
+        |> Repo.get(team.id)
+
+      assert length(team.standups) == 4
+
+      {:ok, updated} =
+        team
+        |> Team.changeset(%{standups: [new_standup]})
+        |> Repo.update()
+
+      updated = Repo.preload(updated, @preload)
+
+      assert length(updated.standups) == 4
+    end
+
+    test "deleting association does not remove record", %{team: team} do
+      assert Repo.get(Team, team.id) != nil
+      assert length(team.standups) == 3
+
+      Enum.map(team.standups, &Repo.delete(&1))
+
+      team =
+        Team
+        |> preload(^@preload)
+        |> Repo.get(team.id)
+
+      assert Repo.get(Team, team.id) != nil
+      assert length(team.standups) == 0
+    end
+
+    test "deleting record deletes associations", %{team: team} do
+      assert Repo.get(Team, team.id) != nil
+      assert length(team.standups) == 3
+
+      Enum.map(team.standups, fn standup ->
+        assert Repo.get(Standup, standup.id).team_id == team.id
+      end)
+
+      Repo.delete(team)
+
+      assert Repo.get(Team, team.id) == nil
+
+      Enum.map(team.standups, fn standup ->
+        assert Repo.get(Standup, standup.id) == nil
+      end)
     end
   end
 end

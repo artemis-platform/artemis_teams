@@ -34,6 +34,17 @@ defmodule Artemis.Factories do
     }
   end
 
+  def standup_factory do
+    %Artemis.Standup{
+      date: DateTime.utc_now(),
+      blockers: Faker.Lorem.sentence(),
+      future: Faker.Lorem.sentence(),
+      past: Faker.Lorem.sentence(),
+      team: insert(:team),
+      user: insert(:user)
+    }
+  end
+
   def team_factory do
     %Artemis.Team{
       active: false,
@@ -81,6 +92,16 @@ defmodule Artemis.Factories do
   def with_roles(%Artemis.Permission{} = permission, number \\ 3) do
     insert_list(number, :role, permissions: [permission])
     permission
+  end
+
+  def with_standups(resource, number \\ 3)
+  def with_standups(%Artemis.Team{} = team, number) do
+    insert_list(number, :standup, team: team)
+    team
+  end
+  def with_standups(%Artemis.User{} = user, number) do
+    insert_list(number, :standup, user: user)
+    user
   end
 
   def with_user_roles(_record, number \\ 3)
