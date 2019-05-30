@@ -64,6 +64,18 @@ defmodule ArtemisWeb.ViewHelper.Layout do
   end
 
   @doc """
+  Generates class for search form
+  """
+  def search_class(conn) do
+    query = Map.get(conn.query_params, "query")
+
+    case Artemis.Helpers.present?(query) do
+      true -> "ui search active"
+      false -> "ui search"
+    end
+  end
+
+  @doc """
   Generates primary nav from nav items
   """
   def render_primary_nav(conn, user) do

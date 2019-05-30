@@ -43,6 +43,12 @@ body {
       }
     }
   }
+
+  form.search {
+    align-items: center;
+    display: flex;
+    height: $height;
+  }
 }
 
 main {

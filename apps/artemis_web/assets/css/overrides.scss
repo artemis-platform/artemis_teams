@@ -15,13 +15,29 @@ h5 {
 }
 
 a {
-  color: #c70932;
-  color: #09aac7;
+  color: $light_blue;
 }
 
 .ui.message {
   margin-bottom: 1.5rem;
 }
+
+/* Button Colors */
+
+.ui.button.red:hover { background-color: #d26a5c; }
+.ui.button.red { background-color: #ca4f3e; }
+
+.ui.button.orange:hover { background-color: #f3b760; }
+.ui.button.orange { background-color: #f0a73c; }
+
+.ui.button.green:hover { background-color: #46c37b; }
+.ui.button.green { background-color: #38ab69; }
+
+.ui.button.blue:hover { background-color: #70b9eb; }
+.ui.button.blue { background-color: #4ea9e6; }
+
+.ui.button.primary:hover { background-color: #70b9eb; }
+.ui.button.primary { background-color: #4ea9e6; }
 
 /* Select 2 */
 

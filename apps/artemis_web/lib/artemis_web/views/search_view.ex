@@ -7,6 +7,7 @@ defmodule ArtemisWeb.SearchView do
     "features" => &Routes.feature_path/3,
     "permissions" => &Routes.permission_path/3,
     "roles" => &Routes.role_path/3,
+    "teams" => &Routes.team_path/3,
     "users" => &Routes.user_path/3
   }
 
@@ -68,6 +69,14 @@ defmodule ArtemisWeb.SearchView do
       title: data.slug,
       permission: "roles:show",
       link: fn conn -> Routes.user_path(conn, :show, data) end
+    }
+  end
+
+  defp search_entry(%Artemis.Team{} = data) do
+    %{
+      title: data.name,
+      permission: "teams:show",
+      link: fn conn -> Routes.team_path(conn, :show, data) end
     }
   end
 
