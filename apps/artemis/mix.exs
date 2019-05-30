@@ -44,6 +44,7 @@ defmodule Artemis.MixProject do
       {:assoc, "~> 0.1"},
       {:slugger, "~> 0.3"},
       {:earmark, "~> 1.3"},
+      {:timex, "~> 3.0"},
       {:html_sanitize_ex, "~> 1.3"},
       {:ex_machina, "~> 2.2"},
       {:faker, "~> 0.11"},
