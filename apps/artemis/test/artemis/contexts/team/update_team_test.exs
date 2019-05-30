@@ -77,6 +77,23 @@ defmodule Artemis.UpdateTeamTest do
 
       assert updated.name == params.name
     end
+
+    test "updates slug from name if not passed as a param" do
+      team = insert(:team)
+      params = params_for(:team, slug: "passed-slug")
+
+      {:ok, updated} = UpdateTeam.call(team.id, params, Mock.system_user())
+
+      assert updated.slug == "passed-slug"
+
+      # When slug is not passed
+
+      params = params_for(:team, name: "Passed Name", slug: nil)
+
+      {:ok, updated} = UpdateTeam.call(team.id, params, Mock.system_user())
+
+      assert updated.slug == "passed-name"
+    end
   end
 
   describe "broadcast" do

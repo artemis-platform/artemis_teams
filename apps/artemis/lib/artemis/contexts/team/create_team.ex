@@ -1,8 +1,9 @@
 defmodule Artemis.CreateTeam do
   use Artemis.Context
 
-  alias Artemis.Team
+  alias Artemis.GenerateTeamParams
   alias Artemis.Repo
+  alias Artemis.Team
 
   def call!(params, user) do
     case call(params, user) do
@@ -20,6 +21,8 @@ defmodule Artemis.CreateTeam do
   end
 
   defp insert_record(params) do
+    params = GenerateTeamParams.call(params)
+
     %Team{}
     |> Team.changeset(params)
     |> Repo.insert()

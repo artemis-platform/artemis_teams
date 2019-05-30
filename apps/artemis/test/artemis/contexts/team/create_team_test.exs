@@ -19,6 +19,22 @@ defmodule Artemis.CreateTeamTest do
 
       assert team.name == params.name
     end
+
+    test "creates slug from name if not passed as a param" do
+      params = params_for(:team, slug: "passed-slug")
+
+      team = CreateTeam.call!(params, Mock.system_user())
+
+      assert team.slug == "passed-slug"
+
+      # When slug is not passed
+
+      params = params_for(:team, name: "Passed Name", slug: nil)
+
+      team = CreateTeam.call!(params, Mock.system_user())
+
+      assert team.slug == "passed-name"
+    end
   end
 
   describe "call" do

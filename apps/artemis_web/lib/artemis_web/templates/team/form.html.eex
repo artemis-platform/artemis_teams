@@ -4,6 +4,8 @@
     <%= text_input f, :name, placeholder: "Name" %>
   </div>
 
+  <h3>Advanced Options</h3>
+
   <div class="field">
     <%= label_with_errors f, :slug %>
     <%= text_input f, :slug, placeholder: "Slug" %>

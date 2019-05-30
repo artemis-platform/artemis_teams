@@ -40,8 +40,11 @@ defmodule Artemis.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:scrivener_ecto, "~> 2.0"},
       {:jason, "~> 1.0"},
-      {:assoc, "~> 0.1"},
       {:config_tuples, "~> 0.2.0"},
+      {:assoc, "~> 0.1"},
+      {:slugger, "~> 0.3"},
+      {:earmark, "~> 1.3"},
+      {:html_sanitize_ex, "~> 1.3"},
       {:ex_machina, "~> 2.2"},
       {:faker, "~> 0.11"},
       {:artemis_pubsub, in_umbrella: true}

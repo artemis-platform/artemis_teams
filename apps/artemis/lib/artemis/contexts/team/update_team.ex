@@ -1,8 +1,9 @@
 defmodule Artemis.UpdateTeam do
   use Artemis.Context
 
-  alias Artemis.Team
+  alias Artemis.GenerateTeamParams
   alias Artemis.Repo
+  alias Artemis.Team
 
   def call!(id, params, user) do
     case call(id, params, user) do
@@ -26,6 +27,8 @@ defmodule Artemis.UpdateTeam do
   defp update_record(nil, _params), do: {:error, "Record not found"}
 
   defp update_record(record, params) do
+    params = GenerateTeamParams.call(params, record)
+
     record
     |> Team.changeset(params)
     |> Repo.update()
