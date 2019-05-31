@@ -7,12 +7,13 @@ defmodule ArtemisWeb.StandupPageTest do
   import ArtemisWeb.BrowserHelpers
   import ArtemisWeb.Router.Helpers
 
+  alias ArtemisWeb.Mock
+
   @moduletag :browser
 
   hound_session()
 
-  def team(), do: insert(:team)
-  def url(), do: team_standup_url(ArtemisWeb.Endpoint, :index, team())
+  def url(), do: standup_url(ArtemisWeb.Endpoint, :index)
 
   describe "authentication" do
     test "requires authentication" do
@@ -39,21 +40,24 @@ defmodule ArtemisWeb.StandupPageTest do
 
     test "search", %{standup: standup} do
       fill_inputs(".search-resource", %{
-        query: standup.slug
+        query: String.slice(standup.blockers, 0..10)
       })
 
-      submit_form(".search-resource")
+      submit_search(".search-resource")
 
-      assert visible?(standup.slug)
+      assert visible?(standup.blockers)
     end
   end
 
   describe "new / create" do
     setup do
+      user = Mock.system_user()
+      team_user = insert(:team_user, user: user)
+
       browser_sign_in()
       navigate_to(url())
 
-      {:ok, []}
+      {:ok, team: team_user.team}
     end
 
     test "submitting an empty form shows an error" do
@@ -63,8 +67,10 @@ defmodule ArtemisWeb.StandupPageTest do
       assert visible?("can't be blank")
     end
 
-    test "successfully creates a new record" do
+    test "successfully creates a new record", %{team: team} do
       click_link("New")
+
+      fill_enhanced_select("#standup-form .field-team-id", team.name)
 
       fill_inputs("#standup-form", %{
         "standup[blockers]": "Test Blockers",
@@ -89,9 +95,9 @@ defmodule ArtemisWeb.StandupPageTest do
     end
 
     test "record details", %{standup: standup} do
-      click_link(standup.date)
+      click_link(Date.to_string(standup.date))
 
-      assert visible?(standup.date)
+      assert visible?(Date.to_string(standup.date))
       assert visible?(standup.blockers)
       assert visible?(standup.past)
     end
@@ -108,7 +114,7 @@ defmodule ArtemisWeb.StandupPageTest do
     end
 
     test "successfully updates record", %{standup: standup} do
-      click_link(standup.slug)
+      click_link(Date.to_string(standup.date))
       click_link("Edit")
 
       fill_inputs("#standup-form", %{

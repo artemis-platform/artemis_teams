@@ -4,7 +4,7 @@
 
     <div class="actions">
       <%= if has?(@conn, "standups:create") do %>
-        <%= action "New", to: Routes.team_standup_path(@conn, :new, @team), color: "blue" %>
+        <%= action "New", to: Routes.standup_path(@conn, :new), color: "blue" %>
       <% end %>
     </div>
   </header>
@@ -23,6 +23,7 @@
     <thead>
       <tr>
         <th><%= sortable_table_header(@conn, "date", "Date") %></th>
+        <th>Team</th>
         <th>Past</th>
         <th>Future</th>
         <th>Blockers</th>
@@ -35,23 +36,24 @@
         <tr>
           <td>
             <%= if has?(@conn, "standups:show") do %>
-              <%= link standup.date, to: Routes.team_standup_path(@conn, :show, @team, standup) %>
+              <%= link standup.date, to: Routes.standup_path(@conn, :show, standup) %>
             <% else %>
               <%= standup.date %>
             <% end %>
           </td>
+          <td><%= standup.team.name %></td>
           <td><%= standup.past %></td>
           <td><%= standup.future %></td>
           <td><%= standup.blockers %></td>
           <td>
             <%= if has?(@conn, "standups:show") do %>
-              <%= link "Show", to: Routes.team_standup_path(@conn, :show, @team, standup) %>
+              <%= link "Show", to: Routes.standup_path(@conn, :show, standup) %>
             <% end %>
             <%= if has?(@conn, "standups:update") do %>
-              <%= link "Edit", to: Routes.team_standup_path(@conn, :edit, @team, standup) %>
+              <%= link "Edit", to: Routes.standup_path(@conn, :edit, standup) %>
             <% end %>
             <%= if has?(@conn, "standups:delete") do %>
-              <%= link "Delete", to: Routes.team_standup_path(@conn, :delete, @team, standup), method: :delete, data: [confirm: "Are you sure?"] %>
+              <%= link "Delete", to: Routes.standup_path(@conn, :delete, standup), method: :delete, data: [confirm: "Are you sure?"] %>
             <% end %>
           </td>
         </tr>

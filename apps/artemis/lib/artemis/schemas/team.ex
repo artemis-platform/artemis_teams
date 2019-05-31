@@ -8,6 +8,8 @@ defmodule Artemis.Team do
     field :slug, :string
 
     has_many :standups, Artemis.Standup, on_delete: :delete_all
+    has_many :team_users, Artemis.TeamUser, on_delete: :delete_all
+    has_many :users, through: [:team_users, :user]
 
     timestamps()
   end

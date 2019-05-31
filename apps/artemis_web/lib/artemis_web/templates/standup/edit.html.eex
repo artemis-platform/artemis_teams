@@ -10,5 +10,5 @@
 
 <div id="content">
   <%= render_flash_notifications @conn %>
-  <%= render "form.html", Map.put(assigns, :action, Routes.team_standup_path(@conn, :update, @team, @standup)) %>
+  <%= render "form.html", Map.put(assigns, :action, Routes.standup_path(@conn, :update, @standup)) %>
 </div>

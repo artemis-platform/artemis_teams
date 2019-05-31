@@ -1,4 +1,9 @@
 <%= form_for @changeset, @action, [class: "ui form", id: "standup-form"], fn f -> %>
+  <div class="field field-team-id">
+    <%= label_with_errors f, :team_id %>
+    <%= select f, :team_id, Enum.map(@teams, fn team -> {team.name, team.id} end), class: "enhanced search creatable", placeholder: "Team" %>
+  </div>
+
   <div class="field">
     <%= label_with_errors f, :date %>
     <%= text_input f, :date, placeholder: "Date" %>

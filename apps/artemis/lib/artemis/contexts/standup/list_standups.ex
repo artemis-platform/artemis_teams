@@ -8,7 +8,7 @@ defmodule Artemis.ListStandups do
   alias Artemis.Standup
 
   @default_order "date"
-  @default_page_size 25
+  @default_page_size 10
   @default_preload [:team, :user]
 
   def call(params \\ %{}, _user) do

@@ -55,4 +55,39 @@ defmodule ArtemisWeb.BrowserHelpers do
 
   def visible?(value) when is_integer(value), do: visible?(Integer.to_string(value))
   def visible?(value), do: visible_in_page?(value)
+
+  # Helpers
+
+  def try_for(func, interval \\ 100, maximum \\ 1000, total \\ 0) do
+    case func.() do
+      true -> true
+      false -> wait_for(func, interval, maximum, total)
+    end
+  end
+
+  def wait_for(func, interval \\ 100, maximum \\ 1000, total \\ 0) do
+    :timer.sleep(interval)
+
+    case func.() do
+      true ->
+        true
+
+      false ->
+        case total < interval do
+          true -> wait_for(func, interval, maximum, total + interval)
+          false -> false
+        end
+    end
+  end
+
+  # Debug
+
+  def print_page_source() do
+    options = [
+      limit: :infinity,
+      printable_limit: :infinity
+    ]
+
+    IO.inspect(page_source(), options)
+  end
 end

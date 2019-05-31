@@ -112,6 +112,16 @@ defmodule Artemis.Factories do
     user
   end
 
+  def with_team_users(resource, number \\ 3)
+  def with_team_users(%Artemis.Team{} = team, number) do
+    insert_list(number, :team_user, team: team)
+    team
+  end
+  def with_team_users(%Artemis.User{} = user, number) do
+    insert_list(number, :team_user, user: user)
+    user
+  end
+
   def with_user_roles(_record, number \\ 3)
 
   def with_user_roles(%Artemis.Role{} = role, number) do

@@ -45,8 +45,8 @@ defmodule ArtemisWeb.Router do
     scope "/" do
       pipe_through :require_auth
 
+      resources "/standups", StandupController
       resources "/teams", TeamController do
-        resources "/standups", StandupController
         resources "/users", TeamUserController, as: :user
       end
     end

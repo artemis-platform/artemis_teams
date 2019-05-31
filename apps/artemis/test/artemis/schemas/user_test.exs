@@ -8,6 +8,7 @@ defmodule Artemis.UserTest do
   alias Artemis.AuthProvider
   alias Artemis.Repo
   alias Artemis.Standup
+  alias Artemis.TeamUser
   alias Artemis.User
   alias Artemis.UserRole
 
@@ -15,6 +16,7 @@ defmodule Artemis.UserTest do
     :auth_providers,
     :roles,
     :standups,
+    :team_users,
     :user_roles
   ]
 
@@ -150,6 +152,69 @@ defmodule Artemis.UserTest do
 
       Enum.map(user.standups, fn standup ->
         assert Repo.get(Standup, standup.id) == nil
+      end)
+    end
+  end
+
+  describe "associations - team users" do
+    setup do
+      user =
+        :user
+        |> insert
+        |> with_team_users
+
+      {:ok, user: Repo.preload(user, @preload)}
+    end
+
+    test "cannot update associations through parent", %{user: user} do
+      new_team_user = insert(:team_user, user: user)
+
+      user =
+        User
+        |> preload(^@preload)
+        |> Repo.get(user.id)
+
+      assert length(user.team_users) == 4
+
+      {:ok, updated} =
+        user
+        |> User.associations_changeset(%{team_users: [new_team_user]})
+        |> Repo.update()
+
+      updated = Repo.preload(updated, @preload)
+
+      assert length(updated.team_users) == 4
+    end
+
+    test "deleting association does not remove record", %{user: user} do
+      assert Repo.get(User, user.id) != nil
+      assert length(user.team_users) == 3
+
+      Enum.map(user.team_users, &Repo.delete(&1))
+
+      user =
+        User
+        |> preload(^@preload)
+        |> Repo.get(user.id)
+
+      assert Repo.get(User, user.id) != nil
+      assert length(user.team_users) == 0
+    end
+
+    test "deleting record deletes associations", %{user: user} do
+      assert Repo.get(User, user.id) != nil
+      assert length(user.team_users) == 3
+
+      Enum.map(user.team_users, fn team_user ->
+        assert Repo.get(TeamUser, team_user.id).user_id == user.id
+      end)
+
+      Repo.delete(user)
+
+      assert Repo.get(User, user.id) == nil
+
+      Enum.map(user.team_users, fn team_user ->
+        assert Repo.get(TeamUser, team_user.id) == nil
       end)
     end
   end

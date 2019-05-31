@@ -13,16 +13,14 @@ defmodule ArtemisWeb.StandupControllerTest do
 
   describe "index" do
     test "lists all standups", %{conn: conn} do
-      team = insert(:team)
-      conn = get(conn, Routes.team_standup_path(conn, :index, team))
+      conn = get(conn, Routes.standup_path(conn, :index))
       assert html_response(conn, 200) =~ "Standups"
     end
   end
 
   describe "new standup" do
     test "renders new form", %{conn: conn} do
-      team = insert(:team)
-      conn = get(conn, Routes.team_standup_path(conn, :new, team))
+      conn = get(conn, Routes.standup_path(conn, :new))
       assert html_response(conn, 200) =~ "New Standup"
     end
   end
@@ -30,18 +28,23 @@ defmodule ArtemisWeb.StandupControllerTest do
   describe "create standup" do
     test "redirects to show when data is valid", %{conn: conn} do
       team = insert(:team)
-      conn = post(conn, Routes.team_standup_path(conn, :create, team), standup: @create_attrs)
+      user = insert(:user)
+      params =
+        @create_attrs
+        |> Map.put(:team_id, team.id)
+        |> Map.put(:user_id, user.id)
+
+      conn = post(conn, Routes.standup_path(conn, :create), standup: params)
 
       assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.team_standup_path(conn, :show, team, id)
+      assert redirected_to(conn) == Routes.standup_path(conn, :show, id)
 
-      conn = get(conn, Routes.team_standup_path(conn, :show, team, id))
+      conn = get(conn, Routes.standup_path(conn, :show, id))
       assert html_response(conn, 200) =~ "Test Blockers"
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      team = insert(:team)
-      conn = post(conn, Routes.team_standup_path(conn, :create, team), standup: @invalid_attrs)
+      conn = post(conn, Routes.standup_path(conn, :create), standup: @invalid_attrs)
       assert html_response(conn, 200) =~ "New Standup"
     end
   end
@@ -50,7 +53,7 @@ defmodule ArtemisWeb.StandupControllerTest do
     setup [:create_record]
 
     test "shows standup", %{conn: conn, record: record} do
-      conn = get(conn, Routes.team_standup_path(conn, :show, record.team, record))
+      conn = get(conn, Routes.standup_path(conn, :show, record))
       assert html_response(conn, 200) =~ record.blockers
     end
   end
@@ -59,7 +62,7 @@ defmodule ArtemisWeb.StandupControllerTest do
     setup [:create_record]
 
     test "renders form for editing chosen standup", %{conn: conn, record: record} do
-      conn = get(conn, Routes.team_standup_path(conn, :edit, record.team, record))
+      conn = get(conn, Routes.standup_path(conn, :edit, record))
       assert html_response(conn, 200) =~ "Edit Standup"
     end
   end
@@ -68,15 +71,15 @@ defmodule ArtemisWeb.StandupControllerTest do
     setup [:create_record]
 
     test "redirects when data is valid", %{conn: conn, record: record} do
-      conn = put(conn, Routes.team_standup_path(conn, :update, record.team, record), standup: @update_attrs)
-      assert redirected_to(conn) == Routes.team_standup_path(conn, :show, record.team, record)
+      conn = put(conn, Routes.standup_path(conn, :update, record), standup: @update_attrs)
+      assert redirected_to(conn) == Routes.standup_path(conn, :show, record)
 
-      conn = get(conn, Routes.team_standup_path(conn, :show, record.team, record))
+      conn = get(conn, Routes.standup_path(conn, :show, record))
       assert html_response(conn, 200) =~ "Updated Blockers"
     end
 
     test "renders errors when data is invalid", %{conn: conn, record: record} do
-      conn = put(conn, Routes.team_standup_path(conn, :update, record.team, record), standup: @invalid_attrs)
+      conn = put(conn, Routes.standup_path(conn, :update, record), standup: @invalid_attrs)
       assert html_response(conn, 200) =~ "Edit Standup"
     end
   end
@@ -85,18 +88,17 @@ defmodule ArtemisWeb.StandupControllerTest do
     setup [:create_record]
 
     test "deletes chosen standup", %{conn: conn, record: record} do
-      conn = delete(conn, Routes.team_standup_path(conn, :delete, record.team, record))
-      assert redirected_to(conn) == Routes.team_standup_path(conn, :index, record.team)
+      conn = delete(conn, Routes.standup_path(conn, :delete, record))
+      assert redirected_to(conn) == Routes.standup_path(conn, :index)
 
       assert_error_sent 404, fn ->
-        get(conn, Routes.team_standup_path(conn, :show, record.team, record))
+        get(conn, Routes.standup_path(conn, :show, record))
       end
     end
   end
 
   defp create_record(_) do
-    team = insert(:team)
-    record = insert(:standup, team: team)
+    record = insert(:standup)
 
     {:ok, record: record}
   end

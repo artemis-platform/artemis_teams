@@ -59,6 +59,18 @@ defmodule ArtemisWeb.ViewData.Layout do
           verify: &has?(&1, "roles:create")
         ]
       ],
+      Standups: [
+        [
+          label: "List Standups",
+          path: &Routes.standup_path(&1, :index),
+          verify: &has?(&1, "standups:list")
+        ],
+        [
+          label: "Create New Standup",
+          path: &Routes.standup_path(&1, :new),
+          verify: &has?(&1, "standups:create")
+        ]
+      ],
       Teams: [
         [
           label: "List Teams",

@@ -6,10 +6,10 @@
 
     <div class="actions">
       <%= if has?(@conn, "standups:delete") do %>
-        <%= action "Delete", method: "delete", to: Routes.team_standup_path(@conn, :delete, @team, @standup), data: [confirm: "Confirm Delete"] %>
+        <%= action "Delete", method: "delete", to: Routes.standup_path(@conn, :delete, @standup), data: [confirm: "Confirm Delete"] %>
       <% end %>
       <%= if has?(@conn, "standups:update") do %>
-        <%= action "Edit", to: Routes.team_standup_path(@conn, :edit, @team, @standup), color: "green" %>
+        <%= action "Edit", to: Routes.standup_path(@conn, :edit, @standup), color: "green" %>
       <% end %>
     </div>
   </header>
