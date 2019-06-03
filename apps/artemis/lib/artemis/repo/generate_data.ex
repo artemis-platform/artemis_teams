@@ -65,8 +65,6 @@ defmodule Artemis.Repo.GenerateData do
       %{slug: "roles:list", name: "Roles - List"},
       %{slug: "roles:show", name: "Roles - Show"},
       %{slug: "roles:update", name: "Roles - Update"},
-      %{slug: "standups:access:all", name: "Standups - Access All"},
-      %{slug: "standups:access:associated", name: "Standups - Access Associated"},
       %{slug: "standups:create", name: "Standups - Create"},
       %{slug: "standups:delete", name: "Standups - Delete"},
       %{slug: "standups:list", name: "Standups - List"},

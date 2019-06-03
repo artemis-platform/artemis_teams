@@ -43,3 +43,21 @@
     }
   }
 }
+
+.label-with-errors {
+
+  i {
+    display: none;
+  }
+
+  &.error {
+    color: #9f3a38 !important;
+
+    i.red.icon {
+      color: #9f3a38 !important;
+      display: inline-block;
+      margin-right: 0 !important;
+      opacity: 0.8;
+    }
+  }
+}

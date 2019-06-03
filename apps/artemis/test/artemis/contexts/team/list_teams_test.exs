@@ -13,6 +13,41 @@ defmodule Artemis.ListTeamsTest do
     {:ok, []}
   end
 
+  describe "access permissions" do
+    setup do
+      insert_list(3, :team)
+
+      {:ok, []}
+    end
+
+    test "returns empty list with no permissions" do
+      user = Mock.user_without_permissions()
+      team_user = insert(:team_user, user: user)
+
+      result = ListTeams.call(user)
+
+      assert length(result) == 0
+    end
+
+    test "requires access:self permission to return own record" do
+      user = Mock.user_with_permission("teams:access:associated")
+      team_user = insert(:team_user, user: user)
+
+      result = ListTeams.call(user)
+
+      assert length(result) == 1
+    end
+
+    test "requires access:all permission to return other records" do
+      user = Mock.user_with_permission("teams:access:all")
+
+      result = ListTeams.call(user)
+      total = Repo.all(Team)
+
+      assert length(result) == length(total)
+    end
+  end
+
   describe "call" do
     test "returns empty list when no teams exist" do
       assert ListTeams.call(Mock.system_user()) == []
