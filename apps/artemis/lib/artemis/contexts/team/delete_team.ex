@@ -1,7 +1,7 @@
 defmodule Artemis.DeleteTeam do
   use Artemis.Context
 
-  alias Artemis.Team
+  alias Artemis.GetTeam
   alias Artemis.Repo
 
   def call!(id, user) do
@@ -13,13 +13,13 @@ defmodule Artemis.DeleteTeam do
 
   def call(id, user) do
     id
-    |> get_record
+    |> get_record(user)
     |> delete_record
     |> Event.broadcast("team:deleted", user)
   end
 
-  def get_record(record) when is_map(record), do: record
-  def get_record(id), do: Repo.get(Team, id)
+  def get_record(%{id: id}, user), do: get_record(id, user)
+  def get_record(id, user), do: GetTeam.call(id, user)
 
   defp delete_record(nil), do: {:error, "Record not found"}
   defp delete_record(record), do: Repo.delete(record)

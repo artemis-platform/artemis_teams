@@ -56,7 +56,7 @@ defmodule ArtemisWeb.TeamUserControllerTest do
     setup [:create_record]
 
     test "shows team user", %{conn: conn, record: record} do
-      conn = get(conn, Routes.team_user_path(conn, :show, record))
+      conn = get(conn, Routes.team_user_path(conn, :show, record.team, record))
       assert html_response(conn, 200) =~ record.type
     end
   end
@@ -65,7 +65,7 @@ defmodule ArtemisWeb.TeamUserControllerTest do
     setup [:create_record]
 
     test "renders form for editing chosen team user", %{conn: conn, record: record} do
-      conn = get(conn, Routes.team_user_path(conn, :edit, record))
+      conn = get(conn, Routes.team_user_path(conn, :edit, record.team, record))
       assert html_response(conn, 200) =~ "Edit Team User"
     end
   end
@@ -74,7 +74,7 @@ defmodule ArtemisWeb.TeamUserControllerTest do
     setup [:create_record]
 
     test "redirects when data is valid", %{conn: conn, record: record} do
-      conn = put(conn, Routes.team_user_path(conn, :update, record), team_user: @update_attrs)
+      conn = put(conn, Routes.team_user_path(conn, :update, record.team, record), team_user: @update_attrs)
       assert redirected_to(conn) == Routes.team_user_path(conn, :index, record.team)
 
       conn = get(conn, Routes.team_user_path(conn, :index, record.team))
@@ -82,7 +82,7 @@ defmodule ArtemisWeb.TeamUserControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, record: record} do
-      conn = put(conn, Routes.team_user_path(conn, :update, record), team_user: @invalid_attrs)
+      conn = put(conn, Routes.team_user_path(conn, :update, record.team, record), team_user: @invalid_attrs)
       assert html_response(conn, 200) =~ "Edit"
     end
   end
@@ -91,11 +91,11 @@ defmodule ArtemisWeb.TeamUserControllerTest do
     setup [:create_record]
 
     test "deletes chosen team user", %{conn: conn, record: record} do
-      conn = delete(conn, Routes.team_user_path(conn, :delete, record))
+      conn = delete(conn, Routes.team_user_path(conn, :delete, record.team, record))
       assert redirected_to(conn) == Routes.team_user_path(conn, :index, record.team)
 
       assert_error_sent 404, fn ->
-        get(conn, Routes.team_user_path(conn, :show, record))
+        get(conn, Routes.team_user_path(conn, :show, record.team, record))
       end
     end
   end
