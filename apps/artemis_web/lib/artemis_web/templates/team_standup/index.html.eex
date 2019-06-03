@@ -1,0 +1,47 @@
+<div id="content-header">
+  <header>
+    <h1>Team Standups</h1>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <table class="ui table selectable">
+    <thead>
+      <tr>
+        <th><%= sortable_table_header(@conn, "date", "Date") %></th>
+        <th>Responses</th>
+        <th>Latest</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render_table_row_if_empty(@team_standups) %>
+      <%= for team_standup <- @team_standups do %>
+        <tr>
+          <td>
+            <%= if has?(@conn, "team-standups:show") do %>
+              <%= link team_standup.date, to: Routes.team_standup_path(@conn, :show, @team, team_standup) %>
+            <% else %>
+              <%= team_standup.date %>
+            <% end %>
+          </td>
+          <td><%= team_standup.count %></td>
+          <td><%= team_standup.latest %></td>
+          <td>
+            <%= if has?(@conn, "team-standups:show") do %>
+              <%= link "Show", to: Routes.team_standup_path(@conn, :show, @team, team_standup) %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%# TODO: <%= render_pagination @conn, @team_standups %1> %>
+</div>

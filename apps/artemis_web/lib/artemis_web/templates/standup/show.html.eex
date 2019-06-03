@@ -25,6 +25,11 @@
   <ul>
 
     <li>
+      <strong>Team:</strong>
+      <%= link @standup.team.name, to: Routes.team_path(@conn, :show, @standup.team) %>
+    </li>
+
+    <li>
       <strong>Date:</strong>
       <%= @standup.date %>
     </li>

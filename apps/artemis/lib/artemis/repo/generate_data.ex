@@ -77,6 +77,8 @@ defmodule Artemis.Repo.GenerateData do
       %{slug: "teams:list", name: "Teams - List"},
       %{slug: "teams:show", name: "Teams - Show"},
       %{slug: "teams:update", name: "Teams - Update"},
+      %{slug: "team-standups:list", name: "Team Standups - List"},
+      %{slug: "team-standups:show", name: "Team Standups - Show"},
       %{slug: "team-users:create", name: "Team Users - Create"},
       %{slug: "team-users:delete", name: "Team Users - Delete"},
       %{slug: "team-users:list", name: "Team Users - List"},

@@ -1,0 +1,55 @@
+<div id="content-header">
+  <header>
+    <h1>
+      Team Standup <%= hd(@standups).date %>
+    </h1>
+
+    <div class="actions">
+      <% # TODO: if user has entry, show edit and delete button %>
+      <% # TODO: if user does not, show new button %>
+      <% # TODO: redirect create / update to team standup page %>
+    </div>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <% # TODO: share a partial file between team_standup/ and standup/ templates? %>
+
+  <%= for standup <- @standups do %>
+    <h3><%= standup.user.name %></h3>
+    <ul>
+
+      <li>
+        <strong>Team:</strong>
+        <%= link standup.team.name, to: Routes.team_path(@conn, :show, standup.team) %>
+      </li>
+
+      <li>
+        <strong>Date:</strong>
+        <%= standup.date %>
+      </li>
+
+      <li>
+        <strong>Past:</strong>
+        <%= standup.past %>
+      </li>
+
+      <li>
+        <strong>Future:</strong>
+        <%= standup.future %>
+      </li>
+
+      <li>
+        <strong>Blockers:</strong>
+        <%= standup.blockers %>
+      </li>
+
+    </ul>
+  <% end %>
+</div>

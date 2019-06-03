@@ -5,6 +5,7 @@ defmodule ArtemisWeb.TeamController do
   alias Artemis.Team
   alias Artemis.DeleteTeam
   alias Artemis.GetTeam
+  alias Artemis.GetUser
   alias Artemis.ListTeams
   alias Artemis.UpdateTeam
 
@@ -12,10 +13,12 @@ defmodule ArtemisWeb.TeamController do
 
   def index(conn, params) do
     authorize(conn, "teams:list", fn ->
+      user = current_user(conn)
       params = Map.put(params, :paginate, true)
-      teams = ListTeams.call(params, current_user(conn))
+      teams = ListTeams.call(params, user)
+      my_teams = GetUser.call(user.id, current_user(conn), preload: [:teams]).teams
 
-      render(conn, "index.html", teams: teams)
+      render(conn, "index.html", my_teams: my_teams, teams: teams, user: user)
     end)
   end
 

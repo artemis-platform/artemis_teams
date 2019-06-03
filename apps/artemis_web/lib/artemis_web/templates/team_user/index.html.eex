@@ -33,6 +33,8 @@
           <td>
             <%= if has?(@conn, "team-users:show") do %>
               <%= link team_user.user.name, to: Routes.team_user_path(@conn, :show, @team, team_user) %>
+            <% else %>
+              <%= team_user.user.name %>
             <% end %>
           </td>
           <td><%= team_user.user.email %></td>
