@@ -25,16 +25,14 @@
         <div class="content">
           <span class="header"><%= team.name %></span>
           <div class="meta">
-            <span class="date">Created in <%= team.slug %></span>
-          </div>
-          <div class="description">
-            <p></p>
+            <%= team.description %>
           </div>
         </div>
         <div class="extra content">
           <span>
             <i class="users icon"></i>
-            2 Members
+            <%= team.team_user_count %>
+            <%= Gettext.dngettext(ArtemisWeb.Gettext, "teams", "User", "Users", team.team_user_count) %>
           </span>
         </div>
       </a>
@@ -63,6 +61,7 @@
         <tr>
           <th><%= sortable_table_header(@conn, "slug", "Slug") %></th>
           <th><%= sortable_table_header(@conn, "name", "Name") %></th>
+          <th>Users</th>
           <th></th>
         </tr>
       </thead>
@@ -78,6 +77,7 @@
               <% end %>
             </td>
             <td><%= team.name %></td>
+            <td><%= team.team_user_count %></td>
             <td>
               <%= if has?(@conn, "teams:show") do %>
                 <%= link "Show", to: Routes.team_path(@conn, :show, team) %>

@@ -2,21 +2,29 @@ defmodule ArtemisWeb.TeamController do
   use ArtemisWeb, :controller
 
   alias Artemis.CreateTeam
+  alias Artemis.CreateTeamUser
   alias Artemis.Team
   alias Artemis.DeleteTeam
   alias Artemis.GetTeam
-  alias Artemis.GetUser
   alias Artemis.ListTeams
   alias Artemis.UpdateTeam
 
   @preload []
+  @team_user_type_on_create "admin"
 
   def index(conn, params) do
     authorize(conn, "teams:list", fn ->
       user = current_user(conn)
-      params = Map.put(params, :paginate, true)
-      teams = ListTeams.call(params, user)
-      my_teams = GetUser.call(user.id, current_user(conn), preload: [:teams]).teams
+
+      teams =
+        params
+        |> Map.put(:paginate, true)
+        |> ListTeams.call(user)
+
+      my_teams =
+        params
+        |> Map.put(:filters, %{user_id: user.id})
+        |> ListTeams.call(user)
 
       render(conn, "index.html", my_teams: my_teams, teams: teams, user: user)
     end)
@@ -33,8 +41,18 @@ defmodule ArtemisWeb.TeamController do
 
   def create(conn, %{"team" => params}) do
     authorize(conn, "teams:create", fn ->
-      case CreateTeam.call(params, current_user(conn)) do
+      user = current_user(conn)
+
+      case CreateTeam.call(params, user) do
         {:ok, team} ->
+          team_user_params = %{
+            team_id: team.id,
+            type: @team_user_type_on_create,
+            user_id: user.id
+          }
+
+          {:ok, _} = CreateTeamUser.call(team_user_params, user)
+
           conn
           |> put_flash(:info, "Team created successfully.")
           |> redirect(to: Routes.team_path(conn, :show, team))

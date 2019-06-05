@@ -48,6 +48,7 @@ defmodule Artemis.Factories do
   def team_factory do
     %Artemis.Team{
       active: false,
+      description: Faker.Lorem.sentence(),
       name: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
       slug: sequence(:slug, &"#{Faker.Internet.slug()}-#{&1}")
     }
@@ -103,20 +104,24 @@ defmodule Artemis.Factories do
   end
 
   def with_standups(resource, number \\ 3)
+
   def with_standups(%Artemis.Team{} = team, number) do
     insert_list(number, :standup, team: team)
     team
   end
+
   def with_standups(%Artemis.User{} = user, number) do
     insert_list(number, :standup, user: user)
     user
   end
 
   def with_team_users(resource, number \\ 3)
+
   def with_team_users(%Artemis.Team{} = team, number) do
     insert_list(number, :team_user, team: team)
     team
   end
+
   def with_team_users(%Artemis.User{} = user, number) do
     insert_list(number, :team_user, user: user)
     user

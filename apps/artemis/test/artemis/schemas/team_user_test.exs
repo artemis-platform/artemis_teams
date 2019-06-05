@@ -28,6 +28,7 @@ defmodule Artemis.TeamUserTest do
         %TeamUser{}
         |> TeamUser.changeset(duplicate_params)
         |> Repo.insert()
+
         insert(:team_user, type: existing.type, team: team, user: user)
       end
 

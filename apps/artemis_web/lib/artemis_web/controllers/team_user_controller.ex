@@ -16,7 +16,10 @@ defmodule ArtemisWeb.TeamUserController do
     authorize(conn, "team-users:list", fn ->
       user = current_user(conn)
       team = get_team!(params, user)
-      params = Map.put(params, :paginate, true)
+      params =
+        params
+        |> Map.put(:paginate, true)
+        |> Map.put(:filters, %{team_id: team.id})
       team_users = ListTeamUsers.call(params, user)
 
       render(conn, "index.html", team: team, team_users: team_users)

@@ -1,131 +1,74 @@
-defmodule Artemis.ListTeamsTest do
+defmodule Artemis.ListTeamStandupsTest do
   use Artemis.DataCase
 
   import Artemis.Factories
 
   alias Artemis.ListTeamStandups
   alias Artemis.Repo
-  alias Artemis.Team
+  alias Artemis.Standup
 
   setup do
+    Repo.delete_all(Standup)
+
     {:ok, []}
   end
 
   describe "call" do
-    test "returns a summary" do
-      date = "2019-01-01"
-      insert(:standup, date: date)
-      insert(:standup, date: date)
-      insert(:standup, date: date)
-
-      date = "2019-01-02"
-      insert(:standup, date: date)
-      insert(:standup, date: date)
-
+    test "returns empty list when no teams exist" do
       assert ListTeamStandups.call(Mock.system_user()) == []
+    end
+
+    test "returns existing team standup" do
+      standup = insert(:standup)
+
+      result = ListTeamStandups.call(Mock.system_user())
+
+      assert hd(result).date == standup.date
+    end
+
+    test "returns a list of team standups" do
+      date1 = ~D[2019-01-01]
+      insert(:standup, date: date1)
+      insert(:standup, date: date1)
+      insert(:standup, date: date1)
+
+      date2 = ~D[2019-01-02]
+      insert(:standup, date: date2)
+      insert(:standup, date: date2)
+
+      result = ListTeamStandups.call(Mock.system_user())
+
+      assert length(result) == 2
+      assert hd(result).date == date1
+      assert hd(result).count == 3
     end
   end
 
-  # describe "call" do
-  #   test "returns empty list when no teams exist" do
-  #     assert ListTeams.call(Mock.system_user()) == []
-  #   end
+  describe "call - params" do
+    setup do
+      insert(:standup, date: ~D[2019-01-01])
+      insert(:standup, date: ~D[2019-01-02])
 
-  #   test "returns existing team" do
-  #     team = insert(:team)
+      {:ok, []}
+    end
 
-  #     assert ListTeams.call(Mock.system_user()) == [team]
-  #   end
+    test "filters - team_id" do
+      standup = insert(:standup)
 
-  #   test "returns a list of teams" do
-  #     count = 3
-  #     insert_list(count, :team)
+      params = %{filters: %{team_id: standup.team_id}}
+      result = ListTeamStandups.call(params, Mock.system_user())
 
-  #     teams = ListTeams.call(Mock.system_user())
+      assert length(result) == 1
+    end
 
-  #     assert length(teams) == count
-  #   end
-  # end
+    test "order" do
+      params = %{order: "date"}
+      ascending = ListTeamStandups.call(params, Mock.system_user())
 
-  # describe "call - params" do
-  #   setup do
-  #     team = insert(:team)
+      params = %{order: "-date"}
+      descending = ListTeamStandups.call(params, Mock.system_user())
 
-  #     {:ok, team: team}
-  #   end
-
-  #   test "order" do
-  #     insert_list(3, :team)
-
-  #     params = %{order: "name"}
-  #     ascending = ListTeams.call(params, Mock.system_user())
-
-  #     params = %{order: "-name"}
-  #     descending = ListTeams.call(params, Mock.system_user())
-
-  #     assert ascending == Enum.reverse(descending)
-  #   end
-
-  #   test "paginate" do
-  #     params = %{
-  #       paginate: true
-  #     }
-
-  #     response_keys =
-  #       ListTeams.call(params, Mock.system_user())
-  #       |> Map.from_struct()
-  #       |> Map.keys()
-
-  #     pagination_keys = [
-  #       :entries,
-  #       :page_number,
-  #       :page_size,
-  #       :total_entries,
-  #       :total_pages
-  #     ]
-
-  #     assert response_keys == pagination_keys
-  #   end
-
-  #   test "query - search" do
-  #     insert(:team, name: "John Smith", slug: "john-smith")
-  #     insert(:team, name: "Jill Smith", slug: "jill-smith")
-  #     insert(:team, name: "John Doe", slug: "john-doe")
-
-  #     user = Mock.system_user()
-  #     teams = ListTeams.call(user)
-
-  #     assert length(teams) == 4
-
-  #     # Succeeds when given a word part of a larger phrase
-
-  #     params = %{
-  #       query: "smit"
-  #     }
-
-  #     teams = ListTeams.call(params, user)
-
-  #     assert length(teams) == 2
-
-  #     # Succeeds with partial value when it is start of a word
-
-  #     params = %{
-  #       query: "john-"
-  #     }
-
-  #     teams = ListTeams.call(params, user)
-
-  #     assert length(teams) == 2
-
-  #     # Fails with partial value when it is not the start of a word
-
-  #     params = %{
-  #       query: "mith"
-  #     }
-
-  #     teams = ListTeams.call(params, user)
-
-  #     assert length(teams) == 0
-  #   end
-  # end
+      assert ascending == Enum.reverse(descending)
+    end
+  end
 end

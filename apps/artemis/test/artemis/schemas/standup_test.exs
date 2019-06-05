@@ -28,6 +28,7 @@ defmodule Artemis.StandupTest do
         %Standup{}
         |> Standup.changeset(duplicate_params)
         |> Repo.insert()
+
         insert(:standup, date: existing.date, team: team, user: user)
       end
 

@@ -4,6 +4,11 @@
     <%= text_input f, :name, placeholder: "Name" %>
   </div>
 
+  <div class="field">
+    <%= label_with_errors f, :description %>
+    <%= textarea f, :description, placeholder: "Description" %>
+  </div>
+
   <h3>Advanced Options</h3>
 
   <div class="field">

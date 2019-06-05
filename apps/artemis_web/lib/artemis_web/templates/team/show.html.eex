@@ -6,10 +6,13 @@
 
     <div class="actions">
       <%= if has?(@conn, "teams:delete") do %>
-        <%= action "Delete", method: "delete", to: Routes.team_path(@conn, :delete, @team), data: [confirm: "Confirm Delete"] %>
+        <%= action "Delete", method: "delete", to: Routes.team_path(@conn, :delete, @team), color: "red", data: [confirm: "Confirm Delete"] %>
       <% end %>
       <%= if has?(@conn, "teams:update") do %>
         <%= action "Edit", to: Routes.team_path(@conn, :edit, @team), color: "green" %>
+      <% end %>
+      <%= if has?(@conn, "team-standups:list") do %>
+        <%= action "View Team Standups", to: Routes.team_standup_path(@conn, :index, @team), color: "teal" %>
       <% end %>
       <%= if has?(@conn, "standups:list") do %>
         <%= action "View Team Users", to: Routes.team_user_path(@conn, :index, @team), color: "blue" %>

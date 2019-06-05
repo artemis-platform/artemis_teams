@@ -10,16 +10,14 @@
     <%= render_primary_nav(@conn, @user) %>
   </nav>
 
-  <div id="global-search">
+  <nav id="primary-navigation-icons">
     <%= if current_user?(@conn) do %>
-      <form class="<%= search_class(@conn) %>" action="<%= Routes.search_path(@conn, :index) %>" method="get">
-        <div class="ui icon input">
-          <i class="search link icon"></i>
-          <input name="query" type="text" value="<%= Map.get(@conn.query_params, "query") %>" />
-        </div>
-      </form>
+      <a href="<%= Routes.search_path(@conn, :index) %>" title="global-search">
+        <i class="search link icon"></i>
+        Search
+      </a>
     <% end %>
-  </div>
+  </nav>
 
   <nav id="user-navigation">
     <ul>

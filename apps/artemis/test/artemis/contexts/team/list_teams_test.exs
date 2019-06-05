@@ -22,7 +22,7 @@ defmodule Artemis.ListTeamsTest do
 
     test "returns empty list with no permissions" do
       user = Mock.user_without_permissions()
-      team_user = insert(:team_user, user: user)
+      insert(:team_user, user: user)
 
       result = ListTeams.call(user)
 
@@ -31,7 +31,7 @@ defmodule Artemis.ListTeamsTest do
 
     test "requires access:self permission to return own record" do
       user = Mock.user_with_permission("teams:access:associated")
-      team_user = insert(:team_user, user: user)
+      insert(:team_user, user: user)
 
       result = ListTeams.call(user)
 
@@ -56,7 +56,9 @@ defmodule Artemis.ListTeamsTest do
     test "returns existing team" do
       team = insert(:team)
 
-      assert ListTeams.call(Mock.system_user()) == [team]
+      result = ListTeams.call(Mock.system_user())
+
+      assert hd(result).id == team.id
     end
 
     test "returns a list of teams" do
@@ -67,6 +69,14 @@ defmodule Artemis.ListTeamsTest do
 
       assert length(teams) == count
     end
+
+    test "returns virtual fields" do
+      insert(:team_user)
+
+      result = ListTeams.call(Mock.system_user())
+
+      assert hd(result).team_user_count == 1
+    end
   end
 
   describe "call - params" do
@@ -74,6 +84,20 @@ defmodule Artemis.ListTeamsTest do
       team = insert(:team)
 
       {:ok, team: team}
+    end
+
+    test "filters - user_id" do
+      _other_teams = insert_list(3, :team)
+
+      user = insert(:user)
+      team = insert(:team)
+
+      insert(:team_user, team: team, user: user)
+
+      params = %{filters: %{user_id: user.id}}
+      result = ListTeams.call(params, Mock.system_user())
+
+      assert length(result) == 1
     end
 
     test "order" do
@@ -110,19 +134,19 @@ defmodule Artemis.ListTeamsTest do
     end
 
     test "query - search" do
-      insert(:team, name: "John Smith", slug: "john-smith")
-      insert(:team, name: "Jill Smith", slug: "jill-smith")
-      insert(:team, name: "John Doe", slug: "john-doe")
+      insert(:team, name: "Four Six", slug: "four-six")
+      insert(:team, name: "Four Two", slug: "four-two")
+      insert(:team, name: "Five Six", slug: "five-six")
 
       user = Mock.system_user()
       teams = ListTeams.call(user)
 
-      assert length(teams) == 4
+      assert length(teams) > 2
 
       # Succeeds when given a word part of a larger phrase
 
       params = %{
-        query: "smit"
+        query: "Six"
       }
 
       teams = ListTeams.call(params, user)
@@ -132,7 +156,7 @@ defmodule Artemis.ListTeamsTest do
       # Succeeds with partial value when it is start of a word
 
       params = %{
-        query: "john-"
+        query: "four-"
       }
 
       teams = ListTeams.call(params, user)
@@ -142,7 +166,7 @@ defmodule Artemis.ListTeamsTest do
       # Fails with partial value when it is not the start of a word
 
       params = %{
-        query: "mith"
+        query: "our"
       }
 
       teams = ListTeams.call(params, user)

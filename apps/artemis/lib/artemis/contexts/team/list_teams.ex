@@ -1,6 +1,7 @@
 defmodule Artemis.ListTeams do
   use Artemis.Context
 
+  import Artemis.Helpers.Filter
   import Artemis.Helpers.Search
   import Ecto.Query
 
@@ -15,8 +16,10 @@ defmodule Artemis.ListTeams do
     params = default_params(params)
 
     Team
+    |> select_fields()
     |> preload(^Map.get(params, "preload"))
     |> search_filter(params)
+    |> filter_query(params, user)
     |> order_query(params)
     |> restrict_access(user)
     |> get_records(params)
@@ -30,8 +33,32 @@ defmodule Artemis.ListTeams do
     |> Map.put_new("preload", @default_preload)
   end
 
-  defp get_records(query, %{"paginate" => true} = params), do: Repo.paginate(query, pagination_params(params))
-  defp get_records(query, _params), do: Repo.all(query)
+  defp select_fields(query) do
+    query
+    |> group_by([t], t.id)
+    |> distinct(true)
+    |> join(:left, [team], team_users in assoc(team, :team_users))
+    |> select([team, ..., team_users], %Team{team | team_user_count: count(team_users.id)})
+  end
+
+  defp filter_query(query, %{"filters" => filters}, _user) when is_map(filters) do
+    Enum.reduce(filters, query, fn {key, value}, acc ->
+      filter(acc, key, value)
+    end)
+  end
+
+  defp filter_query(query, _params, _user), do: query
+
+  defp filter(query, _key, nil), do: query
+  defp filter(query, _key, ""), do: query
+
+  defp filter(query, "user_id", value) do
+    query
+    |> join(:left, [team], team_users in assoc(team, :team_users))
+    |> where([team, ..., team_users], team_users.user_id in ^split(value))
+  end
+
+  defp filter(query, _key, _value), do: query
 
   defp restrict_access(query, user) do
     cond do
@@ -46,4 +73,7 @@ defmodule Artemis.ListTeams do
     |> join(:left, [team], team_users in assoc(team, :team_users))
     |> where([..., tu], tu.user_id == ^user.id)
   end
+
+  defp get_records(query, %{"paginate" => true} = params), do: Repo.paginate(query, pagination_params(params))
+  defp get_records(query, _params), do: Repo.all(query)
 end

@@ -11,12 +11,13 @@ defmodule ArtemisWeb.TeamUserPageTest do
 
   hound_session()
 
-  def team(), do: insert(:team)
-  def url(), do: team_user_url(ArtemisWeb.Endpoint, :index, team())
+  defp get_url(team), do: team_user_url(ArtemisWeb.Endpoint, :index, team)
 
   describe "authentication" do
     test "requires authentication" do
-      navigate_to(url())
+      team_user = insert(:team_user)
+
+      navigate_to(get_url(team_user.team))
 
       assert redirected_to_sign_in_page?()
     end
@@ -27,7 +28,7 @@ defmodule ArtemisWeb.TeamUserPageTest do
       team_user = insert(:team_user)
 
       browser_sign_in()
-      navigate_to(url())
+      navigate_to(get_url(team_user.team))
 
       {:ok, team_user: team_user}
     end
@@ -40,8 +41,10 @@ defmodule ArtemisWeb.TeamUserPageTest do
 
   describe "new / create" do
     setup do
+      team_user = insert(:team_user)
+
       browser_sign_in()
-      navigate_to(url())
+      navigate_to(get_url(team_user.team))
 
       {:ok, []}
     end
@@ -70,7 +73,7 @@ defmodule ArtemisWeb.TeamUserPageTest do
       team_user = insert(:team_user)
 
       browser_sign_in()
-      navigate_to(url())
+      navigate_to(get_url(team_user.team))
 
       {:ok, team_user: team_user}
     end
@@ -89,7 +92,7 @@ defmodule ArtemisWeb.TeamUserPageTest do
       team_user = insert(:team_user)
 
       browser_sign_in()
-      navigate_to(url())
+      navigate_to(get_url(team_user.team))
 
       {:ok, team_user: team_user}
     end
@@ -111,7 +114,7 @@ defmodule ArtemisWeb.TeamUserPageTest do
       team_user = insert(:team_user)
 
       browser_sign_in()
-      navigate_to(url())
+      navigate_to(get_url(team_user.team))
 
       {:ok, team_user: team_user}
     end
@@ -122,7 +125,7 @@ defmodule ArtemisWeb.TeamUserPageTest do
     #   click_button("Remove")
     #   accept_dialog()
 
-    #   assert current_url() == url()
+    #   assert current_url() == get_url(team_user.team)
     #   assert not visible?(team_user.slug)
     # end
   end

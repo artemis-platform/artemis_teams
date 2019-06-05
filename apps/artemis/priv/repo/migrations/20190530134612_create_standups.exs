@@ -2,7 +2,6 @@ defmodule Artemis.Repo.Migrations.CreateStandups do
   use Ecto.Migration
 
   def change do
-
     create table(:standups) do
       add :date, :date
       add :past, :string
