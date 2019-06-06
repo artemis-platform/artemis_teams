@@ -7,14 +7,34 @@
   </a>
 
   <nav id="primary-navigation" role="navigation">
-    <%= render_primary_nav(@conn, @user) %>
+    <ul>
+      <% nav_items = nav_items_for_current_user(@user) %>
+      <%= if render_primary_nav_section?(nav_items, ["Standups"]) do %>
+        <li>
+          <a href="<%= Routes.standup_path(@conn, :index) %>">
+            Standups
+          </a>
+        </li>
+      <% end %>
+      <%= if render_primary_nav_section?(nav_items, ["Teams"]) do %>
+        <li>
+          <a href="<%= Routes.team_path(@conn, :index) %>">
+            Teams
+          </a>
+        </li>
+      <% end %>
+    </ul>
   </nav>
 
   <nav id="primary-navigation-icons">
     <%= if current_user?(@conn) do %>
-      <a href="<%= Routes.search_path(@conn, :index) %>" title="global-search">
+      <a href="<%= Routes.search_path(@conn, :index) %>" title="Global Search">
         <i class="search link icon"></i>
-        Search
+      </a>
+    <% end %>
+    <%= if render_primary_nav_section?(nav_items, ["Event Log", "Features", "Permissions", "Roles"]) do %>
+      <a href="<%= Routes.site_path(@conn, :index) %>" title="Site Settings">
+        <i class="cog link icon"></i>
       </a>
     <% end %>
   </nav>

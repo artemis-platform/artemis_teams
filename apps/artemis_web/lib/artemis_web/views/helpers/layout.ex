@@ -75,27 +75,45 @@ defmodule ArtemisWeb.ViewHelper.Layout do
     end
   end
 
-  @doc """
-  Generates primary nav from nav items
+ @doc """
+  Determine if the current user's permissions result in at least one primary nav entry
   """
-  def render_primary_nav(conn, user) do
-    nav_items = nav_items_for_current_user(user)
+  def render_primary_nav_section?(nav_items, keys) do
+    allowed_keys = Keyword.keys(nav_items)
 
-    links =
-      Enum.map(nav_items, fn {section, items} ->
-        label = section
+    Enum.any?(keys, fn key ->
+      Enum.member?(allowed_keys, String.to_atom(key))
+    end)
+  end
 
-        path =
-          items
-          |> hd
-          |> Keyword.get(:path)
+  @doc """
+  Render the primary nav based on current users permissions
+  """
+  def render_primary_nav_section(conn, nav_items, keys) do
+    requested_keys = Enum.map(keys, &String.to_atom/1)
+    allowed_keys = Keyword.keys(nav_items)
+    section_keys = Enum.filter(requested_keys, &Enum.member?(allowed_keys, &1))
 
-        content_tag(:li) do
-          link(label, to: path.(conn))
-        end
-      end)
+    Enum.map(section_keys, fn section ->
+      entries = Keyword.get(nav_items, section)
 
-    content_tag(:ul, links)
+      links =
+        Enum.map(entries, fn item ->
+          label = Keyword.get(item, :label)
+          path = Keyword.get(item, :path)
+
+          content_tag(:li) do
+            link(label, to: path.(conn))
+          end
+        end)
+
+      content_tag(:article) do
+        [
+          content_tag(:h5, section),
+          content_tag(:ul, links)
+        ]
+      end
+    end)
   end
 
   @doc """
