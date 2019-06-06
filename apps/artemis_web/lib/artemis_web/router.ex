@@ -47,6 +47,7 @@ defmodule ArtemisWeb.Router do
       pipe_through :require_auth
 
       resources "/standups", StandupController
+
       resources "/teams", TeamController do
         resources "/standups", TeamStandupController, only: [:index, :show], as: :standup
         resources "/users", TeamUserController, as: :user

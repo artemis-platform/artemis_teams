@@ -36,8 +36,7 @@ defmodule Artemis.TeamUser do
   def allowed_types,
     do: [
       "admin",
-      "member",
-      "viewer"
+      "member"
     ]
 
   # Changesets

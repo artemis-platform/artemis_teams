@@ -18,6 +18,8 @@ defmodule Artemis.ListTeamStandups do
   end
 
   @default_order "date"
+  @default_page_size 10
+  @default_preload []
 
   def call(params \\ %{}, user) do
     params = default_params(params)
@@ -33,6 +35,8 @@ defmodule Artemis.ListTeamStandups do
     params
     |> Artemis.Helpers.keys_to_strings()
     |> Map.put_new("order", @default_order)
+    |> Map.put_new("page_size", @default_page_size)
+    |> Map.put_new("preload", @default_preload)
   end
 
   defp filter_query(query, %{"filters" => filters}, _user) when is_map(filters) do
@@ -48,12 +52,19 @@ defmodule Artemis.ListTeamStandups do
   defp filter(query, "team_id", value), do: where(query, [s], s.team_id in ^split(value))
   defp filter(query, _key, _value), do: query
 
-  defp get_records(query, _params) do
+  defp get_records(query, params) do
     query
     |> distinct(true)
     |> group_by([s], [s.date])
     |> select([s], %Entry{date: s.date, count: count(s.id), earliest: min(s.inserted_at), latest: max(s.inserted_at)})
-    |> Repo.all()
+    |> maybe_paginate(params)
+  end
+
+  defp maybe_paginate(query, %{"paginate" => true} = params), do: Repo.paginate(query, pagination_params(params))
+  defp maybe_paginate(query, _params), do: Repo.all(query)
+
+  defp process_records(%{entries: records} = result) do
+    Map.put(result, :entries, process_records(records))
   end
 
   defp process_records(records) do

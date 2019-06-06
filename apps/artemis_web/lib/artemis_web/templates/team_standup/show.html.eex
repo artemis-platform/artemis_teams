@@ -3,12 +3,6 @@
     <h1>
       Team Standup <%= hd(@standups).date %>
     </h1>
-
-    <div class="actions">
-      <% # TODO: if user has entry, show edit and delete button %>
-      <% # TODO: if user does not, show new button %>
-      <% # TODO: redirect create / update to team standup page %>
-    </div>
   </header>
 </div>
 
@@ -19,21 +13,18 @@
 <div id="content">
   <%= render_flash_notifications @conn %>
 
-  <% # TODO: share a partial file between team_standup/ and standup/ templates? %>
+  <% new_entry? = !Enum.any?(@standups, &(&1.user_id == @user.id)) %>
+
+  <%= if new_entry? do %>
+    <h3><%= @user.name %></h3>
+    <%= if has?(@conn, "standups:create") do %>
+      <%= action "New", to: Routes.standup_path(@conn, :new, team_id: @team.id), color: "blue" %>
+    <% end %>
+  <% end %>
 
   <%= for standup <- @standups do %>
     <h3><%= standup.user.name %></h3>
     <ul>
-
-      <li>
-        <strong>Team:</strong>
-        <%= link standup.team.name, to: Routes.team_path(@conn, :show, standup.team) %>
-      </li>
-
-      <li>
-        <strong>Date:</strong>
-        <%= standup.date %>
-      </li>
 
       <li>
         <strong>Past:</strong>
@@ -50,6 +41,17 @@
         <%= standup.blockers %>
       </li>
 
+      <%= if standup.user_id == @user.id do %>
+
+        <%= if has?(@conn, "standups:delete") do %>
+          <%= action "Delete", method: "delete", to: Routes.standup_path(@conn, :delete, standup), color: "red", data: [confirm: "Confirm Delete"] %>
+        <% end %>
+
+        <%= if has?(@conn, "standups:update") do %>
+          <%= action "Edit", to: Routes.standup_path(@conn, :edit, standup), color: "green" %>
+        <% end %>
+
+      <% end %>
     </ul>
   <% end %>
 </div>

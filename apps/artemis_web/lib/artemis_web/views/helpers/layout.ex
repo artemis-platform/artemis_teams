@@ -75,7 +75,7 @@ defmodule ArtemisWeb.ViewHelper.Layout do
     end
   end
 
- @doc """
+  @doc """
   Determine if the current user's permissions result in at least one primary nav entry
   """
   def render_primary_nav_section?(nav_items, keys) do
@@ -191,6 +191,7 @@ defmodule ArtemisWeb.ViewHelper.Layout do
     params =
       options
       |> Keyword.get(:params, conn.query_params)
+      |> Enum.into(%{})
       |> Artemis.Helpers.keys_to_atoms()
       |> Map.delete(:page)
       |> Enum.into([])

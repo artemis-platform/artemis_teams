@@ -29,6 +29,7 @@ defmodule ArtemisWeb.StandupControllerTest do
     test "redirects to show when data is valid", %{conn: conn} do
       team = insert(:team)
       user = insert(:user)
+
       params =
         @create_attrs
         |> Map.put(:team_id, team.id)
@@ -36,10 +37,10 @@ defmodule ArtemisWeb.StandupControllerTest do
 
       conn = post(conn, Routes.standup_path(conn, :create), standup: params)
 
-      assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.standup_path(conn, :show, id)
+      assert %{id: id, team_id: team_id} = redirected_params(conn)
+      assert redirected_to(conn) == Routes.team_standup_path(conn, :show, team_id, id)
 
-      conn = get(conn, Routes.standup_path(conn, :show, id))
+      conn = get(conn, Routes.team_standup_path(conn, :show, team_id, id))
       assert html_response(conn, 200) =~ "Test Blockers"
     end
 
@@ -72,9 +73,9 @@ defmodule ArtemisWeb.StandupControllerTest do
 
     test "redirects when data is valid", %{conn: conn, record: record} do
       conn = put(conn, Routes.standup_path(conn, :update, record), standup: @update_attrs)
-      assert redirected_to(conn) == Routes.standup_path(conn, :show, record)
+      assert redirected_to(conn) == Routes.team_standup_path(conn, :show, record.team, @update_attrs.date)
 
-      conn = get(conn, Routes.standup_path(conn, :show, record))
+      conn = get(conn, Routes.team_standup_path(conn, :show, record.team, @update_attrs.date))
       assert html_response(conn, 200) =~ "Updated Blockers"
     end
 

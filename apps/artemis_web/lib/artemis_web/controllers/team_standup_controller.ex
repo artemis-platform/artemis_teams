@@ -9,10 +9,12 @@ defmodule ArtemisWeb.TeamStandupController do
     authorize(conn, "team-standups:list", fn ->
       user = current_user(conn)
       team = get_team!(params, user)
+
       params =
         params
         |> Map.put(:filters, %{team_id: team_id})
         |> Map.put(:paginate, true)
+
       team_standups = ListTeamStandups.call(params, user)
 
       render(conn, "index.html", team: team, team_standups: team_standups)
@@ -26,7 +28,7 @@ defmodule ArtemisWeb.TeamStandupController do
       params = %{filters: %{date: id, team_id: team_id}}
       standups = ListStandups.call(params, user)
 
-      render(conn, "show.html", standups: standups, team: team)
+      render(conn, "show.html", standups: standups, team: team, user: user)
     end)
   end
 

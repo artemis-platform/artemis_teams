@@ -33,6 +33,7 @@ defmodule ArtemisWeb.TeamUserControllerTest do
     test "redirects to index when data is valid", %{conn: conn} do
       team = insert(:team)
       user = insert(:user)
+
       params =
         @create_attrs
         |> Map.put(:team_id, team.id)

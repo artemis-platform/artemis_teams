@@ -70,5 +70,26 @@ defmodule Artemis.ListTeamStandupsTest do
 
       assert ascending == Enum.reverse(descending)
     end
+
+    test "paginate" do
+      params = %{
+        paginate: true
+      }
+
+      response_keys =
+        ListTeamStandups.call(params, Mock.system_user())
+        |> Map.from_struct()
+        |> Map.keys()
+
+      pagination_keys = [
+        :entries,
+        :page_number,
+        :page_size,
+        :total_entries,
+        :total_pages
+      ]
+
+      assert response_keys == pagination_keys
+    end
   end
 end

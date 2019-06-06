@@ -16,10 +16,12 @@ defmodule ArtemisWeb.TeamUserController do
     authorize(conn, "team-users:list", fn ->
       user = current_user(conn)
       team = get_team!(params, user)
+
       params =
         params
         |> Map.put(:paginate, true)
         |> Map.put(:filters, %{team_id: team.id})
+
       team_users = ListTeamUsers.call(params, user)
 
       render(conn, "index.html", team: team, team_users: team_users)
@@ -46,7 +48,6 @@ defmodule ArtemisWeb.TeamUserController do
 
       case CreateTeamUser.call(params, user) do
         {:ok, _team_user} ->
-
           conn
           |> put_flash(:info, "Team member created successfully.")
           |> redirect(to: Routes.team_user_path(conn, :index, team))

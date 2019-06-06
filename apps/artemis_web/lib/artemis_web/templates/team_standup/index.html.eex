@@ -43,5 +43,5 @@
     </tbody>
   </table>
 
-  <%# TODO: <%= render_pagination @conn, @team_standups %1> %>
+  <%= render_pagination @conn, @team_standups, args: [@team], params: [path: &Routes.team_standup_path/4, action: :index] %>
 </div>

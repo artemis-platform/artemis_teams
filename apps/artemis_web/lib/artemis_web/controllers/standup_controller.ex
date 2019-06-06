@@ -39,10 +39,12 @@ defmodule ArtemisWeb.StandupController do
 
       case CreateStandup.call(params, user) do
         {:ok, standup} ->
+          team = standup.team_id
+          date = Date.to_string(standup.date)
 
           conn
           |> put_flash(:info, "Standup created successfully.")
-          |> redirect(to: Routes.standup_path(conn, :show, standup))
+          |> redirect(to: Routes.team_standup_path(conn, :show, team, date))
 
         {:error, %Ecto.Changeset{} = changeset} ->
           standup = %Standup{}
@@ -80,9 +82,12 @@ defmodule ArtemisWeb.StandupController do
 
       case UpdateStandup.call(id, params, user) do
         {:ok, standup} ->
+          team = standup.team_id
+          date = Date.to_string(standup.date)
+
           conn
           |> put_flash(:info, "Standup updated successfully.")
-          |> redirect(to: Routes.standup_path(conn, :show, standup))
+          |> redirect(to: Routes.team_standup_path(conn, :show, team, date))
 
         {:error, %Ecto.Changeset{} = changeset} ->
           standup = GetStandup.call(id, user, preload: @preload)

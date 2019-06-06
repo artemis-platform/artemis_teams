@@ -59,8 +59,19 @@ function initializeSearchSubmit() {
   })
 }
 
+function initializeTextCompleteTextarea() {
+  $('textarea.text-complete').each(function() {
+    const config = window[$(this).data('config')] || {}
+    const data = (config && config.data) || {}
+    const symbol = config && config.symbol
+
+    initializeTextComplete(this, data, symbol)
+  })
+}
+
 $(document).ready(function() {
   initializeMarkdownTextarea()
   initializeSelect2()
   initializeSearchSubmit()
+  initializeTextCompleteTextarea()
 })

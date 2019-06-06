@@ -1,4 +1,12 @@
 <%= form_for @changeset, @action, [class: "ui form", id: "standup-form"], fn f -> %>
+
+  <script>
+    var textCompleteConfig = {
+      symbol: "#",
+      data: {}
+    }
+  </script>
+
   <div class="field field-team-id">
     <%= label_with_errors f, :team_id %>
     <%= select f, :team_id, Enum.map(@teams, fn team -> {team.name, team.id} end), class: "enhanced search creatable", placeholder: "Team" %>
@@ -11,17 +19,17 @@
 
   <div class="field">
     <%= label_with_errors f, :past, "Past" %>
-    <%= textarea f, :past %>
+    <%= textarea f, :past, class: "text-complete", data: [config: "textCompleteConfig"] %>
   </div>
 
   <div class="field">
     <%= label_with_errors f, :future, "Future" %>
-    <%= textarea f, :future %>
+    <%= textarea f, :future, class: "text-complete", data: [config: "textCompleteConfig"] %>
   </div>
 
   <div class="field">
     <%= label_with_errors f, :blockers, "Blockers" %>
-    <%= textarea f, :blockers %>
+    <%= textarea f, :blockers, class: "text-complete", data: [config: "textCompleteConfig"] %>
   </div>
 
   <div>
