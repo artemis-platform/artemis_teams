@@ -1,47 +1,13 @@
-# Artemis Platform
+# Artemis Teams
 
-[![Build Status](https://travis-ci.com/chrislaskey/artemis_platform.svg?branch=master)](https://travis-ci.com/chrislaskey/artemis_platform)
+[![Build Status](https://travis-ci.com/chrislaskey/artemis_teams.svg?branch=master)](https://travis-ci.com/chrislaskey/artemis_teams)
 
 ## About
 
-Artemis Platform contains enterprise ready patterns for web applications in Elixir. It can be used as:
+Artemis Teams is a collection of collaborative team-based tools written in
+Elixir.
 
-- A starting point for a new web application
-- A pattern reference for an existing web application
-
-## Patterns
-
-General Patterns:
-
-- Authentication with OAuth2
-- Role-Based Access Control [⬈ Documentation](https://github.com/chrislaskey/artemis_platform/wiki/Role-Based-Access-Control) [⬈ Discussion](https://github.com/chrislaskey/artemis_platform/issues/12)
-- Full Text Search [⬈ Documentation](https://github.com/chrislaskey/artemis_platform/wiki/Full-Text-Search) [⬈ Discussion](https://github.com/chrislaskey/artemis_platform/issues/13)
-- Event Based Pub/Sub
-- Dedicated Audit Logging
-- Feature Flipper
-- GraphQL API Endpoint
-- Phoenix Web Endpoint
-- Docker Support
-- Unit Testing
-- Browser-based Feature Testing
-
-UI Patterns:
-
-- Breadcrumbs
-- Pagination
-- Table Search
-
-In Flight:
-
-- Optional RabbitMQ Support
-- On-demand Caching
-
-Planned:
-
-- Node Clustering
-- Table Sorting
-- Table Filtering
-- Table Export
+It is built on top of [Artemis Platform](https://github.com/chrislaskey/artemis_platform).
 
 ## Demo
 
@@ -54,14 +20,12 @@ bin/demo/stop # Stop the demo environment
 bin/demo/remove # Remove the demo environment
 ```
 
-## Looking for a UI Design?
+## Looking for More?
 
 > ### [Artemis Dashboard](https://github.com/chrislaskey/artemis_dashboard)
 
-Artemis Dashboard is an example of a complete application (including UI and design) built on top of Artemis Platform.
+Artemis Dashboard is an operational dashboard in Elixir and Phoenix built on top of Artemis Platform.
 
-## Development
+> ### [Artemis Platform](https://github.com/chrislaskey/artemis_platform)
 
-Artemis can be used as a pattern reference for an existing application or as a starting point for a new one.
-
-To build a new application using Artemis, see the [`DEVELOPMENT.md`](DEVELOPMENT.md).
+Artemis Platform is a generic Elixir / Phoenix platform ready to be the foundation of your next web application.
