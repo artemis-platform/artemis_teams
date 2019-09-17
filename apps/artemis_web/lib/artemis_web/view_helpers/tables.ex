@@ -84,9 +84,9 @@ defmodule ArtemisWeb.ViewHelper.Tables do
     <%=
       render_data_table(
         @conn,
-        @customers,
+        @users,
         allowed_columns: allowed_columns(),
-        default_columns: ["name", "slug", "actions"]
+        default_columns: ["email", "name", "actions"]
       )
     %>
 

@@ -1,10 +1,10 @@
 <footer id="primary-footer">
   <div class="container content">
     <div class="about">
-      <h3>Artemis Dashboard</h3>
-      <p><a target="_blank" href="https://github.com/artemis-platform/artemis_dashboard">Artemis Dashboard</a> is an example of a production ready operational dashboard built in Elixir and Phoenix Framework.</p>
+      <h3>Artemis Teams</h3>
+      <p><a target="_blank" href="https://github.com/artemis-platform/artemis_teams">Artemis Teams</a> is an example of a production ready SaaS built in Elixir and Phoenix Framework.</p>
       <p>It's built on top of <a target="_blank" href="https://github.com/artemis-platform/artemis_platform">Artemis Platform</a>, which is a collection of enterprise patterns for building web applications in Elixir.</p>
-      <p>Learn more on <a target="_blank" href="https://github.com/artemis-platform/artemis_dashboard">GitHub</a>.</p>
+      <p>Learn more on <a target="_blank" href="https://github.com/artemis-platform/artemis_teams">GitHub</a>.</p>
     </div>
 
     <nav id="primary-footer-navigation" role="navigation">
@@ -14,7 +14,7 @@
 
   <div class="container footer">
     <div>
-      <a target="_blank" href="https://github.com/artemis-platform/artemis_dashboard"><i class="icon github"></i>GitHub</a>
+      <a target="_blank" href="https://github.com/artemis-platform/artemis_teams"><i class="icon github"></i>GitHub</a>
       &nbsp;|&nbsp;
       Created by <a target="_blank" href="http://artemis-platform.com">Chris Laskey</a>
     </div>

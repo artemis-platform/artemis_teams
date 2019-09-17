@@ -6,10 +6,7 @@ defmodule Artemis.GetTagTest do
   alias Artemis.GetTag
 
   setup do
-    tag =
-      :tag
-      |> insert()
-      |> with_wiki_page()
+    tag = insert(:tag)
 
     {:ok, tag: tag}
   end
@@ -27,23 +24,6 @@ defmodule Artemis.GetTagTest do
 
     test "finds tag keyword list", %{tag: tag} do
       assert GetTag.call([name: tag.name, type: tag.type], Mock.system_user()) == tag
-    end
-  end
-
-  describe "call - options" do
-    test "preload", %{tag: tag} do
-      tag = GetTag.call(tag.id, Mock.system_user())
-
-      assert !is_list(tag.wiki_pages)
-      assert tag.wiki_pages.__struct__ == Ecto.Association.NotLoaded
-
-      options = [
-        preload: [:wiki_pages]
-      ]
-
-      tag = GetTag.call(tag.id, Mock.system_user(), options)
-
-      assert is_list(tag.wiki_pages)
     end
   end
 

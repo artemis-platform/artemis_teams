@@ -178,76 +178,6 @@ function initializeTagForm() {
   })
 }
 
-function initializeWikiSidenav() {
-  var links = []
-  var offsets = []
-  var sidenav = $('.sidenav')
-  var headings = $('#wiki-page h1, #wiki-page h2, #wiki-page h3, #wiki-page h4, #wiki-page h5')
-
-  headings.each(function(i) {
-    var label = $(this).html()
-    var tag = 'tag-' + this.nodeName
-    var offset = $(this).offset().top
-    var link = $('<li class="' + tag + '"><a href="#sidebar-link">' + label + '</a></li>')
-
-    link.click(function(event) {
-      event.preventDefault()
-
-      $([document.documentElement, document.body]).animate({
-        scrollTop: offset - 14
-      }, 200);
-    })
-
-    links.push(link)
-    offsets.push(offset)
-  })
-
-  var nav = links.length > 0 ? $('<ul></ul>').append(links) : null
-
-  $('#wiki-page aside nav.page-sections').append(nav)
-
-	$('#wiki-page .ui.sticky').sticky({
-	  offset: 28,
-	  bottomOffset: 0,
-    context: '#wiki-page'
-  })
-
-  var highlightCurrent
-  var highlightReadAheadBuffer = 16
-  var highlightSections = $('#wiki-page aside nav.page-sections ul li')
-
-  var updateHighlight = function () { 
-    var windowPosition = window.pageYOffset + highlightReadAheadBuffer
-    var windowIsAtBottom = (window.innerHeight + window.pageYOffset) >= document.body.scrollHeight
-    var highlightNext = 0
-
-    if (windowIsAtBottom) {
-      highlightNext = offsets.length - 1
-    } else {
-      for (var i = 0; i < offsets.length; i++) {
-        var isBefore = windowPosition <= offsets[i]
-
-        if (isBefore) {
-          break
-        }
-
-        highlightNext = i
-      }
-    }
-
-    if (highlightCurrent !== highlightNext) {
-      $(highlightSections).removeClass('highlight')
-      $(highlightSections[highlightNext]).addClass('highlight')
-    }
-  }
-
-  $(window).scroll(function() {
-    updateHighlight()
-  })
-
-  updateHighlight()
-}
-
 $(document).ready(function() {
   initializeColumnField()
   initializeDropdowns()
@@ -258,7 +188,6 @@ $(document).ready(function() {
   initializeSidebars()
   initializeSearchSubmit()
   initializeTagForm()
-  initializeWikiSidenav()
 
   // Reinitialize after LiveView Updates
 

@@ -12,25 +12,6 @@ defmodule ArtemisWeb.Config.Navigation do
   """
   def get_nav_items do
     Enum.reverse(
-      Customers: [
-        [
-          label: "List Customers",
-          path: &Routes.customer_path(&1, :index),
-          verify: &has?(&1, "customers:list")
-        ],
-        [
-          label: "Create New Customer",
-          path: &Routes.customer_path(&1, :new),
-          verify: &has?(&1, "customers:create")
-        ]
-      ],
-      Documentation: [
-        [
-          label: "View Documentation",
-          path: &Routes.wiki_page_path(&1, :index),
-          verify: &has?(&1, "wiki-pages:list")
-        ]
-      ],
       "Event Log": [
         [
           label: "View Event Logs",
@@ -57,20 +38,6 @@ defmodule ArtemisWeb.Config.Navigation do
           verify: &has?(&1, "http-request-logs:list")
         ]
       ],
-      Incidents: [
-        [
-          label: "List Incidents",
-          path: &Routes.incident_path(&1, :index),
-          verify: &has?(&1, "incidents:list")
-        ]
-      ],
-      "On Call": [
-        [
-          label: "Overview",
-          path: &Routes.on_call_path(&1, :index),
-          verify: &has_any?(&1, ["incidents:list"])
-        ]
-      ],
       Permissions: [
         [
           label: "List Permissions",
@@ -93,18 +60,6 @@ defmodule ArtemisWeb.Config.Navigation do
           label: "Create New Role",
           path: &Routes.role_path(&1, :new),
           verify: &has?(&1, "roles:create")
-        ]
-      ],
-      Jobs: [
-        [
-          label: "List Jobs",
-          path: &Routes.job_path(&1, :index),
-          verify: &has?(&1, "jobs:list")
-        ],
-        [
-          label: "Create New Job",
-          path: &Routes.job_path(&1, :new),
-          verify: &has?(&1, "jobs:create")
         ]
       ],
       Sessions: [

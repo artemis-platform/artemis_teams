@@ -51,20 +51,6 @@ defmodule Artemis.CreateTagTest do
 
       assert tag.name == params.name
     end
-
-    test "creates a tag with associations" do
-      wiki_page = insert(:wiki_page)
-
-      params =
-        :tag
-        |> params_for
-        |> Map.put(:wiki_pages, [%{id: wiki_page.id}])
-
-      {:ok, tag} = CreateTag.call(params, Mock.system_user())
-
-      assert tag.name == params.name
-      assert hd(tag.wiki_pages).id == wiki_page.id
-    end
   end
 
   describe "broadcasts" do

@@ -1,6 +1,4 @@
 {:ok, _} = Application.ensure_all_started(:hound)
-Artemis.Drivers.IBMCloudant.DeleteAll.call()
-Artemis.Drivers.IBMCloudant.CreateAll.call()
 ExUnit.configure(exclude: [cloudant_exclusive_feature: true, pending: true])
 ExUnit.start()
 Ecto.Adapters.SQL.Sandbox.mode(Artemis.Repo, :manual)

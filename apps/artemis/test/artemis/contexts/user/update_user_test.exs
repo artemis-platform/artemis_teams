@@ -80,41 +80,6 @@ defmodule Artemis.UpdateUserTest do
   end
 
   describe "call - associations" do
-    test "adds updatable associations and updates record values" do
-      user = insert(:user)
-      role = insert(:role)
-
-      # Associations not updatable through User
-      insert(:wiki_page, user: user)
-      insert(:wiki_revision, user: user)
-
-      user = Repo.preload(user, [:user_roles, :wiki_pages, :wiki_revisions])
-
-      assert user.user_roles == []
-      assert user.wiki_pages != []
-      assert user.wiki_revisions != []
-
-      # Add Association
-
-      params = %{
-        id: user.id,
-        email: user.email,
-        name: "Updated Name",
-        user_roles: [
-          %{role_id: role.id}
-        ],
-        wiki_pages: [],
-        wiki_revisions: []
-      }
-
-      {:ok, updated} = UpdateUser.call(user.id, params, Mock.system_user())
-
-      assert updated.name == "Updated Name"
-      assert updated.user_roles != []
-      assert updated.wiki_pages != []
-      assert updated.wiki_revisions != []
-    end
-
     test "removes associations when explicitly passed an empty value" do
       user =
         :user

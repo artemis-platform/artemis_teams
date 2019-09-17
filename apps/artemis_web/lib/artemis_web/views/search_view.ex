@@ -4,25 +4,9 @@ defmodule ArtemisWeb.SearchView do
   alias ArtemisWeb.Router.Helpers, as: Routes
 
   @search_links %{
-    "customers" => [
-      label: "Customers",
-      path: &Routes.customer_path/3
-    ],
-    "wiki_pages" => [
-      label: "Documentation",
-      path: &Routes.wiki_page_path/3
-    ],
     "features" => [
       label: "Features",
       path: &Routes.feature_path/3
-    ],
-    "incidents" => [
-      label: "Incidents",
-      path: &Routes.incident_path/3
-    ],
-    "jobs" => [
-      label: "Jobs",
-      path: &Routes.job_path/3
     ],
     "permissions" => [
       label: "Permissions",
@@ -91,22 +75,6 @@ defmodule ArtemisWeb.SearchView do
     }
   end
 
-  defp search_entry(%Artemis.Incident{} = data) do
-    %{
-      title: data.title,
-      permission: "incidents:show",
-      link: fn conn -> Routes.incident_path(conn, :show, data) end
-    }
-  end
-
-  defp search_entry(%Artemis.Job{} = data) do
-    %{
-      title: data._id,
-      permission: "jobs:show",
-      link: fn conn -> Routes.job_path(conn, :show, data._id) end
-    }
-  end
-
   defp search_entry(%Artemis.Permission{} = data) do
     %{
       title: data.slug,
@@ -128,14 +96,6 @@ defmodule ArtemisWeb.SearchView do
       title: data.name,
       permission: "users:show",
       link: fn conn -> Routes.user_path(conn, :show, data) end
-    }
-  end
-
-  defp search_entry(%Artemis.WikiPage{} = data) do
-    %{
-      title: data.title,
-      permission: "wiki-pages:show",
-      link: fn conn -> Routes.wiki_page_path(conn, :show, data) end
     }
   end
 

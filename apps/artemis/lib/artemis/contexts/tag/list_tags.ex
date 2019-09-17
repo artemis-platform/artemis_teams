@@ -44,12 +44,6 @@ defmodule Artemis.ListTags do
   defp filter(query, "slug", value), do: where(query, [t], t.slug in ^split(value))
   defp filter(query, "type", value), do: where(query, [t], t.type in ^split(value))
 
-  defp filter(query, "wiki_page_id", value) do
-    query
-    |> join(:left, [tags], wiki_pages in assoc(tags, :wiki_pages))
-    |> where([..., wp], wp.id in ^split(value))
-  end
-
   defp get_records(query, %{"paginate" => true} = params), do: Repo.paginate(query, pagination_params(params))
   defp get_records(query, _params), do: Repo.all(query)
 end

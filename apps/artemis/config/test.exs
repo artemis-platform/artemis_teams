@@ -11,10 +11,6 @@ use Mix.Config
 config :logger, level: :info
 
 config :artemis, :actions,
-  ibm_cloudant_change_listener: [enabled: "false"],
-  ibm_cloudant_migrator: [enabled: "false"],
-  pager_duty_synchronize_incidents: [enabled: "false"],
-  pager_duty_synchronize_on_call: [enabled: "false"],
   repo_delete_all: [enabled: "false"],
   repo_generate_filler_data: [enabled: "false"],
   repo_reset_on_interval: [enabled: "false"]
@@ -27,5 +23,3 @@ config :artemis, Artemis.Repo,
   port: System.get_env("ARTEMIS_POSTGRES_PORT"),
   ssl: Enum.member?(["true", "\"true\""], System.get_env("ARTEMIS_POSTGRES_SSL_ENABLED")),
   pool: Ecto.Adapters.SQL.Sandbox
-
-config :artemis, :ibm_cloudant, prepend_database_names_with: "test_"

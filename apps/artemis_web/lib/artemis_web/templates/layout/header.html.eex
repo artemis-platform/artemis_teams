@@ -2,55 +2,12 @@
   <section>
     <a href="/" id="logo">
       <i class="fire icon"></i>
-      Artemis Dashboard
+      Artemis Teams
     </a>
     <nav id="primary-navigation" role="navigation">
       <% nav_items = nav_items_for_current_user(@user) %>
       <ul>
-        <%= if render_primary_nav_section?(nav_items, ["Customers"]) do %>
-          <li>
-            <a href="<%= Routes.customer_path(@conn, :index) %>">
-              Customers
-            </a>
-          </li>
-        <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Jobs"]) do %>
-          <li class="with-dropdown">
-            <a href="<%= Routes.job_path(@conn, :index) %>">
-              Services
-              <i class="angle down icon"></i>
-            </a>
-            <div class="dropdown">
-              <content>
-                <header>
-                  <h3>Services</h3>
-                  <p>Details of every service in the offering catalogue.</p>
-                </header>
-                <%= render_primary_nav_section(@conn, @user, nav_items, ["Jobs"]) %>
-              </content>
-              <footer></footer>
-            </div>
-          </li>
-        <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["On Call", "Incidents"]) do %>
-          <li class="with-dropdown">
-            <a href="<%= Routes.incident_path(@conn, :index) %>">
-              On Call
-              <i class="angle down icon"></i>
-            </a>
-            <div class="dropdown">
-              <content>
-                <header>
-                  <h3>On Call</h3>
-                  <p>Tools to better understand and respond to the current status.</p>
-                </header>
-                <%= render_primary_nav_section(@conn, @user, nav_items, ["On Call", "Incidents"]) %>
-              </content>
-              <footer></footer>
-            </div>
-          </li>
-        <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Users", "Roles", "Permissions", "Features", "Event Logs", "HTTP Request Logs", "Sessions"]) do %>
+        <%= if render_primary_nav_section?(nav_items, ["Roles", "Permissions", "Features", "Event Logs", "HTTP Request Logs", "Sessions"]) do %>
           <li class="with-dropdown">
             <a href="<%= Routes.user_path(@conn, :index) %>">
               Admin
@@ -66,13 +23,6 @@
               </content>
               <footer></footer>
             </div>
-          </li>
-        <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Documentation"]) do %>
-          <li>
-            <a href="<%= Routes.wiki_page_path(@conn, :index) %>">
-              Docs
-            </a>
           </li>
         <% end %>
         <li class="primary-navigation-link">
@@ -108,16 +58,6 @@
               </a>
             </li>
           <% end %>
-          <li>
-            <a title="Alerts" href="#">
-              <i class="bullhorn icon"></i>
-            </a>
-          </li>
-          <li>
-            <a title="Help" href="<%= Routes.wiki_page_path(@conn, :index, %{filters: %{tags: ["help"]}}) %>">
-              <i class="help icon"></i>
-            </a>
-          </li>
         </ul>
       </nav>
     <% end %>
@@ -146,32 +86,6 @@
       </ul>
     </nav>
   </section>
-
-  <aside>
-    <div class="on-call">
-      <%= render_on_call_status(@conn, @user) %>
-      <%= render_on_call_person(@conn) %>
-    </div>
-    <div class="external-links">
-      <ul>
-        <li>
-          <%= link "GitHub", to: "https://github.com/artemis-platform/artemis_dashboard", target: "_blank" %>
-        </li>
-        <li>
-          <%= link "ServiceNow", to: "https://service-now.com", target: "_blank" %>
-        </li>
-        <li>
-          <%= link "PagerDuty", to: "https://artemis.pagerduty.com", target: "_blank" %>
-        </li>
-        <li class="more-links">
-          <i class="angle down icon"></i>
-          <a href="<%= Routes.wiki_page_path(@conn, :index, %{filters: %{tags: ["links"]}}) %>">
-            More Links
-          </a>
-        </li>
-      </ul>
-    </div>
-  </aside>
 
   <footer>
 

@@ -47,29 +47,13 @@ defmodule ArtemisWeb.Router do
 
       get "/", HomeController, :index
 
-      resources "/docs", WikiPageController do
-        resources "/comments", WikiPageCommentController, only: [:create, :edit, :update, :delete], name: :comment
-        resources "/revisions", WikiRevisionController, only: [:index, :show, :delete], as: :revision
-        put "/tags", WikiPageTagController, :update, as: :tag
-      end
-
-      resources "/customers", CustomerController
-      get "/docs/:id/:slug", WikiPageController, :show
       resources "/event-logs", EventLogController, only: [:index, :show]
       resources "/http-request-logs", HttpRequestLogController, only: [:index, :show]
       resources "/features", FeatureController
-
-      resources "/incidents", IncidentController, only: [:index, :show, :delete] do
-        resources "/comments", IncidentCommentController, only: [:create, :edit, :update, :delete], name: :comment
-        put "/tags", IncidentTagController, :update, as: :tag
-      end
-
-      resources "/on-call", OnCallController, only: [:index]
       resources "/permissions", PermissionController
       resources "/roles", RoleController
       resources "/search", SearchController, only: [:index]
       resources "/sessions", SessionController, only: [:index, :show]
-      resources "/jobs", JobController
       resources "/tags", TagController
 
       resources "/users", UserController do

@@ -2,7 +2,7 @@
   <section>
     <h1>
       <i class="fire icon"></i>
-      Artemis Dashboard
+      Artemis Teams
     </h1>
     <ul class="providers">
       <%= for provider <- list_auth_providers(@conn) do %>

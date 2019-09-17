@@ -96,66 +96,6 @@ defmodule Artemis.UpdateTagTest do
     end
   end
 
-  describe "call - associations" do
-    test "adds updatable associations and updates record values" do
-      tag = insert(:tag)
-      wiki_page = insert(:wiki_page)
-
-      tag = Repo.preload(tag, [:wiki_pages])
-
-      assert tag.wiki_pages == []
-
-      # Add Association
-
-      params = %{
-        id: tag.id,
-        slug: tag.slug,
-        name: "Updated name",
-        wiki_pages: [
-          %{id: wiki_page.id}
-        ]
-      }
-
-      {:ok, updated} = UpdateTag.call(tag.id, params, Mock.system_user())
-
-      assert updated.name == "Updated name"
-      assert updated.wiki_pages != []
-    end
-
-    test "removes associations when explicitly passed an empty value" do
-      tag =
-        :tag
-        |> insert
-        |> with_wiki_page
-
-      tag = Repo.preload(tag, [:wiki_pages])
-
-      assert length(tag.wiki_pages) == 1
-
-      # Keeps existing associations if the association key is not passed
-
-      params = %{
-        id: tag.id,
-        name: "New Name"
-      }
-
-      {:ok, updated} = UpdateTag.call(tag.id, params, Mock.system_user())
-
-      assert length(updated.wiki_pages) == 1
-
-      # Only removes associations when the association key is explicitly passed
-
-      params = %{
-        id: tag.id,
-        wiki_pages: []
-      }
-
-      {:ok, updated} = UpdateTag.call(tag.id, params, Mock.system_user())
-
-      assert length(updated.wiki_pages) == 0
-    end
-  end
-
   describe "broadcast" do
     test "publishes event and record" do
       ArtemisPubSub.subscribe(Artemis.Event.get_broadcast_topic())

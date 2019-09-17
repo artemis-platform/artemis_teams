@@ -29,7 +29,7 @@ defmodule Artemis.AnonymizeUser do
     uid = Artemis.Helpers.UUID.encode(record.id)
 
     params = %{
-      email: "anonymized-user-#{uid}@noreply.ibm.com",
+      email: "anonymized-user-#{uid}@noreply.artemis-platform.com",
       first_name: nil,
       last_name: nil,
       name: "Anonymized User #{uid}"

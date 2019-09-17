@@ -41,32 +41,6 @@ defmodule Artemis.ListTagsTest do
       {:ok, tag: tag}
     end
 
-    test "filters" do
-      tag = insert(:tag)
-      insert_list(3, :tag)
-
-      params = %{}
-      results = ListTags.call(params, Mock.system_user())
-
-      assert length(results) == length(Repo.all(Tag))
-
-      # With wiki page many to many association filter
-
-      wiki_page = insert(:wiki_page, tags: [tag])
-
-      params = %{
-        filters: %{
-          wiki_page_id: wiki_page.id
-        },
-        preload: [:wiki_pages]
-      }
-
-      results = ListTags.call(params, Mock.system_user())
-
-      assert length(results) == 1
-      assert hd(hd(results).wiki_pages).id == wiki_page.id
-    end
-
     test "order" do
       insert_list(3, :tag)
 
