@@ -55,6 +55,23 @@ defmodule Artemis.Factories do
     }
   end
 
+  def team_factory do
+    %Artemis.Team{
+      active: false,
+      description: Faker.Lorem.sentence(),
+      name: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
+      slug: sequence(:slug, &"#{Faker.Internet.slug()}-#{&1}")
+    }
+  end
+
+  def team_user_factory do
+    %Artemis.TeamUser{
+      type: Enum.random(Artemis.TeamUser.allowed_types()),
+      team: insert(:team),
+      user: insert(:user)
+    }
+  end
+
   def user_factory do
     %Artemis.User{
       email: sequence(:slug, &"#{Faker.Internet.email()}-#{&1}"),
@@ -99,6 +116,18 @@ defmodule Artemis.Factories do
   def with_roles(%Artemis.Permission{} = permission, number \\ 3) do
     insert_list(number, :role, permissions: [permission])
     permission
+  end
+
+  def with_team_users(resource, number \\ 3)
+
+  def with_team_users(%Artemis.Team{} = team, number) do
+    insert_list(number, :team_user, team: team)
+    team
+  end
+
+  def with_team_users(%Artemis.User{} = user, number) do
+    insert_list(number, :team_user, user: user)
+    user
   end
 
   def with_user_roles(_record, number \\ 3)
