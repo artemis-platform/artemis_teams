@@ -1,0 +1,60 @@
+<div id="content-header">
+  <header>
+    <h1>Team Users</h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "team-users:create") do %>
+        <%= action "New", to: Routes.team_user_path(@conn, :new, @team), color: "blue" %>
+      <% end %>
+    </div>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <table class="ui table selectable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th><%= sortable_table_header(@conn, "type", "Type") %></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render_table_row_if_empty(@team_users.entries) %>
+      <%= for team_user <- @team_users.entries do %>
+        <tr>
+          <td>
+            <%= if has?(@conn, "team-users:show") do %>
+              <%= link team_user.user.name, to: Routes.team_user_path(@conn, :show, @team, team_user) %>
+            <% else %>
+              <%= team_user.user.name %>
+            <% end %>
+          </td>
+          <td><%= team_user.user.email %></td>
+          <td><%= humanize(team_user.type) %></td>
+          <td>
+            <%= if has?(@conn, "team-users:show") do %>
+              <%= link "Show", to: Routes.team_user_path(@conn, :show, @team, team_user) %>
+            <% end %>
+            <%= if has?(@conn, "team-users:update") do %>
+              <%= link "Edit", to: Routes.team_user_path(@conn, :edit, @team, team_user) %>
+            <% end %>
+            <%= if has?(@conn, "team-users:delete") do %>
+              <%= link "Remove", to: Routes.team_user_path(@conn, :delete, @team, team_user), method: :delete, data: [confirm: "Are you sure?"] %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= render_pagination @conn, @team_users %>
+</div>

@@ -34,6 +34,8 @@ defmodule ArtemisWeb.Router do
     pipe_through :browser
     pipe_through :read_auth
 
+    get "/", HomeController, :index
+
     scope "/auth" do
       get "/new", AuthController, :new
       get "/:provider", AuthController, :request
@@ -42,10 +44,17 @@ defmodule ArtemisWeb.Router do
       delete "/logout", AuthController, :delete
     end
 
+
     scope "/" do
       pipe_through :require_auth
 
-      get "/", HomeController, :index
+      resources "/teams", TeamController do
+        resources "/users", TeamUserController, as: :user
+      end
+    end
+
+    scope "/site" do
+      pipe_through :require_auth
 
       resources "/event-logs", EventLogController, only: [:index, :show]
       resources "/http-request-logs", HttpRequestLogController, only: [:index, :show]

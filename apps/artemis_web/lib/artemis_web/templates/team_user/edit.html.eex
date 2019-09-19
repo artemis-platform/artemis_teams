@@ -1,0 +1,16 @@
+<div id="content-header">
+  <header>
+    <h1>Edit Team Users</h1>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+  <%= render_event_log_notifications @conn, "Team User", @team_user.id %>
+  <%= render "form.html", Map.put(assigns, :action, Routes.team_user_path(@conn, :update, @team, @team_user)) %>
+</div>

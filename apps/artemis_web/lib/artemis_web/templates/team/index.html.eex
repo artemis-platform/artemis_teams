@@ -1,0 +1,100 @@
+<div id="content-header">
+  <header>
+    <h1>Teams</h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "teams:create") do %>
+        <%= action "New", to: Routes.team_path(@conn, :new), color: "blue" %>
+      <% end %>
+    </div>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <h3>My Teams</h3>
+
+  <div class="ui special cards">
+    <%= for team <- @my_teams do %>
+      <a class="ui link card" href="<%= Routes.team_path(@conn, :show, team) %>">
+        <div class="content">
+          <span class="header"><%= team.name %></span>
+          <div class="meta">
+            <%= team.description %>
+          </div>
+        </div>
+        <div class="extra content">
+          <span>
+            <i class="users icon"></i>
+            <%= team.team_user_count %>
+            <%= Gettext.dngettext(ArtemisWeb.Gettext, "teams", "User", "Users", team.team_user_count) %>
+          </span>
+        </div>
+      </a>
+    <% end %>
+    <a class="ui link card" href="<%= Routes.team_path(@conn, :new) %>">
+      <div class="content">
+        <div class="header">New Team</div>
+        <div class="meta">
+          <span class="category">Create New Team</span>
+        </div>
+        <div class="description">
+          <p></p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <%= if has?(@user, "teams:access:all") do %>
+
+    <h3>All Teams</h3>
+
+    <%= render_search @conn %>
+
+    <table class="ui table selectable">
+      <thead>
+        <tr>
+          <th><%= sortable_table_header(@conn, "slug", "Slug") %></th>
+          <th><%= sortable_table_header(@conn, "name", "Name") %></th>
+          <th>Users</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render_table_row_if_empty(@teams.entries) %>
+        <%= for team <- @teams.entries do %>
+          <tr>
+            <td>
+              <%= if has?(@conn, "teams:show") do %>
+                <%= link team.slug, to: Routes.team_path(@conn, :show, team) %>
+              <% else %>
+                <%= team.slug %>
+              <% end %>
+            </td>
+            <td><%= team.name %></td>
+            <td><%= team.team_user_count %></td>
+            <td>
+              <%= if has?(@conn, "teams:show") do %>
+                <%= link "Show", to: Routes.team_path(@conn, :show, team) %>
+              <% end %>
+              <%= if has?(@conn, "teams:update") do %>
+                <%= link "Edit", to: Routes.team_path(@conn, :edit, team) %>
+              <% end %>
+              <%= if has?(@conn, "teams:delete") do %>
+                <%= link "Delete", to: Routes.team_path(@conn, :delete, team), method: :delete, data: [confirm: "Are you sure?"] %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <%= render_pagination @conn, @teams %>
+  <% end %>
+</div>
