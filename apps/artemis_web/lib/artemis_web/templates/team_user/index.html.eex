@@ -1,6 +1,6 @@
 <div id="content-header">
   <header>
-    <h1>Team Users</h1>
+    <h1>Team Users - <%= @team.name %></h1>
 
     <div class="actions">
       <%= if has?(@conn, "team-users:create") do %>
@@ -18,43 +18,23 @@
 <div id="content">
   <%= render_flash_notifications @conn %>
 
-  <table class="ui table selectable">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th><%= sortable_table_header(@conn, "type", "Type") %></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <%= render_table_row_if_empty(@team_users.entries) %>
-      <%= for team_user <- @team_users.entries do %>
-        <tr>
-          <td>
-            <%= if has?(@conn, "team-users:show") do %>
-              <%= link team_user.user.name, to: Routes.team_user_path(@conn, :show, @team, team_user) %>
-            <% else %>
-              <%= team_user.user.name %>
-            <% end %>
-          </td>
-          <td><%= team_user.user.email %></td>
-          <td><%= humanize(team_user.type) %></td>
-          <td>
-            <%= if has?(@conn, "team-users:show") do %>
-              <%= link "Show", to: Routes.team_user_path(@conn, :show, @team, team_user) %>
-            <% end %>
-            <%= if has?(@conn, "team-users:update") do %>
-              <%= link "Edit", to: Routes.team_user_path(@conn, :edit, @team, team_user) %>
-            <% end %>
-            <%= if has?(@conn, "team-users:delete") do %>
-              <%= link "Remove", to: Routes.team_user_path(@conn, :delete, @team, team_user), method: :delete, data: [confirm: "Are you sure?"] %>
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="table-header">
+    <div>
+
+    </div>
+    <div class="table-actions">
+      <%= render_export_actions(@conn, available_columns: data_table_available_columns()) %>
+    </div>
+  </div>
+
+  <%=
+    render_data_table(
+      @conn,
+      @team_users.entries,
+      allowed_columns: data_table_allowed_columns(),
+      default_columns: ["name", "email", "type", "actions"]
+    )
+  %>
 
   <%= render_pagination @conn, @team_users %>
 </div>

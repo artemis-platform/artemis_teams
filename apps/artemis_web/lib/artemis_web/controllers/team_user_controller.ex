@@ -24,7 +24,7 @@ defmodule ArtemisWeb.TeamUserController do
 
       team_users = ListTeamUsers.call(params, user)
 
-      render(conn, "index.html", team: team, team_users: team_users)
+      render_format(conn, "index", team: team, team_users: team_users)
     end)
   end
 

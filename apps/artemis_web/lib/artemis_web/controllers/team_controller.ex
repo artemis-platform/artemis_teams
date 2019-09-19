@@ -7,6 +7,7 @@ defmodule ArtemisWeb.TeamController do
   alias Artemis.DeleteTeam
   alias Artemis.GetTeam
   alias Artemis.ListTeams
+  alias Artemis.ListTeamUsers
   alias Artemis.UpdateTeam
 
   @preload []
@@ -26,7 +27,13 @@ defmodule ArtemisWeb.TeamController do
         |> Map.put(:filters, %{user_id: user.id})
         |> ListTeams.call(user)
 
-      render(conn, "index.html", my_teams: my_teams, teams: teams, user: user)
+      assigns = [
+        my_teams: my_teams,
+        teams: teams,
+        user: user
+      ]
+
+      render(conn, "index.html", assigns)
     end)
   end
 
@@ -65,11 +72,19 @@ defmodule ArtemisWeb.TeamController do
     end)
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id} = params) do
     authorize(conn, "teams:show", fn ->
-      team = GetTeam.call!(id, current_user(conn))
+      user = current_user(conn)
+      team = GetTeam.call!(id, user)
 
-      render(conn, "show.html", team: team)
+      team_users =
+        params
+        |> Map.delete("id")
+        |> Map.put(:paginate, true)
+        |> Map.put(:filters, %{team_id: team.id})
+        |> ListTeamUsers.call(user)
+
+      render(conn, "show.html", team: team, team_users: team_users)
     end)
   end
 

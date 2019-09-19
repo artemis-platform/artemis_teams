@@ -8,11 +8,11 @@
       <%= if has?(@conn, "teams:delete") do %>
         <%= action "Delete", method: "delete", to: Routes.team_path(@conn, :delete, @team), data: [confirm: "Confirm Delete"] %>
       <% end %>
+      <%= if has?(@conn, "team-users:list") do %>
+        <%= action "View Team Users", to: Routes.team_user_path(@conn, :index, @team) %>
+      <% end %>
       <%= if has?(@conn, "teams:update") do %>
         <%= action "Edit", to: Routes.team_path(@conn, :edit, @team), color: "green" %>
-      <% end %>
-      <%= if has?(@conn, "team-users:list") do %>
-        <%= action "View Team Users", to: Routes.team_user_path(@conn, :index, @team), color: "blue" %>
       <% end %>
     </div>
   </header>
@@ -36,5 +36,37 @@
         ["Active", @team.active]
       ])
     %>
+  </section>
+
+  <section>
+    <%= h2 "Team Users" %>
+
+    <div class="table-header">
+      <div>
+        <%= if has?(@conn, "team-users:create") do %>
+          <%= action "Add Team User", to: Routes.team_user_path(@conn, :new, @team) %>
+        <% end %>
+      </div>
+      <div class="table-actions">
+        <%=
+          render_export_actions(
+            @conn,
+            available_columns: ArtemisWeb.TeamUserView.data_table_available_columns(),
+            path: Routes.team_user_path(@conn, :index, @team)
+          )
+        %>
+      </div>
+    </div>
+
+    <%=
+      render_data_table(
+        @conn,
+        @team_users.entries,
+        allowed_columns: ArtemisWeb.TeamUserView.data_table_allowed_columns(),
+        default_columns: ["name", "email", "type", "actions"]
+      )
+    %>
+
+    <%= render_pagination @conn, @team_users %>
   </section>
 </div>
