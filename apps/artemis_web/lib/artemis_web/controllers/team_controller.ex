@@ -6,6 +6,7 @@ defmodule ArtemisWeb.TeamController do
   alias Artemis.Team
   alias Artemis.DeleteTeam
   alias Artemis.GetTeam
+  alias Artemis.ListEventTemplates
   alias Artemis.ListTeams
   alias Artemis.ListTeamUsers
   alias Artemis.UpdateTeam
@@ -77,6 +78,13 @@ defmodule ArtemisWeb.TeamController do
       user = current_user(conn)
       team = GetTeam.call!(id, user)
 
+      event_templates =
+        params
+        |> Map.delete("id")
+        |> Map.put(:paginate, true)
+        |> Map.put(:filters, %{team_id: team.id})
+        |> ListEventTemplates.call(user)
+
       team_users =
         params
         |> Map.delete("id")
@@ -84,7 +92,13 @@ defmodule ArtemisWeb.TeamController do
         |> Map.put(:filters, %{team_id: team.id})
         |> ListTeamUsers.call(user)
 
-      render(conn, "show.html", team: team, team_users: team_users)
+      assigns = [
+        event_templates: event_templates,
+        team: team,
+        team_users: team_users
+      ]
+
+      render(conn, "show.html", assigns)
     end)
   end
 

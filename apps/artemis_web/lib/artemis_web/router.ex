@@ -49,6 +49,7 @@ defmodule ArtemisWeb.Router do
       pipe_through :require_auth
 
       resources "/teams", TeamController do
+        resources "/event-templates", EventTemplateController, as: :event_template
         resources "/users", TeamUserController, as: :user
       end
     end

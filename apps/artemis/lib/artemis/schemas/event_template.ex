@@ -39,13 +39,30 @@ defmodule Artemis.EventTemplate do
       :type
     ]
 
+  def allowed_types,
+    do: [
+      "standup"
+    ]
+
   # Changesets
 
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, updatable_fields())
     |> validate_required(required_fields())
+    |> validate_inclusion(:type, allowed_types())
     |> unique_constraint(:slug, name: :event_templates_team_id_slug_index)
     |> foreign_key_constraint(:team_id)
+  end
+
+  # Queries
+
+  def active?(%EventTemplate{} = team), do: team.active
+
+  def active?(slug) do
+    case Repo.get_by(EventTemplate, slug: slug) do
+      nil -> false
+      record -> record.active
+    end
   end
 end

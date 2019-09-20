@@ -77,6 +77,23 @@ defmodule Artemis.UpdateEventTemplateTest do
 
       assert updated.type == params.type
     end
+
+    test "updates slug from name if not passed as a param" do
+      event_template = insert(:event_template)
+      params = params_for(:event_template, slug: "passed-slug")
+
+      {:ok, updated} = UpdateEventTemplate.call(event_template.id, params, Mock.system_user())
+
+      assert updated.slug == "passed-slug"
+
+      # When slug is not passed
+
+      params = params_for(:event_template, name: "Passed Name", slug: nil)
+
+      {:ok, updated} = UpdateEventTemplate.call(event_template.id, params, Mock.system_user())
+
+      assert updated.slug == "passed-name"
+    end
   end
 
   describe "broadcast" do

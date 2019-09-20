@@ -1,6 +1,7 @@
 defmodule Artemis.UpdateEventTemplate do
   use Artemis.Context
 
+  alias Artemis.GenerateEventTemplateParams
   alias Artemis.GetEventTemplate
   alias Artemis.Repo
   alias Artemis.EventTemplate
@@ -27,6 +28,8 @@ defmodule Artemis.UpdateEventTemplate do
   defp update_record(nil, _params), do: {:error, "Record not found"}
 
   defp update_record(record, params) do
+    params = GenerateEventTemplateParams.call(params, record)
+
     record
     |> EventTemplate.changeset(params)
     |> Repo.update()

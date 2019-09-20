@@ -1,0 +1,38 @@
+<div id="content-header">
+  <header>
+    <h1>
+      <%= "Event Template Details" %>
+    </h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "event-templates:delete") do %>
+        <%= action "Remove", method: "delete", to: Routes.team_event_template_path(@conn, :delete, @team, @event_template), data: [confirm: "Remove user from team?"] %>
+      <% end %>
+      <%= if has?(@conn, "event-templates:update") do %>
+        <%= action "Edit", to: Routes.team_event_template_path(@conn, :edit, @team, @event_template), color: "green" %>
+      <% end %>
+    </div>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <section>
+    <%= h2 "Overview" %>
+    <%=
+      render_key_value_list([
+        ["Team", @event_template.team.name],
+        ["Active", @event_template.active],
+        ["Name", @event_template.name],
+        ["Type", @event_template.type],
+        ["Slug", @event_template.slug],
+      ])
+    %>
+  </section>
+</div>

@@ -1,8 +1,9 @@
 defmodule Artemis.CreateEventTemplate do
   use Artemis.Context
 
-  alias Artemis.Repo
+  alias Artemis.GenerateEventTemplateParams
   alias Artemis.EventTemplate
+  alias Artemis.Repo
 
   def call!(params, user) do
     case call(params, user) do
@@ -20,6 +21,8 @@ defmodule Artemis.CreateEventTemplate do
   end
 
   defp insert_record(params) do
+    params = GenerateEventTemplateParams.call(params)
+
     %EventTemplate{}
     |> EventTemplate.changeset(params)
     |> Repo.insert()

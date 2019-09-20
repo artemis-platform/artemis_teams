@@ -1,0 +1,40 @@
+<div id="content-header">
+  <header>
+    <h1>Event Templates - <%= @team.name %></h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "event-templates:create") do %>
+        <%= action "New", to: Routes.team_event_template_path(@conn, :new, @team), color: "blue" %>
+      <% end %>
+    </div>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <div class="table-header">
+    <div>
+
+    </div>
+    <div class="table-actions">
+      <%= render_export_actions(@conn, available_columns: data_table_available_columns()) %>
+    </div>
+  </div>
+
+  <%=
+    render_data_table(
+      @conn,
+      @event_templates.entries,
+      allowed_columns: data_table_allowed_columns(),
+      default_columns: ["name", "type", "active"]
+    )
+  %>
+
+  <%= render_pagination @conn, @event_templates %>
+</div>

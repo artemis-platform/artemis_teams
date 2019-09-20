@@ -19,6 +19,22 @@ defmodule Artemis.CreateEventTemplateTest do
 
       assert event_template.type == params.type
     end
+
+    test "creates slug from name if not passed as a param" do
+      params = params_for(:event_template, slug: "passed-slug")
+
+      event_template = CreateEventTemplate.call!(params, Mock.system_user())
+
+      assert event_template.slug == "passed-slug"
+
+      # When slug is not passed
+
+      params = params_for(:event_template, name: "Passed Name", slug: nil)
+
+      event_template = CreateEventTemplate.call!(params, Mock.system_user())
+
+      assert event_template.slug == "passed-name"
+    end
   end
 
   describe "call" do

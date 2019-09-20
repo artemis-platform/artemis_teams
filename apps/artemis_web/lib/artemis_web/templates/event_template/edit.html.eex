@@ -1,0 +1,16 @@
+<div id="content-header">
+  <header>
+    <h1>Edit Event Templates</h1>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+  <%= render_event_log_notifications @conn, "Event Template", @event_template.id %>
+  <%= render "form.html", Map.put(assigns, :action, Routes.team_event_template_path(@conn, :update, @team, @event_template)) %>
+</div>
