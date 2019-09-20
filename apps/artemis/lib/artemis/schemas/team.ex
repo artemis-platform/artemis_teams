@@ -9,6 +9,7 @@ defmodule Artemis.Team do
 
     field :team_user_count, :integer, virtual: true
 
+    has_many :event_templates, Artemis.EventTemplate, on_delete: :delete_all
     has_many :team_users, Artemis.TeamUser, on_delete: :delete_all
     has_many :users, through: [:team_users, :user]
 

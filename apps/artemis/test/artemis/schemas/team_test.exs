@@ -5,11 +5,12 @@ defmodule Artemis.TeamTest do
   import Ecto.Repo
   import Artemis.Factories
 
+  alias Artemis.EventTemplate
   alias Artemis.Repo
   alias Artemis.Team
   alias Artemis.TeamUser
 
-  @preload [:team_users, :users]
+  @preload [:event_templates, :team_users, :users]
 
   describe "attributes - constraints" do
     test "slug must be unique" do
@@ -32,6 +33,69 @@ defmodule Artemis.TeamTest do
       team = insert(:team, active: true)
 
       assert Team.active?(team) == true
+    end
+  end
+
+  describe "associations - event templates" do
+    setup do
+      team =
+        :team
+        |> insert
+        |> with_event_templates
+
+      {:ok, team: Repo.preload(team, @preload)}
+    end
+
+    test "cannot update associations through parent", %{team: team} do
+      new_event_template = insert(:event_template, team: team)
+
+      team =
+        Team
+        |> preload(^@preload)
+        |> Repo.get(team.id)
+
+      assert length(team.event_templates) == 4
+
+      {:ok, updated} =
+        team
+        |> Team.changeset(%{event_templates: [new_event_template]})
+        |> Repo.update()
+
+      updated = Repo.preload(updated, @preload)
+
+      assert length(updated.event_templates) == 4
+    end
+
+    test "deleting association does not remove record", %{team: team} do
+      assert Repo.get(Team, team.id) != nil
+      assert length(team.event_templates) == 3
+
+      Enum.map(team.event_templates, &Repo.delete(&1))
+
+      team =
+        Team
+        |> preload(^@preload)
+        |> Repo.get(team.id)
+
+      assert Repo.get(Team, team.id) != nil
+      assert length(team.event_templates) == 0
+    end
+
+    test "deleting record deletes associations", %{team: team} do
+      assert Repo.get(Team, team.id) != nil
+      assert length(team.event_templates) == 3
+
+      Enum.map(team.event_templates, fn event_template ->
+        assert Repo.get(EventTemplate, event_template.id).team_id == team.id
+      end)
+
+      Repo.delete(team)
+
+      assert Repo.get(Team, team.id) == nil
+
+      Enum.map(team.event_templates, fn event_template ->
+        assert Repo.get(EventTemplate, event_template.id) == nil
+      end)
     end
   end
 

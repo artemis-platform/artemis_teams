@@ -24,6 +24,16 @@ defmodule Artemis.Factories do
     }
   end
 
+  def event_template_factory do
+    %Artemis.EventTemplate{
+      active: false,
+      name: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
+      slug: sequence(:slug, &"#{Faker.Internet.slug()}-#{&1}"),
+      team: insert(:team),
+      type: "standup"
+    }
+  end
+
   def feature_factory do
     %Artemis.Feature{
       active: false,
@@ -99,6 +109,11 @@ defmodule Artemis.Factories do
   def with_comments(%Artemis.User{} = user, number \\ 3) do
     insert_list(number, :comment, user: user)
     user
+  end
+
+  def with_event_templates(%Artemis.Team{} = team, number \\ 3) do
+    insert_list(number, :event_template, team: team)
+    team
   end
 
   def with_permission(%Artemis.User{} = user, slug) do
