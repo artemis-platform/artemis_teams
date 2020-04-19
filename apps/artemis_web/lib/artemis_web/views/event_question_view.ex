@@ -1,29 +1,6 @@
 defmodule ArtemisWeb.EventQuestionView do
   use ArtemisWeb, :view
 
-  # Bulk Actions
-
-  def available_bulk_actions() do
-    [
-      %BulkAction{
-        action: &Artemis.DeleteEventQuestion.call_many(&1, &2),
-        authorize: &has?(&1, "event-questions:delete"),
-        extra_fields: &render_extra_fields_delete_warning(&1),
-        key: "delete",
-        label: "Delete EventQuestions"
-      }
-    ]
-  end
-
-  def allowed_bulk_actions(user) do
-    Enum.reduce(available_bulk_actions(), [], fn entry, acc ->
-      case entry.authorize.(user) do
-        true -> [entry | acc]
-        false -> acc
-      end
-    end)
-  end
-
   # Data Table
 
   def data_table_available_columns() do
@@ -48,7 +25,7 @@ defmodule ArtemisWeb.EventQuestionView do
         value: fn _conn, row -> row.title end,
         value_html: fn conn, row ->
           case has?(conn, "event-questions:show") do
-            true -> link(row.title, to: Routes.event_question_path(conn, :show, row))
+            true -> link(row.title, to: Routes.event_question_path(conn, :show, row.event_template, row))
             false -> row.title
           end
         end
@@ -60,11 +37,11 @@ defmodule ArtemisWeb.EventQuestionView do
     allowed_actions = [
       [
         verify: has?(conn, "event-questions:show"),
-        link: link("Show", to: Routes.event_question_path(conn, :show, row))
+        link: link("Show", to: Routes.event_question_path(conn, :show, row.event_template, row))
       ],
       [
         verify: has?(conn, "event-questions:update"),
-        link: link("Edit", to: Routes.event_question_path(conn, :edit, row))
+        link: link("Edit", to: Routes.event_question_path(conn, :edit, row.event_template, row))
       ]
     ]
 
@@ -83,6 +60,6 @@ defmodule ArtemisWeb.EventQuestionView do
   def render_show_link(_conn, nil), do: nil
 
   def render_show_link(conn, record) do
-    link(record.title, to: Routes.event_question_path(conn, :show, record))
+    link(record.title, to: Routes.event_question_path(conn, :show, record.event_template, record))
   end
 end

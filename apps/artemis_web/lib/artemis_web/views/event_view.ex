@@ -1,4 +1,4 @@
-defmodule ArtemisWeb.EventTemplateView do
+defmodule ArtemisWeb.EventView do
   use ArtemisWeb, :view
 
   # Bulk Actions
@@ -48,7 +48,7 @@ defmodule ArtemisWeb.EventTemplateView do
         value: fn _conn, row -> row.title end,
         value_html: fn conn, row ->
           case has?(conn, "event-templates:show") do
-            true -> link(row.title, to: Routes.event_template_path(conn, :show, row))
+            true -> link(row.title, to: Routes.event_path(conn, :show, row))
             false -> row.title
           end
         end
@@ -60,11 +60,11 @@ defmodule ArtemisWeb.EventTemplateView do
     allowed_actions = [
       [
         verify: has?(conn, "event-templates:show"),
-        link: link("Show", to: Routes.event_template_path(conn, :show, row))
+        link: link("Show", to: Routes.event_path(conn, :show, row))
       ],
       [
         verify: has?(conn, "event-templates:update"),
-        link: link("Edit", to: Routes.event_template_path(conn, :edit, row))
+        link: link("Edit", to: Routes.event_path(conn, :edit, row))
       ]
     ]
 
@@ -83,6 +83,6 @@ defmodule ArtemisWeb.EventTemplateView do
   def render_show_link(_conn, nil), do: nil
 
   def render_show_link(conn, record) do
-    link(record.title, to: Routes.event_template_path(conn, :show, record))
+    link(record.title, to: Routes.event_path(conn, :show, record))
   end
 end

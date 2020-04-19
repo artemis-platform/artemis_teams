@@ -41,7 +41,7 @@
       render_data_table(
         @conn,
         @team.event_templates,
-        allowed_columns: ArtemisWeb.EventTemplateView.data_table_allowed_columns(),
+        allowed_columns: ArtemisWeb.EventView.data_table_allowed_columns(),
         default_columns: ["title", "actions"]
       )
     %>

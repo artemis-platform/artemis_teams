@@ -10,15 +10,6 @@
   </div>
 
   <div class="field">
-    <%= label_with_errors f, :event_template_id, "Event Template" %>
-    <%=
-      event_template_options = [blank_option() | Artemis.EventTemplate.unique_select_values_for(:title)]
-
-      select f, :event_template_id, event_template_options, class: "enhanced clearable", placeholder: ""
-    %>
-  </div>
-
-  <div class="field">
     <%= label_with_errors f, :order %>
     <%= text_input f, :order, placeholder: "Order" %>
   </div>
@@ -28,7 +19,7 @@
     <%= checkbox f, :active %>
   </div>
 
-  <%= reason_field f %>
+  <%= hidden_input f, :event_template_id, value: @event_template.id %>
 
   <div>
     <%= if @changeset.action do %>

@@ -25,10 +25,12 @@
     <%=
       render_data_table(
         @conn,
-        @event_template.event_questions,
+        @event_questions,
         allowed_columns: ArtemisWeb.EventQuestionView.data_table_allowed_columns(),
         default_columns: ["title", "actions"]
       )
     %>
+
+    <%= action "New Question", to: Routes.event_question_path(@conn, :new, @event_template), color: "blue" %>
   </section>
 </div>

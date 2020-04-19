@@ -14,7 +14,7 @@
       render_key_value_list([
         ["Title", @event_question.title],
         ["Active", @event_question.active],
-        ["Event Template", ArtemisWeb.EventTemplateView.render_show_link(@conn, @event_question.event_template)]
+        ["Event Template", ArtemisWeb.EventView.render_show_link(@conn, @event_question.event_template)]
       ])
     %>
   </section>

@@ -4,7 +4,7 @@
 
     <div class="actions">
       <%= if has?(@conn, "event-templates:create") do %>
-        <%= action "New", to: Routes.event_template_path(@conn, :new), color: "blue" %>
+        <%= action "New", to: Routes.event_path(@conn, :new), color: "blue" %>
       <% end %>
     </div>
   </header>
@@ -13,14 +13,8 @@
     secondary_navigation_items = [
       [
         label: "Overview",
-        path: &Routes.event_template_path(&1, :index),
+        path: &Routes.event_path(&1, :index),
         path_match_type: :exact,
-        verify: &has?(&1, "event-templates:list")
-      ],
-      [
-        label: "Event Logs",
-        path: &Routes.event_template_path(&1, :index_event_log_list),
-        path_match_type: :starts_with,
         verify: &has?(&1, "event-templates:list")
       ]
     ]

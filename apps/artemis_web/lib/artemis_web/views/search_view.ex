@@ -44,6 +44,13 @@ defmodule ArtemisWeb.SearchView do
       label: "Roles",
       path: &Routes.role_path/3
     ],
+    "event_templates" => [
+      label: "Events",
+      path: &Routes.event_path/3
+    ],
+    "event_questions" => [
+      label: "Event Questions"
+    ],
     "teams" => [
       label: "Teams",
       path: &Routes.team_path/3
@@ -82,9 +89,11 @@ defmodule ArtemisWeb.SearchView do
       |> Map.get(key, [])
       |> Keyword.get(:path)
 
-    to = path.(conn, :index, current_query_params(conn))
+    if path do
+      to = path.(conn, :index, current_query_params(conn))
 
-    action(label, to: to)
+      action(label, to: to)
+    end
   end
 
   def search_matches_text(data) do
@@ -117,17 +126,17 @@ defmodule ArtemisWeb.SearchView do
 
   defp search_entry(%Artemis.EventQuestion{} = data) do
     %{
-      title: data.name,
+      title: data.title,
       permission: "event-questions:show",
-      link: fn conn -> Routes.event_question_path(conn, :show, data) end
+      link: fn conn -> Routes.event_question_path(conn, :show, data.event_template, data) end
     }
   end
 
   defp search_entry(%Artemis.EventTemplate{} = data) do
     %{
-      title: data.name,
+      title: data.title,
       permission: "event-templates:show",
-      link: fn conn -> Routes.event_template_path(conn, :show, data) end
+      link: fn conn -> Routes.event_path(conn, :show, data) end
     }
   end
 

@@ -14,6 +14,14 @@
   <%= render_event_log_notifications @conn, "EventQuestion", @event_question.id %>
 
   <section>
-    <%= render "form.html", Map.put(assigns, :action, Routes.event_question_path(@conn, :update, @event_question)) %>
+
+    <%=
+      form_assigns =
+        assigns
+        |> Map.put(:action, Routes.event_question_path(@conn, :update, @event_question.event_template, @event_question))
+        |> Map.put(:event_template, @event_template)
+
+      render "form.html", form_assigns
+    %>
   </section>
 </div>

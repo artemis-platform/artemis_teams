@@ -7,23 +7,13 @@
 
 <div id="content">
   <%= render_flash_notifications @conn %>
-  <%= render_event_log_notifications @conn, "EventQuestion" %>
+  <%= render_event_log_notifications @conn, "EventTemplate" %>
 
   <section>
     <div class="table-header">
       <%= render_search @conn %>
       <div class="table-actions">
         <%= render_data_table_column_selector(@conn, data_table_available_columns()) %>
-
-        <%=
-          render_bulk_actions(
-            @conn,
-            "Bulk Actions",
-            Routes.event_question_path(@conn, :index_bulk_actions),
-            allowed_bulk_actions: @allowed_bulk_actions
-          )
-        %>
-
         <%= render_export_actions(@conn, available_columns: data_table_available_columns()) %>
       </div>
     </div>
@@ -31,13 +21,12 @@
     <%=
       render_data_table(
         @conn,
-        @event_questions.entries,
+        @event_templates.entries,
         allowed_columns: data_table_allowed_columns(),
-        default_columns: ["title", "actions"],
-        selectable: length(@allowed_bulk_actions) > 0
+        default_columns: ["title", "actions"]
       )
     %>
 
-    <%= render_pagination @conn, @event_questions %>
+    <%= render_pagination @conn, @event_templates %>
   </section>
 </div>

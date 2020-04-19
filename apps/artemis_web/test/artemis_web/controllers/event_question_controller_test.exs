@@ -7,49 +7,49 @@ defmodule ArtemisWeb.EventQuestionControllerTest do
   @invalid_attrs %{title: nil}
 
   setup %{conn: conn} do
-    {:ok, conn: sign_in(conn)}
+    event_template = insert(:event_template)
+
+    {:ok, conn: sign_in(conn), event_template: event_template}
   end
 
   describe "index" do
-    test "lists all event_questions", %{conn: conn} do
-      conn = get(conn, Routes.event_question_path(conn, :index))
-      assert html_response(conn, 200) =~ "Event Templates"
+    test "lists all event_questions", %{conn: conn, event_template: event_template} do
+      conn = get(conn, Routes.event_question_path(conn, :index, event_template))
+      assert html_response(conn, 200) =~ "Event Questions"
     end
   end
 
   describe "new event_question" do
-    test "renders new form", %{conn: conn} do
-      conn = get(conn, Routes.event_question_path(conn, :new))
-      assert html_response(conn, 200) =~ "New Event Template"
+    test "renders new form", %{conn: conn, event_template: event_template} do
+      conn = get(conn, Routes.event_question_path(conn, :new, event_template))
+      assert html_response(conn, 200) =~ "New Event Question"
     end
   end
 
   describe "create event_question" do
-    test "redirects to show when data is valid", %{conn: conn} do
-      event_template = insert(:event_template)
-
+    test "redirects to show when data is valid", %{conn: conn, event_template: event_template} do
       params = params_for(:event_question, event_template: event_template)
 
-      conn = post(conn, Routes.event_question_path(conn, :create), event_question: params)
+      conn = post(conn, Routes.event_question_path(conn, :create, event_template), event_question: params)
 
       assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.event_question_path(conn, :show, id)
+      assert redirected_to(conn) == Routes.event_question_path(conn, :show, event_template, id)
 
-      conn = get(conn, Routes.event_question_path(conn, :show, id))
+      conn = get(conn, Routes.event_question_path(conn, :show, event_template, id))
       assert html_response(conn, 200) =~ "Title"
     end
 
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.event_question_path(conn, :create), event_question: @invalid_attrs)
-      assert html_response(conn, 200) =~ "New Event Template"
+    test "renders errors when data is invalid", %{conn: conn, event_template: event_template} do
+      conn = post(conn, Routes.event_question_path(conn, :create, event_template), event_question: @invalid_attrs)
+      assert html_response(conn, 200) =~ "New Event Question"
     end
   end
 
   describe "show" do
     setup [:create_record]
 
-    test "shows event_question", %{conn: conn, record: record} do
-      conn = get(conn, Routes.event_question_path(conn, :show, record))
+    test "shows event_question", %{conn: conn, event_template: event_template, record: record} do
+      conn = get(conn, Routes.event_question_path(conn, :show, event_template, record))
       assert html_response(conn, 200) =~ "Title"
     end
   end
@@ -57,8 +57,8 @@ defmodule ArtemisWeb.EventQuestionControllerTest do
   describe "edit event_question" do
     setup [:create_record]
 
-    test "renders form for editing chosen event_question", %{conn: conn, record: record} do
-      conn = get(conn, Routes.event_question_path(conn, :edit, record))
+    test "renders form for editing chosen event_question", %{conn: conn, event_template: event_template, record: record} do
+      conn = get(conn, Routes.event_question_path(conn, :edit, event_template, record))
       assert html_response(conn, 200) =~ "Edit Event Template"
     end
   end
@@ -66,16 +66,18 @@ defmodule ArtemisWeb.EventQuestionControllerTest do
   describe "update event_question" do
     setup [:create_record]
 
-    test "redirects when data is valid", %{conn: conn, record: record} do
-      conn = put(conn, Routes.event_question_path(conn, :update, record), event_question: @update_attrs)
-      assert redirected_to(conn) == Routes.event_question_path(conn, :show, record)
+    test "redirects when data is valid", %{conn: conn, event_template: event_template, record: record} do
+      conn = put(conn, Routes.event_question_path(conn, :update, event_template, record), event_question: @update_attrs)
+      assert redirected_to(conn) == Routes.event_question_path(conn, :show, event_template, record)
 
-      conn = get(conn, Routes.event_question_path(conn, :show, record))
+      conn = get(conn, Routes.event_question_path(conn, :show, event_template, record))
       assert html_response(conn, 200) =~ "some updated title"
     end
 
-    test "renders errors when data is invalid", %{conn: conn, record: record} do
-      conn = put(conn, Routes.event_question_path(conn, :update, record), event_question: @invalid_attrs)
+    test "renders errors when data is invalid", %{conn: conn, event_template: event_template, record: record} do
+      conn =
+        put(conn, Routes.event_question_path(conn, :update, event_template, record), event_question: @invalid_attrs)
+
       assert html_response(conn, 200) =~ "Edit Event Template"
     end
   end
@@ -83,18 +85,18 @@ defmodule ArtemisWeb.EventQuestionControllerTest do
   describe "delete event_question" do
     setup [:create_record]
 
-    test "deletes chosen event_question", %{conn: conn, record: record} do
-      conn = delete(conn, Routes.event_question_path(conn, :delete, record))
-      assert redirected_to(conn) == Routes.event_question_path(conn, :index)
+    test "deletes chosen event_question", %{conn: conn, event_template: event_template, record: record} do
+      conn = delete(conn, Routes.event_question_path(conn, :delete, event_template, record))
+      assert redirected_to(conn) == Routes.event_question_path(conn, :index, event_template)
 
       assert_error_sent 404, fn ->
-        get(conn, Routes.event_question_path(conn, :show, record))
+        get(conn, Routes.event_question_path(conn, :show, event_template, record))
       end
     end
   end
 
-  defp create_record(_) do
-    record = insert(:event_question)
+  defp create_record(params) do
+    record = insert(:event_question, event_template: params[:event_template])
 
     {:ok, record: record}
   end

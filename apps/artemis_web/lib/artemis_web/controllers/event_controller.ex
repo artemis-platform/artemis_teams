@@ -1,28 +1,11 @@
-defmodule ArtemisWeb.EventTemplateController do
+defmodule ArtemisWeb.EventController do
   use ArtemisWeb, :controller
-
-  use ArtemisWeb.Controller.BulkActions,
-    bulk_actions: ArtemisWeb.EventTemplateView.available_bulk_actions(),
-    path: &Routes.event_template_path(&1, :index),
-    permission: "event-templates:list"
-
-  use ArtemisWeb.Controller.EventLogsIndex,
-    path: &Routes.event_template_path/3,
-    permission: "event-templates:list",
-    resource_type: "EventTemplate"
-
-  use ArtemisWeb.Controller.EventLogsShow,
-    path: &Routes.event_template_event_log_path/4,
-    permission: "event-templates:show",
-    resource_getter: &Artemis.GetEventTemplate.call!/2,
-    resource_id: "event_template_id",
-    resource_type: "EventTemplate",
-    resource_variable: :event_template
 
   alias Artemis.CreateEventTemplate
   alias Artemis.EventTemplate
   alias Artemis.DeleteEventTemplate
   alias Artemis.GetEventTemplate
+  alias Artemis.ListEventQuestions
   alias Artemis.ListEventTemplates
   alias Artemis.UpdateEventTemplate
 
@@ -38,10 +21,8 @@ defmodule ArtemisWeb.EventTemplateController do
         |> Map.put(:preload, @preload)
 
       event_templates = ListEventTemplates.call(params, user)
-      allowed_bulk_actions = ArtemisWeb.EventTemplateView.allowed_bulk_actions(user)
 
       assigns = [
-        allowed_bulk_actions: allowed_bulk_actions,
         event_templates: event_templates
       ]
 
@@ -64,7 +45,7 @@ defmodule ArtemisWeb.EventTemplateController do
         {:ok, event_template} ->
           conn
           |> put_flash(:info, "EventTemplate created successfully.")
-          |> redirect(to: Routes.event_template_path(conn, :show, event_template))
+          |> redirect(to: Routes.event_path(conn, :show, event_template))
 
         {:error, %Ecto.Changeset{} = changeset} ->
           event_template = %EventTemplate{}
@@ -76,9 +57,16 @@ defmodule ArtemisWeb.EventTemplateController do
 
   def show(conn, %{"id" => id}) do
     authorize(conn, "event-templates:show", fn ->
-      event_template = GetEventTemplate.call!(id, current_user(conn), preload: @preload)
+      event_template = GetEventTemplate.call!(id, current_user(conn))
+      event_questions_params = %{filters: %{event_template_id: event_template.id}}
+      event_questions = ListEventQuestions.call(event_questions_params, current_user(conn))
 
-      render(conn, "show.html", event_template: event_template)
+      assigns = [
+        event_questions: event_questions,
+        event_template: event_template
+      ]
+
+      render(conn, "show.html", assigns)
     end)
   end
 
@@ -97,7 +85,7 @@ defmodule ArtemisWeb.EventTemplateController do
         {:ok, event_template} ->
           conn
           |> put_flash(:info, "EventTemplate updated successfully.")
-          |> redirect(to: Routes.event_template_path(conn, :show, event_template))
+          |> redirect(to: Routes.event_path(conn, :show, event_template))
 
         {:error, %Ecto.Changeset{} = changeset} ->
           event_template = GetEventTemplate.call(id, current_user(conn), preload: @preload)
@@ -113,7 +101,7 @@ defmodule ArtemisWeb.EventTemplateController do
 
       conn
       |> put_flash(:info, "EventTemplate deleted successfully.")
-      |> redirect(to: Routes.event_template_path(conn, :index))
+      |> redirect(to: Routes.event_path(conn, :index))
     end)
   end
 end

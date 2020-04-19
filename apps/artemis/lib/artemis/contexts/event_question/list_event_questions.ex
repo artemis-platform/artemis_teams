@@ -17,7 +17,7 @@ defmodule Artemis.ListEventQuestions do
 
   @default_order "order,inserted_at"
   @default_page_size 25
-  @default_preload []
+  @default_preload [:event_template]
 
   def call(params \\ %{}, user) do
     params = default_params(params)
@@ -47,6 +47,7 @@ defmodule Artemis.ListEventQuestions do
 
   defp filter_query(query, _params, _user), do: query
 
+  defp filter(query, "event_template_id", value), do: where(query, [i], i.event_template_id in ^split(value))
   defp filter(query, "title", value), do: where(query, [i], i.title in ^split(value))
 
   defp get_records(query, %{"paginate" => true} = params), do: Repo.paginate(query, pagination_params(params))

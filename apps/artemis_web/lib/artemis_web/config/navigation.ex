@@ -74,30 +74,6 @@ defmodule ArtemisWeb.Config.Navigation do
           verify: &has?(&1, "event-logs:list")
         ]
       ],
-      "Event Questions": [
-        [
-          label: "List Event Questions",
-          path: &Routes.event_question_path(&1, :index),
-          verify: &has?(&1, "event-questions:list")
-        ],
-        [
-          label: "Create New Event Question",
-          path: &Routes.event_question_path(&1, :new),
-          verify: &has?(&1, "event-questions:create")
-        ]
-      ],
-      "Event Templates": [
-        [
-          label: "List Event Templates",
-          path: &Routes.event_template_path(&1, :index),
-          verify: &has?(&1, "event-templates:list")
-        ],
-        [
-          label: "Create New Event Template",
-          path: &Routes.event_template_path(&1, :new),
-          verify: &has?(&1, "event-templates:create")
-        ]
-      ],
       Features: [
         [
           label: "List Features",
@@ -208,6 +184,18 @@ defmodule ArtemisWeb.Config.Navigation do
           label: "Create New Team",
           path: &Routes.team_path(&1, :new),
           verify: &has?(&1, "teams:create")
+        ]
+      ],
+      "Team Events": [
+        [
+          label: "List Events",
+          path: &Routes.event_path(&1, :index),
+          verify: &has?(&1, "event-templates:list")
+        ],
+        [
+          label: "Create New Event",
+          path: &Routes.event_path(&1, :new),
+          verify: &has?(&1, "event-templates:create")
         ]
       ],
       Users: [

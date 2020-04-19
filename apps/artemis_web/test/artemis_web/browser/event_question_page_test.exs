@@ -8,13 +8,15 @@ defmodule ArtemisWeb.EventQuestionPageTest do
   import ArtemisWeb.Router.Helpers
 
   @moduletag :browser
-  @url event_question_url(ArtemisWeb.Endpoint, :index)
 
   hound_session()
 
   describe "authentication" do
     test "requires authentication" do
-      navigate_to(@url)
+      event_template = insert(:event_template)
+      url = get_url(event_template)
+
+      navigate_to(url)
 
       assert redirected_to_sign_in_page?()
     end
@@ -23,16 +25,17 @@ defmodule ArtemisWeb.EventQuestionPageTest do
   describe "index" do
     setup do
       event_question = insert(:event_question)
+      url = get_url(event_question.event_template)
 
       browser_sign_in()
-      navigate_to(@url)
+      navigate_to(url)
 
       {:ok, event_question: event_question}
     end
 
     test "list of records" do
       assert page_title() == "Artemis"
-      assert visible?("Event Templates")
+      assert visible?("Event Questions")
     end
 
     test "search", %{event_question: event_question} do
@@ -48,12 +51,13 @@ defmodule ArtemisWeb.EventQuestionPageTest do
 
   describe "new / create" do
     setup do
-      event_template = insert(:event_template)
+      event_question = insert(:event_question)
+      url = get_url(event_question.event_template)
 
       browser_sign_in()
-      navigate_to(@url)
+      navigate_to(url)
 
-      {:ok, event_template: event_template}
+      {:ok, event_question: event_question}
     end
 
     test "submitting an empty form shows an error" do
@@ -63,14 +67,14 @@ defmodule ArtemisWeb.EventQuestionPageTest do
       assert visible?("can't be blank")
     end
 
-    test "successfully creates a new record", %{event_template: event_template} do
+    test "successfully creates a new record", %{event_question: event_question} do
       click_link("New")
 
       fill_inputs("#event-question-form", %{
         "event_question[title]": "Test Title"
       })
 
-      fill_select("#event-question-form select[name=event_question[event_template_id]]", event_template.id)
+      fill_select("#event-question-form select[name=event_question[event_question_id]]", event_question.id)
 
       submit_form("#event-question-form")
 
@@ -81,11 +85,12 @@ defmodule ArtemisWeb.EventQuestionPageTest do
   describe "show" do
     setup do
       event_question = insert(:event_question)
+      url = get_url(event_question.event_template)
 
       Artemis.ListEventQuestions.reset_cache()
 
       browser_sign_in()
-      navigate_to(@url)
+      navigate_to(url)
 
       {:ok, event_question: event_question}
     end
@@ -100,11 +105,12 @@ defmodule ArtemisWeb.EventQuestionPageTest do
   describe "edit / update" do
     setup do
       event_question = insert(:event_question)
+      url = get_url(event_question.event_template)
 
       Artemis.ListEventQuestions.reset_cache()
 
       browser_sign_in()
-      navigate_to(@url)
+      navigate_to(url)
 
       {:ok, event_question: event_question}
     end
@@ -126,9 +132,10 @@ defmodule ArtemisWeb.EventQuestionPageTest do
   describe "delete" do
     setup do
       event_question = insert(:event_question)
+      url = get_url(event_question.event_template)
 
       browser_sign_in()
-      navigate_to(@url)
+      navigate_to(url)
 
       {:ok, event_question: event_question}
     end
@@ -138,9 +145,17 @@ defmodule ArtemisWeb.EventQuestionPageTest do
     #   click_link(event_question.title)
     #   click_button("Delete")
     #   accept_dialog()
-
-    #   assert current_url() == @url
+    #
+    #   assert current_url() == get_url(event_question.event_template)
     #   assert not visible?(event_question.title)
     # end
+  end
+
+  # Helpers
+
+  defp get_url(event_template) do
+    event_question = insert(:event_question, event_template: event_template)
+
+    event_question_url(ArtemisWeb.Endpoint, :index, event_templatek)
   end
 end

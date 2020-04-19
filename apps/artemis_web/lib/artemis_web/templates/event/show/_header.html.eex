@@ -7,10 +7,10 @@
 
     <div class="actions">
       <%= if has?(@conn, "event-templates:delete") do %>
-        <%= delete_confirmation "Delete", Routes.event_template_path(@conn, :delete, @event_template) %>
+        <%= delete_confirmation "Delete", Routes.event_path(@conn, :delete, @event_template) %>
       <% end %>
       <%= if has?(@conn, "event-templates:update") do %>
-        <%= action "Edit", to: Routes.event_template_path(@conn, :edit, @event_template), color: "green" %>
+        <%= action "Edit", to: Routes.event_path(@conn, :edit, @event_template), color: "green" %>
       <% end %>
     </div>
   </header>
@@ -19,14 +19,8 @@
     secondary_navigation_items = [
       [
         label: "Overview",
-        path: &Routes.event_template_path(&1, :show, @event_template),
+        path: &Routes.event_path(&1, :show, @event_template),
         path_match_type: :exact,
-        verify: &has?(&1, "event-templates:show")
-      ],
-      [
-        label: "Event Logs",
-        path: &Routes.event_template_event_log_path(&1, :show_event_log_list, @event_template),
-        path_match_type: :starts_with,
         verify: &has?(&1, "event-templates:show")
       ]
     ]
