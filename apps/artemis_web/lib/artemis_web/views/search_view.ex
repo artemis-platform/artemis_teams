@@ -51,6 +51,9 @@ defmodule ArtemisWeb.SearchView do
     "event_questions" => [
       label: "Event Questions"
     ],
+    "event_answers" => [
+      label: "Event Answers"
+    ],
     "teams" => [
       label: "Teams",
       path: &Routes.team_path/3
@@ -121,6 +124,14 @@ defmodule ArtemisWeb.SearchView do
       title: data.slug,
       permission: "data-centers:show",
       link: fn conn -> Routes.data_center_path(conn, :show, data) end
+    }
+  end
+
+  defp search_entry(%Artemis.EventAnswer{} = data) do
+    %{
+      title: data.event_question.title,
+      permission: "event-answers:show",
+      link: fn conn -> Routes.event_path(conn, :show, data.event_question.event_template_id) end
     }
   end
 
