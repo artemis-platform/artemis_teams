@@ -4,6 +4,7 @@ defmodule Artemis.Repo.Migrations.CreateEventAnswers do
   def change do
     create table(:event_answers) do
       add :category, :string
+      add :date, :date
       add :type, :string
       add :value, :text
 
@@ -13,8 +14,11 @@ defmodule Artemis.Repo.Migrations.CreateEventAnswers do
       timestamps(type: :utc_datetime)
     end
 
-    create index(:event_answers, [:event_question_id, :category])
+    create index(:event_answers, [:date])
     create index(:event_answers, [:category])
+    create index(:event_answers, [:event_question_id, :category])
+    create index(:event_answers, [:event_question_id, :date])
+    create index(:event_answers, [:event_question_id, :date, :category])
     create index(:event_answers, [:type])
   end
 end

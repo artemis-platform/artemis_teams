@@ -5,6 +5,7 @@ defmodule Artemis.EventAnswer do
 
   schema "event_answers" do
     field :category, :string
+    field :date, :date
     field :type, :string
     field :value, :string
 
@@ -21,6 +22,7 @@ defmodule Artemis.EventAnswer do
   def updatable_fields,
     do: [
       :category,
+      :date,
       :event_question_id,
       :type,
       :user_id,
@@ -45,6 +47,7 @@ defmodule Artemis.EventAnswer do
     do: [
       :id,
       :category,
+      :date,
       :event_question_id,
       :type,
       :value,

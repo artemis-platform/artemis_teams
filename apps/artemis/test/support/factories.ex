@@ -60,6 +60,8 @@ defmodule Artemis.Factories do
 
   def event_answer_factory do
     %Artemis.EventAnswer{
+      category: Faker.Lorem.word(),
+      date: Date.utc_today(),
       type: Enum.random(Artemis.EventAnswer.allowed_types()),
       value: Faker.Lorem.paragraph(),
       event_question: build(:event_question),
