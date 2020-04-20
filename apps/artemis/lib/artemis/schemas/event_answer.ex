@@ -4,6 +4,7 @@ defmodule Artemis.EventAnswer do
   use Assoc.Schema, repo: Artemis.Repo
 
   schema "event_answers" do
+    field :category, :string
     field :type, :string
     field :value, :string
 
@@ -19,6 +20,7 @@ defmodule Artemis.EventAnswer do
 
   def updatable_fields,
     do: [
+      :category,
       :event_question_id,
       :type,
       :user_id,
@@ -42,6 +44,7 @@ defmodule Artemis.EventAnswer do
   def event_log_fields,
     do: [
       :id,
+      :category,
       :event_question_id,
       :type,
       :value,
@@ -60,7 +63,6 @@ defmodule Artemis.EventAnswer do
     |> cast(params, updatable_fields())
     |> validate_required(required_fields())
     |> validate_inclusion(:type, allowed_types())
-    |> foreign_key_constraint(:event_template_id)
     |> foreign_key_constraint(:event_question_id)
     |> foreign_key_constraint(:user_id)
   end

@@ -89,7 +89,7 @@ defmodule ArtemisWeb.EventQuestionController do
       case UpdateEventQuestion.call(id, params, user) do
         {:ok, _event_question} ->
           conn
-          |> put_flash(:info, "EventQuestion updated successfully.")
+          |> put_flash(:info, "Event Question updated successfully.")
           |> redirect(to: Routes.event_path(conn, :show, event_template_id))
 
         {:error, %Ecto.Changeset{} = changeset} ->
