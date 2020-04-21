@@ -1,0 +1,89 @@
+<%= render "index/_header.html", assigns %>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+  <%= render_event_log_notifications @conn, "EventTemplate", @event_template.id %>
+
+  <section>
+    <%= h2 "Event Answers" %>
+    <div class="table-header">
+      <div class="table-filters">
+        <div>
+          <%=
+            options = Artemis.EventAnswer.unique_values_for(:category)
+
+            filter_multi_select(@conn, "Category", :category, options)
+          %>
+        </div>
+
+        <div>
+          <%=
+            options =
+              :date
+              |> Artemis.EventAnswer.unique_values_for()
+              |> Enum.map(&Date.to_iso8601(&1))
+
+            filter_multi_select(@conn, "Date", :date, options)
+          %>
+        </div>
+
+        <div>
+          <%=
+            options = Artemis.EventAnswer.unique_values_for(:user_id)
+
+            filter_multi_select(@conn, "User", :user_id, options)
+          %>
+        </div>
+
+        <div>
+          <%=
+            options = Artemis.EventAnswer.unique_values_for(:event_question_id)
+
+            filter_multi_select(@conn, "Event Question", :event_question_id, options)
+          %>
+        </div>
+      </div>
+    </div>
+
+    <%= if length(@event_answers.entries) == 0 do %>
+      <p>No records found</p>
+    <% end %>
+
+    <%= Enum.map @event_answers, fn event_answer -> %>
+      <%= h4 event_answer.event_question.title %>
+
+      <a href="<%= Routes.event_instance_path(@conn, :show, @event_template, Date.to_iso8601(event_answer.date)) %>">
+        <div>
+          <%= event_answer.date %>
+        </div>
+
+        <div>
+          <%= event_answer.user.name %>
+        </div>
+
+        <div>
+          <%= event_answer.category %>
+        </div>
+
+        <div>
+          <%= event_answer.value %>
+        </div>
+      </a>
+    <% end %>
+
+    <%=
+      pagination_options = [
+        path: fn(conn, function, options) ->
+          Routes.event_instance_path(conn, function, @event_template, options)
+        end
+      ]
+
+      render_pagination @conn, @event_answers, params: pagination_options
+    %>
+  </section>
+</div>

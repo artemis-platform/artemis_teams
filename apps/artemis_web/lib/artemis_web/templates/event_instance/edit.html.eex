@@ -1,0 +1,29 @@
+<div id="content-header">
+  <header>
+    <h1>
+      Edit Event Instance
+      <span class="subheading"><%= @date %> - <%= @event_template.title %></span>
+    </h1>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <section>
+
+    <%=
+      form_assigns =
+        assigns
+        |> Map.put(:action, Routes.event_instance_path(@conn, :update, @event_template, @date))
+        |> Map.put(:event_template, @event_template)
+
+      render "form.html", form_assigns
+    %>
+  </section>
+</div>

@@ -12,6 +12,9 @@
       <%= if has?(@conn, "event-templates:update") do %>
         <%= action "Edit", to: Routes.event_path(@conn, :edit, @event_template), color: "green" %>
       <% end %>
+      <%= if has?(@conn, "event-templates:delete") do %>
+        <%= action "View Instances", to: Routes.event_instance_path(@conn, :index, @event_template), color: "blue" %>
+      <% end %>
     </div>
   </header>
 

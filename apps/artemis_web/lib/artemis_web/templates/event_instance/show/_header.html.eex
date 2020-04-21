@@ -1,0 +1,31 @@
+<div id="content-header">
+  <header>
+    <h1>
+      <%= @event_template.title %>
+      <span class="subheading"><%= @date %></span>
+    </h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "event-answers:update") do %>
+        <%= action "Edit", to: Routes.event_instance_path(@conn, :edit, @event_template, @date), color: "green" %>
+      <% end %>
+    </div>
+  </header>
+
+  <%=
+    secondary_navigation_items = [
+      [
+        label: "Overview",
+        path: &Routes.event_instance_path(&1, :show, @event_template, @date),
+        path_match_type: :exact,
+        verify: &has?(&1, "event-answers:show")
+      ]
+    ]
+
+    render_secondary_navigation(
+      @conn,
+      current_user(@conn),
+      secondary_navigation_items
+    )
+  %>
+</div>
