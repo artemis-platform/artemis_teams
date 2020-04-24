@@ -3,101 +3,166 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
 
   import Artemis.Factories
 
-  @update_attrs %{title: "some updated title"}
-  @invalid_attrs %{title: nil}
-
   setup %{conn: conn} do
+    date = Date.to_iso8601(Date.utc_today())
     event_template = insert(:event_template)
+    event_question = insert(:event_question, event_template: event_template)
 
-    {:ok, conn: sign_in(conn), event_template: event_template}
+    {:ok, conn: sign_in(conn), date: date, event_question: event_question, event_template: event_template}
   end
 
   describe "index" do
     test "lists all event_instances", %{conn: conn, event_template: event_template} do
       conn = get(conn, Routes.event_instance_path(conn, :index, event_template))
-      assert html_response(conn, 200) =~ "Event Questions"
+      assert html_response(conn, 200) =~ "Event Instance"
     end
   end
 
-  describe "new event_instance" do
-    test "renders new form", %{conn: conn, event_template: event_template} do
-      conn = get(conn, Routes.event_instance_path(conn, :new, event_template))
-      assert html_response(conn, 200) =~ "New Event Question"
+  describe "new event instance" do
+    test "renders edit form", %{conn: conn, date: date, event_template: event_template} do
+      conn = get(conn, Routes.event_instance_path(conn, :edit, event_template, date))
+      assert html_response(conn, 200) =~ "Event Instance"
     end
   end
 
-  describe "create event_instance" do
-    test "redirects to show when data is valid", %{conn: conn, event_template: event_template} do
-      params = params_for(:event_instance, event_template: event_template)
+  describe "create event instance" do
+    test "redirects to show when data is valid", %{
+      conn: conn,
+      date: date,
+      event_question: event_question,
+      event_template: event_template
+    } do
+      user = Mock.system_user()
+      event_answer_params = params_for(:event_answer, date: date, event_question: event_question, user: user)
 
-      conn = post(conn, Routes.event_instance_path(conn, :create, event_template), event_instance: params)
+      params = %{
+        event_template.id => %{
+          "1" => event_answer_params
+        }
+      }
 
-      assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.event_instance_path(conn, :show, event_template, id)
+      conn = put(conn, Routes.event_instance_path(conn, :update, event_template, date), event_instance: params)
 
-      conn = get(conn, Routes.event_instance_path(conn, :show, event_template, id))
-      assert html_response(conn, 200) =~ "Title"
+      assert %{id: date} = redirected_params(conn)
+      assert redirected_to(conn) == Routes.event_instance_path(conn, :show, event_template, date)
+
+      conn = get(conn, Routes.event_instance_path(conn, :show, event_template, date))
+      assert html_response(conn, 200) =~ event_answer_params.category
     end
 
-    test "renders errors when data is invalid", %{conn: conn, event_template: event_template} do
-      conn = post(conn, Routes.event_instance_path(conn, :create, event_template), event_instance: @invalid_attrs)
-      assert html_response(conn, 200) =~ "New Event Question"
+    test "renders errors when passed invalid params", %{
+      conn: conn,
+      date: date,
+      event_question: event_question,
+      event_template: event_template
+    } do
+      user = Mock.system_user()
+
+      event_answer_params =
+        params_for(:event_answer, date: date, event_question: event_question, user: user, value: nil)
+
+      invalid_params = %{
+        event_template.id => %{
+          "1" => event_answer_params
+        }
+      }
+
+      conn = put(conn, Routes.event_instance_path(conn, :update, event_template, date), event_instance: invalid_params)
+      assert html_response(conn, 200) =~ "Edit Event Instance"
     end
   end
 
   describe "show" do
     setup [:create_record]
 
-    test "shows event_instance", %{conn: conn, event_template: event_template, record: record} do
-      conn = get(conn, Routes.event_instance_path(conn, :show, event_template, record))
-      assert html_response(conn, 200) =~ "Title"
+    test "shows event_instance", %{conn: conn, date: date, event_answers: event_answers, event_template: event_template} do
+      conn = get(conn, Routes.event_instance_path(conn, :show, event_template, date))
+
+      assert html_response(conn, 200) =~ hd(event_answers).category
     end
   end
 
   describe "edit event_instance" do
     setup [:create_record]
 
-    test "renders form for editing chosen event_instance", %{conn: conn, event_template: event_template, record: record} do
-      conn = get(conn, Routes.event_instance_path(conn, :edit, event_template, record))
-      assert html_response(conn, 200) =~ "Edit Event Template"
+    test "renders form for editing chosen event_instance", %{
+      conn: conn,
+      date: date,
+      event_template: event_template
+    } do
+      conn = get(conn, Routes.event_instance_path(conn, :edit, event_template, date))
+
+      assert html_response(conn, 200) =~ "Edit Event Instance"
     end
   end
 
   describe "update event_instance" do
     setup [:create_record]
 
-    test "redirects when data is valid", %{conn: conn, event_template: event_template, record: record} do
-      conn = put(conn, Routes.event_instance_path(conn, :update, event_template, record), event_instance: @update_attrs)
-      assert redirected_to(conn) == Routes.event_instance_path(conn, :show, event_template, record)
+    test "redirects when data is valid", %{
+      conn: conn,
+      date: date,
+      event_template: event_template,
+      event_answers: event_answers
+    } do
+      event_answer_params = %{id: hd(event_answers).id, category: "updated category"}
 
-      conn = get(conn, Routes.event_instance_path(conn, :show, event_template, record))
-      assert html_response(conn, 200) =~ "some updated title"
+      params = %{
+        event_template.id => %{
+          "1" => event_answer_params
+        }
+      }
+
+      conn = put(conn, Routes.event_instance_path(conn, :update, event_template, date), event_instance: params)
+
+      assert %{id: date} = redirected_params(conn)
+      assert redirected_to(conn) == Routes.event_instance_path(conn, :show, event_template, date)
+
+      conn = get(conn, Routes.event_instance_path(conn, :show, event_template, date))
+      assert html_response(conn, 200) =~ "updated category"
     end
 
-    test "renders errors when data is invalid", %{conn: conn, event_template: event_template, record: record} do
-      conn =
-        put(conn, Routes.event_instance_path(conn, :update, event_template, record), event_instance: @invalid_attrs)
+    test "renders errors when passed invalid params", %{
+      conn: conn,
+      date: date,
+      event_answers: event_answers,
+      event_template: event_template
+    } do
+      event_answer_params = %{id: hd(event_answers).id, value: ""}
 
-      assert html_response(conn, 200) =~ "Edit Event Template"
+      invalid_params = %{
+        event_template.id => %{
+          "1" => event_answer_params
+        }
+      }
+
+      conn = put(conn, Routes.event_instance_path(conn, :update, event_template, date), event_instance: invalid_params)
+      assert html_response(conn, 200) =~ "Edit Event Instance"
     end
   end
 
-  describe "delete event_instance" do
-    setup [:create_record]
+  # describe "delete event instance" do
+  #   setup [:create_record]
 
-    test "deletes chosen event_instance", %{conn: conn, event_template: event_template, record: record} do
-      conn = delete(conn, Routes.event_instance_path(conn, :delete, event_template, record))
-      assert redirected_to(conn) == Routes.event_instance_path(conn, :index, event_template)
+  #   test "deletes chosen event_instance", %{conn: conn, event_template: event_template, event_answers: event_answers} do
+  #     conn = delete(conn, Routes.event_instance_path(conn, :delete, event_template, event_answers))
+  #     assert redirected_to(conn) == Routes.event_instance_path(conn, :index, event_template)
 
-      assert_error_sent 404, fn ->
-        get(conn, Routes.event_instance_path(conn, :show, event_template, record))
-      end
-    end
-  end
+  #     assert_error_sent 404, fn ->
+  #       get(conn, Routes.event_instance_path(conn, :show, event_template, event_answers))
+  #     end
+  #   end
+  # end
 
   defp create_record(params) do
-    record = insert(:event_instance, event_template: params[:event_template])
+    event_answer_params = [
+      date: params[:date],
+      event_question: params[:event_question],
+      user: Mock.system_user()
+    ]
 
-    {:ok, record: record}
+    event_answers = insert_list(3, :event_answer, event_answer_params)
+
+    {:ok, event_answers: event_answers}
   end
 end

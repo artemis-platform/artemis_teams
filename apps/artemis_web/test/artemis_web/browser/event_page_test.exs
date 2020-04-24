@@ -1,4 +1,4 @@
-defmodule ArtemisWeb.EventTemplatePageTest do
+defmodule ArtemisWeb.EventPageTest do
   use ArtemisWeb.ConnCase
   use ExUnit.Case
   use Hound.Helpers

@@ -30,10 +30,10 @@ defmodule ArtemisWeb.EventController do
     end)
   end
 
-  def new(conn, _params) do
+  def new(conn, params) do
     authorize(conn, "event-templates:create", fn ->
       event_template = %EventTemplate{}
-      changeset = EventTemplate.changeset(event_template)
+      changeset = EventTemplate.changeset(event_template, params)
 
       render(conn, "new.html", changeset: changeset, event_template: event_template)
     end)

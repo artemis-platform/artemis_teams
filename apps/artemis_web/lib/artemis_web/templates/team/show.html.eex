@@ -35,7 +35,7 @@
   </section>
 
   <section>
-    <%= h3 "Event Templates" %>
+    <%= h3 "Events" %>
 
     <%=
       render_data_table(
@@ -45,5 +45,7 @@
         default_columns: ["title", "actions"]
       )
     %>
+
+    <%= action "New Event", to: Routes.event_path(@conn, :new, team_id: @team.id), color: "blue" %>
   </section>
 </div>
