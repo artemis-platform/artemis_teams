@@ -14,10 +14,6 @@ defmodule Artemis.IntervalSupervisor do
       supervisor(Artemis.Worker.IBMCloudantChangeSupervisor, []),
       worker(Artemis.Worker.IBMCloudIAMAccessToken, []),
       worker(Artemis.Worker.IBMCloudantMigrator, []),
-      worker(Artemis.Worker.PagerDutyEscalationPolicySynchronizer, []),
-      supervisor(Artemis.Worker.PagerDutyIncidentSynchronizerSupervisor, []),
-      worker(Artemis.Worker.PagerDutyIncidentStatus, []),
-      worker(Artemis.Worker.PagerDutyOnCallSynchronizer, []),
       worker(Artemis.Worker.RepoResetOnInterval, [])
     ]
 

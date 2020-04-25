@@ -127,7 +127,6 @@ defmodule ArtemisWeb do
       import ArtemisWeb.ViewHelper.Breadcrumbs
       import ArtemisWeb.ViewHelper.BulkActions
       import ArtemisWeb.ViewHelper.Cache
-      import ArtemisWeb.ViewHelper.Charts
       import ArtemisWeb.ViewHelper.Conditionals
       import ArtemisWeb.ViewHelper.Errors
       import ArtemisWeb.ViewHelper.Events
@@ -138,7 +137,6 @@ defmodule ArtemisWeb do
       import ArtemisWeb.ViewHelper.Navigation
       import ArtemisWeb.ViewHelper.Notifications
       import ArtemisWeb.ViewHelper.Numbers
-      import ArtemisWeb.ViewHelper.OnCall
       import ArtemisWeb.ViewHelper.Pagination
       import ArtemisWeb.ViewHelper.Presence
       import ArtemisWeb.ViewHelper.Print

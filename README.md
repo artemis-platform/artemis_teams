@@ -1,51 +1,17 @@
-# Artemis Dashboard
+# Artemis Teams
 
-> An Operational Dashboard in Elixir and Phoenix
+[![Build Status](https://travis-ci.com/chrislaskey/artemis_teams.svg?branch=master)](https://travis-ci.com/chrislaskey/artemis_teams)
 
-Artemis Dashboard is built on top of [Artemis Platform](https://github.com/artemis-platform/artemis_platform), a collection of production-ready design patterns for Elixir and Phoenix.
+## About
 
-[![Artemis Dashboard Home](/docs/artemis-dashboard-home.png)](https://artemis-dashboard.com/)
+Artemis Teams is a collection of collaborative team-based tools written in
+Elixir.
 
-View a live demo at [https://artemis-dashboard.com/](https://artemis-dashboard.com/).
-
-[![Build Status](https://travis-ci.com/artemis-platform/artemis_dashboard.svg?branch=master)](https://travis-ci.com/artemis-platform/artemis_dashboard)
-
-## Patterns
-
-General Patterns:
-
-- Authentication with OAuth2
-- Role-Based Access Control [⬈ Documentation](https://github.com/artemis-platform/artemis_platform/wiki/Role-Based-Access-Control) [⬈ Discussion](https://github.com/artemis-platform/artemis_platform/issues/12)
-- Full Text Search [⬈ Documentation](https://github.com/artemis-platform/artemis_platform/wiki/Full-Text-Search) [⬈ Discussion](https://github.com/artemis-platform/artemis_platform/issues/13)
-- Event Based Pub/Sub
-- Dedicated Audit Logging
-- Feature Flipper
-- GraphQL API Endpoint
-- Phoenix Web Endpoint
-- Docker Support
-- Unit Testing
-- Browser-based Testing
-
-UI Patterns:
-
-- Breadcrumbs
-- Pagination
-- Table Search
-- Table Export
-- Table Sorting
-- Table Filtering
-
-Additional Patterns:
-
-- Real-time data updates with Phoenix LiveView
-- Dynamic Caching
-- Custom UI and Design
+It is built on top of [Artemis Platform](https://github.com/chrislaskey/artemis_platform).
 
 ## Demo
 
-View a live demo at [https://artemis-dashboard.com/](https://artemis-dashboard.com/).
-
-Or spin up a demo locally. Assuming [docker](https://www.docker.com/) and [docker compose](https://docs.docker.com/compose/) is installed:
+A container-based demo environment is available. Assuming [docker](https://www.docker.com/) and [docker compose](https://docs.docker.com/compose/) is installed:
 
 ```bash
 bin/demo/build # Build the demo environment
@@ -54,10 +20,14 @@ bin/demo/stop # Stop the demo environment
 bin/demo/remove # Remove the demo environment
 ```
 
-Once built and started, the demo environment is available at: http://localhost:4077
-
 ## Looking for More?
 
 > ### [Artemis Platform](https://github.com/artemis-platform/artemis_platform)
 
 Artemis Platform is a generic Elixir / Phoenix platform ready to be the foundation of your next web application.
+
+> ### [Artemis Dashboard](https://github.com/artemis-platform/artemis_dashboard)
+
+[![Artemis Dashboard Home](https://github.com/artemis-platform/artemis_dashboard/blob/master/docs/artemis-dashboard-home.png)](https://github.com/artemis-platform/artemis_dashboard)
+
+Artemis Dashboard is an example of a complete application (including UI and design) built on top of Artemis Platform.

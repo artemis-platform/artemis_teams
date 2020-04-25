@@ -2,55 +2,26 @@
   <section>
     <a href="/" id="logo">
       <i class="fire icon"></i>
-      Artemis Dashboard
+      Artemis Teams
     </a>
     <nav id="primary-navigation" role="navigation">
       <% nav_items = primary_nav_items_for_current_user(@user) %>
       <ul>
-        <%= if render_primary_nav_section?(nav_items, ["Customers"]) do %>
+        <%= if render_primary_nav_section?(nav_items, ["Teams"]) do %>
           <li>
-            <a href="<%= Routes.customer_path(@conn, :index) %>">
-              Customers
+            <a href="<%= Routes.team_path(@conn, :index) %>">
+              Teams
             </a>
           </li>
         <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Clouds", "Data Centers", "Machines", "Jobs"]) do %>
-          <li class="with-dropdown">
-            <a href="<%= Routes.cloud_path(@conn, :index) %>">
-              Clouds
-              <i class="angle down icon"></i>
+        <%= if render_primary_nav_section?(nav_items, ["Events"]) do %>
+          <li>
+            <a href="<%= Routes.event_path(@conn, :index) %>">
+              Events
             </a>
-            <div class="dropdown">
-              <content>
-                <header>
-                  <h3>Clouds</h3>
-                  <p>Details of every deployed cloud and supporting instances.</p>
-                </header>
-                <%= render_primary_nav_section(@conn, @user, nav_items, ["Clouds", "Data Centers", "Machines", "Jobs"]) %>
-              </content>
-              <footer></footer>
-            </div>
           </li>
         <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["On Call", "Incidents"]) do %>
-          <li class="with-dropdown">
-            <a href="<%= Routes.on_call_path(@conn, :index) %>">
-              On Call
-              <i class="angle down icon"></i>
-            </a>
-            <div class="dropdown">
-              <content>
-                <header>
-                  <h3>On Call</h3>
-                  <p>Tools to better understand and respond to the current status.</p>
-                </header>
-                <%= render_primary_nav_section(@conn, @user, nav_items, ["On Call", "Incidents"]) %>
-              </content>
-              <footer></footer>
-            </div>
-          </li>
-        <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Users", "Roles", "Permissions", "Features", "Event Logs", "HTTP Request Logs", "Sessions", "Tags", "Teams", "Team Events", "Application"]) do %>
+        <%= if render_primary_nav_section?(nav_items, ["Users", "Roles", "Permissions", "Features", "Event Logs", "HTTP Request Logs", "Sessions", "Tags", "Application"]) do %>
           <li class="with-dropdown">
             <a href="<%= Routes.user_path(@conn, :index) %>">
               Admin
@@ -62,7 +33,7 @@
                   <h3>Admin</h3>
                   <p>Administrative tools to manage the site.</p>
                 </header>
-                <%= render_primary_nav_section(@conn, @user, nav_items, ["Users", "Roles", "Permissions", "Features", "Event Log", "HTTP Request Logs", "Sessions", "Tags", "Teams", "Team Events", "Application"]) %>
+                <%= render_primary_nav_section(@conn, @user, nav_items, ["Users", "Roles", "Permissions", "Features", "Event Log", "HTTP Request Logs", "Sessions", "Tags", "Application"]) %>
               </content>
               <footer></footer>
             </div>
@@ -146,34 +117,6 @@
       </ul>
     </nav>
   </section>
-
-  <aside>
-    <div class="on-call">
-      <%= render_on_call_status(@conn) %>
-      <%= render_on_call_person(@conn) %>
-    </div>
-    <div class="external-links">
-      <ul>
-        <li>
-          <%= link "GitHub", to: "https://github.com/artemis-platform/artemis_dashboard", target: "_blank" %>
-        </li>
-        <li>
-          <%= link "ServiceNow", to: "https://service-now.com", target: "_blank" %>
-        </li>
-        <%= if Artemis.Helpers.PagerDuty.get_pager_duty_web_url() do %>
-          <li>
-            <%= link "PagerDuty", to: Artemis.Helpers.PagerDuty.get_pager_duty_web_url(), target: "_blank" %>
-          </li>
-        <% end %>
-        <li class="more-links">
-          <i class="angle down icon"></i>
-          <a href="<%= Routes.wiki_page_path(@conn, :index, %{filters: %{tags: ["links"]}}) %>">
-            More Links
-          </a>
-        </li>
-      </ul>
-    </div>
-  </aside>
 
   <footer>
 

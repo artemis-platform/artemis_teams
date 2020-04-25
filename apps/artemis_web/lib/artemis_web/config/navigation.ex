@@ -24,47 +24,23 @@ defmodule ArtemisWeb.Config.Navigation do
           verify: &has?(&1, "system-tasks:list")
         ]
       ],
-      Clouds: [
-        [
-          label: "List Clouds",
-          path: &Routes.cloud_path(&1, :index),
-          verify: &has?(&1, "clouds:list")
-        ],
-        [
-          label: "Create New Cloud",
-          path: &Routes.cloud_path(&1, :new),
-          verify: &has?(&1, "clouds:create")
-        ]
-      ],
-      Customers: [
-        [
-          label: "List Customers",
-          path: &Routes.customer_path(&1, :index),
-          verify: &has?(&1, "customers:list")
-        ],
-        [
-          label: "Create New Customer",
-          path: &Routes.customer_path(&1, :new),
-          verify: &has?(&1, "customers:create")
-        ]
-      ],
-      "Data Centers": [
-        [
-          label: "List Data Centers",
-          path: &Routes.data_center_path(&1, :index),
-          verify: &has?(&1, "data-centers:list")
-        ],
-        [
-          label: "Create New Data Center",
-          path: &Routes.data_center_path(&1, :new),
-          verify: &has?(&1, "data-centers:create")
-        ]
-      ],
       Documentation: [
         [
           label: "View Documentation",
           path: &Routes.wiki_page_path(&1, :index),
           verify: &has?(&1, "wiki-pages:list")
+        ]
+      ],
+      Events: [
+        [
+          label: "List Events",
+          path: &Routes.event_path(&1, :index),
+          verify: &has?(&1, "event-templates:list")
+        ],
+        [
+          label: "Create New Event",
+          path: &Routes.event_path(&1, :new),
+          verify: &has?(&1, "event-templates:create")
         ]
       ],
       "Event Log": [
@@ -91,44 +67,6 @@ defmodule ArtemisWeb.Config.Navigation do
           label: "View HTTP Request Logs",
           path: &Routes.http_request_log_path(&1, :index),
           verify: &has?(&1, "http-request-logs:list")
-        ]
-      ],
-      Incidents: [
-        [
-          label: "List Incidents",
-          path: &Routes.incident_path(&1, :index),
-          verify: &has?(&1, "incidents:list")
-        ]
-      ],
-      Jobs: [
-        [
-          label: "List Jobs",
-          path: &Routes.job_path(&1, :index),
-          verify: &has?(&1, "jobs:list")
-        ],
-        [
-          label: "Create New Job",
-          path: &Routes.job_path(&1, :new),
-          verify: &has?(&1, "jobs:create")
-        ]
-      ],
-      Machines: [
-        [
-          label: "List Machines",
-          path: &Routes.machine_path(&1, :index),
-          verify: &has?(&1, "machines:list")
-        ],
-        [
-          label: "Create New Machine",
-          path: &Routes.machine_path(&1, :new),
-          verify: &has?(&1, "machines:create")
-        ]
-      ],
-      "On Call": [
-        [
-          label: "Overview",
-          path: &Routes.on_call_path(&1, :index),
-          verify: &has_any?(&1, ["incidents:list"])
         ]
       ],
       Permissions: [
@@ -184,18 +122,6 @@ defmodule ArtemisWeb.Config.Navigation do
           label: "Create New Team",
           path: &Routes.team_path(&1, :new),
           verify: &has?(&1, "teams:create")
-        ]
-      ],
-      "Team Events": [
-        [
-          label: "List Events",
-          path: &Routes.event_path(&1, :index),
-          verify: &has?(&1, "event-templates:list")
-        ],
-        [
-          label: "Create New Event",
-          path: &Routes.event_path(&1, :new),
-          verify: &has?(&1, "event-templates:create")
         ]
       ],
       Users: [

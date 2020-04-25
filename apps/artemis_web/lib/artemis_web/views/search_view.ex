@@ -4,45 +4,13 @@ defmodule ArtemisWeb.SearchView do
   alias ArtemisWeb.Router.Helpers, as: Routes
 
   @search_links %{
-    "customers" => [
-      label: "Customers",
-      path: &Routes.customer_path/3
-    ],
-    "clouds" => [
-      label: "Clouds",
-      path: &Routes.cloud_path/3
+    "teams" => [
+      label: "Teams",
+      path: &Routes.team_path/3
     ],
     "wiki_pages" => [
       label: "Documentation",
       path: &Routes.wiki_page_path/3
-    ],
-    "data_centers" => [
-      label: "Data Centers",
-      path: &Routes.data_center_path/3
-    ],
-    "machines" => [
-      label: "Machines",
-      path: &Routes.machine_path/3
-    ],
-    "features" => [
-      label: "Features",
-      path: &Routes.feature_path/3
-    ],
-    "incidents" => [
-      label: "Incidents",
-      path: &Routes.incident_path/3
-    ],
-    "jobs" => [
-      label: "Jobs",
-      path: &Routes.job_path/3
-    ],
-    "permissions" => [
-      label: "Permissions",
-      path: &Routes.permission_path/3
-    ],
-    "roles" => [
-      label: "Roles",
-      path: &Routes.role_path/3
     ],
     "event_templates" => [
       label: "Events",
@@ -54,9 +22,17 @@ defmodule ArtemisWeb.SearchView do
     "event_answers" => [
       label: "Event Answers"
     ],
-    "teams" => [
-      label: "Teams",
-      path: &Routes.team_path/3
+    "features" => [
+      label: "Features",
+      path: &Routes.feature_path/3
+    ],
+    "permissions" => [
+      label: "Permissions",
+      path: &Routes.permission_path/3
+    ],
+    "roles" => [
+      label: "Roles",
+      path: &Routes.role_path/3
     ],
     "users" => [
       label: "Users",
@@ -111,22 +87,6 @@ defmodule ArtemisWeb.SearchView do
     |> Enum.map(&search_entry(&1))
   end
 
-  defp search_entry(%Artemis.Customer{} = data) do
-    %{
-      title: data.slug,
-      permission: "customers:show",
-      link: fn conn -> Routes.customer_path(conn, :show, data) end
-    }
-  end
-
-  defp search_entry(%Artemis.DataCenter{} = data) do
-    %{
-      title: data.slug,
-      permission: "data-centers:show",
-      link: fn conn -> Routes.data_center_path(conn, :show, data) end
-    }
-  end
-
   defp search_entry(%Artemis.EventAnswer{} = data) do
     %{
       title: data.event_question.title,
@@ -156,30 +116,6 @@ defmodule ArtemisWeb.SearchView do
       title: data.slug,
       permission: "features:show",
       link: fn conn -> Routes.feature_path(conn, :show, data) end
-    }
-  end
-
-  defp search_entry(%Artemis.Incident{} = data) do
-    %{
-      title: data.title,
-      permission: "incidents:show",
-      link: fn conn -> Routes.incident_path(conn, :show, data) end
-    }
-  end
-
-  defp search_entry(%Artemis.Job{} = data) do
-    %{
-      title: data._id,
-      permission: "jobs:show",
-      link: fn conn -> Routes.job_path(conn, :show, data._id) end
-    }
-  end
-
-  defp search_entry(%Artemis.Machine{} = data) do
-    %{
-      title: data.slug,
-      permission: "machines:show",
-      link: fn conn -> Routes.machine_path(conn, :show, data) end
     }
   end
 

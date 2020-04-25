@@ -72,26 +72,11 @@ defmodule Artemis.Repo.GenerateData do
     permissions = [
       %{slug: "application-configs:list", name: "Application Configs - List", description: admin_only},
       %{slug: "application-configs:show", name: "Application Configs - Show", description: admin_only},
-      %{slug: "clouds:create", name: "Clouds - Create"},
-      %{slug: "clouds:delete", name: "Clouds - Delete"},
-      %{slug: "clouds:list", name: "Clouds - List"},
-      %{slug: "clouds:show", name: "Clouds - Show"},
-      %{slug: "clouds:update", name: "Clouds - Update"},
       %{slug: "comments:access:all", name: "Comments - Access All", description: admin_only},
       %{slug: "comments:access:self", name: "Comments - Access Self"},
       %{slug: "comments:create", name: "Comments - Create"},
       %{slug: "comments:delete", name: "Comments - Delete"},
       %{slug: "comments:update", name: "Comments - Update"},
-      %{slug: "customers:create", name: "Customers - Create"},
-      %{slug: "customers:delete", name: "Customers - Delete"},
-      %{slug: "customers:list", name: "Customers - List"},
-      %{slug: "customers:show", name: "Customers - Show"},
-      %{slug: "customers:update", name: "Customers - Update"},
-      %{slug: "data-centers:create", name: "Data Centers - Create"},
-      %{slug: "data-centers:delete", name: "Data Centers - Delete"},
-      %{slug: "data-centers:list", name: "Data Centers - List"},
-      %{slug: "data-centers:show", name: "Data Centers - Show"},
-      %{slug: "data-centers:update", name: "Data Centers - Update"},
       %{slug: "event-logs:access:all", name: "Event Logs - Access All", description: admin_only},
       %{slug: "event-logs:access:self", name: "Event Logs - Access Self"},
       %{slug: "event-logs:list", name: "Event Logs - List"},
@@ -120,25 +105,6 @@ defmodule Artemis.Repo.GenerateData do
       %{slug: "http-request-logs:access:self", name: "HTTP Request Logs - Access Self"},
       %{slug: "http-request-logs:list", name: "HTTP Request Logs - List"},
       %{slug: "http-request-logs:show", name: "HTTP Request Logs - Show"},
-      %{slug: "incidents:delete", name: "Incidents - Delete"},
-      %{slug: "incidents:list", name: "Incidents - List"},
-      %{slug: "incidents:show", name: "Incidents - Show"},
-      %{slug: "incidents:create:comments", name: "Incidents - Create Comments"},
-      %{slug: "incidents:delete:comments", name: "Incidents - Delete Comments"},
-      %{slug: "incidents:list:comments", name: "Incidents - List Comments"},
-      %{slug: "incidents:update:comments", name: "Incidents - Update Comments"},
-      %{slug: "incidents:create:tags", name: "Incidents - Create New Tags"},
-      %{slug: "incidents:update:tags", name: "Incidents - Update Tags"},
-      %{slug: "jobs:create", name: "Jobs - Create"},
-      %{slug: "jobs:delete", name: "Jobs - Delete"},
-      %{slug: "jobs:list", name: "Jobs - List"},
-      %{slug: "jobs:show", name: "Jobs - Show"},
-      %{slug: "jobs:update", name: "Jobs - Update"},
-      %{slug: "machines:create", name: "Machines - Create"},
-      %{slug: "machines:delete", name: "Machines - Delete"},
-      %{slug: "machines:list", name: "Machines - List"},
-      %{slug: "machines:show", name: "Machines - Show"},
-      %{slug: "machines:update", name: "Machines - Update"},
       %{slug: "permissions:create", name: "Permissions - Create"},
       %{slug: "permissions:delete", name: "Permissions - Delete"},
       %{slug: "permissions:list", name: "Permissions - List"},
@@ -360,9 +326,9 @@ defmodule Artemis.Repo.GenerateData do
     help_tag = Repo.get_by(Tag, slug: "help", type: "wiki-pages")
 
     help_body = """
-    Artemis Dashboard is an example of an operational dashboard built on top of Artemis Platform.
+    Artemis Teams is an example of an organizational tool built on top of Artemis Platform.
 
-    Learn more about [Artemis Dashboard on GitHub](https://github.com/artemis-platform/artemis_dashboard).
+    Learn more about [Artemis Teams on GitHub](https://github.com/artemis-platform/artemis_teams).
     """
 
     example_body = """
@@ -472,15 +438,15 @@ defmodule Artemis.Repo.GenerateData do
     wiki_pages = [
       %{
         body: help_body,
-        section: "Artemis Dashboard",
-        slug: "artemis-dashboard-help",
+        section: "Artemis Teams",
+        slug: "artemis-teams-help",
         tags: [%{id: help_tag.id}],
-        title: "Artemis Dashboard Help",
+        title: "Artemis Teams Help",
         user_id: system_user.id
       },
       %{
         body: example_body,
-        section: "Artemis Dashboard",
+        section: "Artemis Teams",
         slug: "documentation-example",
         tags: [%{id: help_tag.id}],
         title: "Documentation Example",

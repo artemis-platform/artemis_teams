@@ -51,60 +51,6 @@ defmodule ArtemisWeb.Router do
 
       resources "/application-config", ApplicationConfigController, only: [:index, :show]
 
-      # Clouds
-
-      post "/clouds/bulk-actions", CloudController, :index_bulk_actions
-      get "/clouds/event-logs", CloudController, :index_event_log_list
-      get "/clouds/event-logs/:id", CloudController, :index_event_log_details
-
-      resources "/clouds", CloudController do
-        get "/comments", CloudController, :index_comment, as: :comment
-        post "/comments", CloudController, :create_comment, as: :comment
-        get "/comments/:id/edit", CloudController, :edit_comment, as: :comment
-        patch "/comments/:id", CloudController, :update_comment, as: :comment
-        put "/comments/:id", CloudController, :update_comment, as: :comment
-        delete "/comments/:id", CloudController, :delete_comment, as: :comment
-
-        get "/event-logs", CloudController, :show_event_log_list, as: :event_log
-        get "/event-logs/:id", CloudController, :show_event_log_details, as: :event_log
-      end
-
-      # Customers
-
-      post "/customers/bulk-actions", CustomerController, :index_bulk_actions
-      get "/customers/event-logs", CustomerController, :index_event_log_list
-      get "/customers/event-logs/:id", CustomerController, :index_event_log_details
-
-      resources "/customers", CustomerController do
-        get "/comments", CustomerController, :index_comment, as: :comment
-        post "/comments", CustomerController, :create_comment, as: :comment
-        get "/comments/:id/edit", CustomerController, :edit_comment, as: :comment
-        patch "/comments/:id", CustomerController, :update_comment, as: :comment
-        put "/comments/:id", CustomerController, :update_comment, as: :comment
-        delete "/comments/:id", CustomerController, :delete_comment, as: :comment
-
-        get "/event-logs", CustomerController, :show_event_log_list, as: :event_log
-        get "/event-logs/:id", CustomerController, :show_event_log_details, as: :event_log
-      end
-
-      # Data Centers
-
-      post "/data-centers/bulk-actions", DataCenterController, :index_bulk_actions
-      get "/data-centers/event-logs", DataCenterController, :index_event_log_list
-      get "/data-centers/event-logs/:id", DataCenterController, :index_event_log_details
-
-      resources "/data-centers", DataCenterController do
-        get "/comments", DataCenterController, :index_comment, as: :comment
-        post "/comments", DataCenterController, :create_comment, as: :comment
-        get "/comments/:id/edit", DataCenterController, :edit_comment, as: :comment
-        patch "/comments/:id", DataCenterController, :update_comment, as: :comment
-        put "/comments/:id", DataCenterController, :update_comment, as: :comment
-        delete "/comments/:id", DataCenterController, :delete_comment, as: :comment
-
-        get "/event-logs", DataCenterController, :show_event_log_list, as: :event_log
-        get "/event-logs/:id", DataCenterController, :show_event_log_details, as: :event_log
-      end
-
       # Docs
 
       resources "/docs", WikiPageController do
@@ -133,10 +79,6 @@ defmodule ArtemisWeb.Router do
         resources "/questions", EventQuestionController, as: :question
       end
 
-      # HTTP Requests
-
-      resources "/http-request-logs", HttpRequestLogController, only: [:index, :show]
-
       # Features
 
       post "/features/bulk-actions", FeatureController, :index_bulk_actions
@@ -148,61 +90,9 @@ defmodule ArtemisWeb.Router do
         get "/event-logs/:id", FeatureController, :show_event_log_details, as: :event_log
       end
 
-      # Incidents
+      # HTTP Requests
 
-      post "/incidents/bulk-actions", IncidentController, :index_bulk_actions
-
-      resources "/incidents", IncidentController, only: [:index, :show, :delete] do
-        get "/comments", IncidentController, :index_comment, as: :comment
-        post "/comments", IncidentController, :create_comment, as: :comment
-        get "/comments/:id/edit", IncidentController, :edit_comment, as: :comment
-        patch "/comments/:id", IncidentController, :update_comment, as: :comment
-        put "/comments/:id", IncidentController, :update_comment, as: :comment
-        delete "/comments/:id", IncidentController, :delete_comment, as: :comment
-
-        put "/tags", IncidentTagController, :update, as: :tag
-      end
-
-      # Jobs
-
-      post "/jobs/bulk-actions", JobController, :index_bulk_actions
-      get "/jobs/event-logs", JobController, :index_event_log_list
-      get "/jobs/event-logs/:id", JobController, :index_event_log_details
-
-      resources "/jobs", JobController do
-        get "/comments", JobController, :index_comment, as: :comment
-        post "/comments", JobController, :create_comment, as: :comment
-        get "/comments/:id/edit", JobController, :edit_comment, as: :comment
-        patch "/comments/:id", JobController, :update_comment, as: :comment
-        put "/comments/:id", JobController, :update_comment, as: :comment
-        delete "/comments/:id", JobController, :delete_comment, as: :comment
-
-        get "/event-logs", JobController, :show_event_log_list, as: :event_log
-        get "/event-logs/:id", JobController, :show_event_log_details, as: :event_log
-      end
-
-      # Machines
-
-      post "/machines/bulk-actions", MachineController, :index_bulk_actions
-      get "/machines/event-logs", MachineController, :index_event_log_list
-      get "/machines/event-logs/:id", MachineController, :index_event_log_details
-
-      resources "/machines", MachineController do
-        get "/comments", MachineController, :index_comment, as: :comment
-        post "/comments", MachineController, :create_comment, as: :comment
-        get "/comments/:id/edit", MachineController, :edit_comment, as: :comment
-        patch "/comments/:id", MachineController, :update_comment, as: :comment
-        put "/comments/:id", MachineController, :update_comment, as: :comment
-        delete "/comments/:id", MachineController, :delete_comment, as: :comment
-
-        get "/event-logs", MachineController, :show_event_log_list, as: :event_log
-        get "/event-logs/:id", MachineController, :show_event_log_details, as: :event_log
-      end
-
-      # On Call
-
-      get "/on-call/weekly-summary", OnCallController, :index_weekly_summary
-      resources "/on-call", OnCallController, only: [:index]
+      resources "/http-request-logs", HttpRequestLogController, only: [:index, :show]
 
       # Permissions
 

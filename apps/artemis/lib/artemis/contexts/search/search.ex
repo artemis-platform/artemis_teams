@@ -36,11 +36,6 @@ defmodule Artemis.Search do
 
   def get_searchable_resources do
     searchable_resources = %{
-      "customers" => [
-        enabled: true,
-        function: &Artemis.ListCustomers.call/2,
-        permissions: "customers:list"
-      ],
       "event_answers" => [
         enabled: true,
         function: &Artemis.ListEventAnswers.call/2,
@@ -60,16 +55,6 @@ defmodule Artemis.Search do
         enabled: true,
         function: &Artemis.ListFeatures.call/2,
         permissions: "features:list"
-      ],
-      "incidents" => [
-        enabled: true,
-        function: &Artemis.ListIncidents.call/2,
-        permissions: "incidents:list"
-      ],
-      "jobs" => [
-        enabled: Artemis.Job.search_enabled?(),
-        function: &Artemis.ListJobs.call/2,
-        permissions: "jobs:list"
       ],
       "permissions" => [
         enabled: true,

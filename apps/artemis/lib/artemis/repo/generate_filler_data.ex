@@ -49,25 +49,15 @@ defmodule Artemis.Repo.GenerateFillerData do
   defp generate_data do
     system_user = GetSystemUser.call!()
 
-    generate_incidents(system_user)
     generate_roles(system_user)
     generate_users(system_user)
-
-    customers = generate_customers(system_user)
-    clouds = generate_clouds(customers, system_user)
-    data_centers = generate_data_centers(system_user)
-    _machines = generate_machines(clouds, data_centers, system_user)
 
     :ok
   end
 
-  defp generate_incidents(_system_user), do: insert_list(100, :incident)
-
   defp generate_roles(system_user) do
     roles = [
-      %{name: "Executive Viewers", slug: "executive-viewer"},
-      %{name: "Client Success Manager", slug: "client-success-manager"},
-      %{name: "Network Administrator", slug: "network-administrator"}
+      %{name: "Organization Admin", slug: "organization-admin"}
     ]
 
     Enum.map(roles, fn params ->
@@ -87,72 +77,5 @@ defmodule Artemis.Repo.GenerateFillerData do
     end)
 
     users
-  end
-
-  defp generate_customers(_system_user), do: insert_list(30, :customer)
-
-  defp generate_data_centers(system_user) do
-    data_centers = [
-      %{
-        name: "Moscow",
-        slug: "DME",
-        country: "Russia",
-        latitude: "55.7558",
-        longitude: "37.6173"
-      },
-      %{
-        name: "Paris",
-        slug: "CDG",
-        country: "France",
-        latitude: "48.8566",
-        longitude: "2.3522"
-      },
-      %{
-        name: "San Francisco",
-        slug: "SFO",
-        country: "United States",
-        latitude: "37.7749",
-        longitude: "-122.4194"
-      },
-      %{
-        name: "Tokyo",
-        slug: "TOK",
-        country: "Japan",
-        latitude: "35.6804",
-        longitude: "139.7690"
-      },
-      %{
-        name: "Toronto",
-        slug: "TOR",
-        country: "Canada",
-        latitude: "43.6532",
-        longitude: "-79.3832"
-      }
-    ]
-
-    Enum.map(data_centers, fn params ->
-      case Artemis.GetDataCenter.call([slug: params.slug], system_user) do
-        nil -> Artemis.CreateDataCenter.call!(params, system_user)
-        record -> record
-      end
-    end)
-  end
-
-  defp generate_clouds(customers, _system_user) do
-    Enum.map(Range.new(0, 100), fn _ ->
-      customer = Enum.random(customers)
-
-      insert(:cloud, customer: customer, machines: [])
-    end)
-  end
-
-  defp generate_machines(clouds, data_centers, _system_user) do
-    Enum.map(clouds, fn cloud ->
-      Enum.map(Range.new(3, 16), fn _ ->
-        data_center = Enum.random(data_centers)
-
-        insert(:machine, cloud: cloud, data_center: data_center)
-      end)
-    end)
   end
 end

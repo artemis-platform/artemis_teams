@@ -188,7 +188,7 @@ defmodule Artemis.Worker.IBMCloudantChangeListener do
     document = Map.get(data, "doc")
 
     case Artemis.Helpers.present?(document) do
-      true -> Artemis.Job.from_json(document)
+      true -> Jason.decode!(document)
       false -> document
     end
   end

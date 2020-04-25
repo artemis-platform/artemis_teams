@@ -14,15 +14,6 @@ config :artemis, :actions,
   ibm_cloudant_migrator: [
     enabled: System.get_env("ARTEMIS_ACTION_IBM_CLOUDANT_MIGRATOR")
   ],
-  pager_duty_synchronize_escalation_policies: [
-    enabled: System.get_env("ARTEMIS_ACTION_PAGER_DUTY_SYNCHRONIZE_ESCALATION_POLICIES")
-  ],
-  pager_duty_synchronize_incidents: [
-    enabled: System.get_env("ARTEMIS_ACTION_PAGER_DUTY_SYNCHRONIZE_INCIDENTS")
-  ],
-  pager_duty_synchronize_on_call: [
-    enabled: System.get_env("ARTEMIS_ACTION_PAGER_DUTY_SYNCHRONIZE_ON_CALL")
-  ],
   repo_delete_all: [
     enabled: System.get_env("ARTEMIS_ACTION_REPO_DELETE_ALL_ENABLED")
   ],
@@ -52,54 +43,10 @@ config :artemis, :ibm_cloud,
   ]
 
 config :artemis, :ibm_cloudant,
-  hosts: [
-    [
-      name: :shared,
-      ibm_cloud_iam_api_key: :ibm_cloudant_shared,
-      auth_type: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_AUTH_TYPE"),
-      username: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_USERNAME"),
-      password: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_PASSWORD"),
-      hostname: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_HOSTNAME"),
-      protocol: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_PROTOCOL"),
-      port: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_PORT"),
-      create_change_databases: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_CREATE_CHANGE_DATABASES"),
-      query_index_enabled: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_QUERY_INDEX_ENABLED"),
-      query_index_design_doc_base: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_QUERY_INDEX_DESIGN_DOC_BASE"),
-      query_index_include_partition_param:
-        System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_QUERY_INDEX_INCLUDE_PARTITION_PARAM"),
-      search_enabled: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_SEARCH_ENABLED"),
-      search_design_doc_base: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_SEARCH_DESIGN_DOC_BASE"),
-      search_index: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_SEARCH_INDEX"),
-      view_custom_design_doc_base: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_VIEW_CUSTOM_DESIGN_DOC_BASE"),
-      view_filter_design_doc_base: System.get_env("ARTEMIS_IBM_CLOUDANT_SHARED_VIEW_FILTER_DESIGN_DOC_BASE")
-    ]
-  ],
-  databases: [
-    [
-      host: :shared,
-      name: "jobs",
-      schema: Artemis.Job
-    ]
-  ]
+  hosts: [],
+  databases: []
 
 config :artemis, :interval_worker, default_log_limit: System.get_env("ARTEMIS_INTERVAL_WORKER_DEFAULT_LOG_LIMIT")
-
-config :artemis, :pager_duty,
-  api_token: System.get_env("ARTEMIS_PAGER_DUTY_API_TOKEN"),
-  api_url: System.get_env("ARTEMIS_PAGER_DUTY_API_URL"),
-  teams: [
-    [
-      id: System.get_env("ARTEMIS_PAGER_DUTY_TEAM_ID"),
-      name: "Artemis Dashboard",
-      slug: :artemis_dashboard
-    ]
-  ],
-  web_url: System.get_env("ARTEMIS_PAGER_DUTY_WEB_URL")
-
-config :artemis, :service_now,
-  api_token: System.get_env("ARTEMIS_SERVICE_NOW_API_TOKEN"),
-  api_url: System.get_env("ARTEMIS_SERVICE_NOW_API_URL"),
-  web_url: System.get_env("ARTEMIS_SERVICE_NOW_WEB_URL")
 
 config :slugger, separator_char: ?-
 config :slugger, replacement_file: "lib/replacements.exs"
