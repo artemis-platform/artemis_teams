@@ -3,6 +3,7 @@ defmodule ArtemisWeb.SystemTaskControllerTest do
 
   import Artemis.Factories
 
+  @moduletag :pending
   @invalid_attrs %{extra_params: nil}
 
   setup %{conn: conn} do

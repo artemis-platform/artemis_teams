@@ -154,8 +154,8 @@ defmodule ArtemisWeb.EventQuestionPageTest do
   # Helpers
 
   defp get_url(event_template) do
-    event_question = insert(:event_question, event_template: event_template)
+    _event_question = insert(:event_question, event_template: event_template)
 
-    event_question_url(ArtemisWeb.Endpoint, :index, event_templatek)
+    event_question_url(ArtemisWeb.Endpoint, :index, event_template)
   end
 end

@@ -24,7 +24,7 @@ defmodule Artemis.UserTeamTest do
         |> UserTeam.changeset(params)
         |> Repo.insert()
 
-      assert errors_on(changeset) == %{type: ["is invalid"]}
+      assert errors_on(changeset) == %{type: ["is invalid"], created_by_id: ["can't be blank"]}
     end
   end
 

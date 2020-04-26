@@ -26,6 +26,16 @@ defmodule Artemis.SystemTask do
       :type
     ]
 
+  # Defines allowed system tasks by calling existing contexts. For example:
+  #
+  #   %{
+  #     action: fn params, user -> Artemis.DeleteAllIncidents.call(params, user) end,
+  #     description: "Removes all incident records, so they can be regenerated from the original source.",
+  #     name: "Delete All Incidents",
+  #     type: "delete_all_incidents",
+  #     verify: fn user -> Artemis.UserAccess.has_all?(user, ["system-tasks:create", "incidents:delete"]) end
+  #   }
+  #
   def allowed_system_tasks,
     do: []
 

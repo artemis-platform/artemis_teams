@@ -6,6 +6,9 @@ defmodule Artemis.SystemTaskTest do
 
   alias Artemis.SystemTask
 
+  # Marked pending until at least one system task is defined
+  @moduletag :pending
+
   describe "changeset - validations" do
     test "extra_params" do
       struct = struct(Artemis.SystemTask)

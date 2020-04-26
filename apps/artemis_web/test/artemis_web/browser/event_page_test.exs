@@ -8,7 +8,7 @@ defmodule ArtemisWeb.EventPageTest do
   import ArtemisWeb.Router.Helpers
 
   @moduletag :browser
-  @url event_template_url(ArtemisWeb.Endpoint, :index)
+  @url event_url(ArtemisWeb.Endpoint, :index)
 
   hound_session()
 

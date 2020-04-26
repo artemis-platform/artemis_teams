@@ -14,18 +14,18 @@ defmodule Artemis.DeleteManyAssociatedCommentsTest do
     end
 
     test "succeeds if record has no comments" do
-      record = insert(:customer)
+      record = insert(:wiki_page)
 
-      result = DeleteManyAssociatedComments.call!("Customer", record.id, Mock.system_user())
+      result = DeleteManyAssociatedComments.call!("WikiPage", record.id, Mock.system_user())
 
       assert result.total == 0
     end
 
     test "deletes associated comments when passed valid resource type and resource id" do
-      record = insert(:customer)
-      comments = insert_list(3, :comment, resource_id: Integer.to_string(record.id), resource_type: "Customer")
+      record = insert(:wiki_page)
+      comments = insert_list(3, :comment, resource_id: Integer.to_string(record.id), resource_type: "WikiPage")
 
-      result = DeleteManyAssociatedComments.call!("Customer", record.id, Mock.system_user())
+      result = DeleteManyAssociatedComments.call!("WikiPage", record.id, Mock.system_user())
 
       assert result.total == 3
       assert Repo.get(Comment, hd(comments).id) == nil
@@ -34,27 +34,27 @@ defmodule Artemis.DeleteManyAssociatedCommentsTest do
 
   describe "call" do
     test "succeeds if record has no comments" do
-      record = insert(:customer)
+      record = insert(:wiki_page)
 
-      {:ok, result} = DeleteManyAssociatedComments.call("Customer", record.id, Mock.system_user())
+      {:ok, result} = DeleteManyAssociatedComments.call("WikiPage", record.id, Mock.system_user())
 
       assert result.total == 0
     end
 
     test "deletes associated comments when passed valid resource type and resource id" do
-      record = insert(:customer)
-      comments = insert_list(3, :comment, resource_id: Integer.to_string(record.id), resource_type: "Customer")
+      record = insert(:wiki_page)
+      comments = insert_list(3, :comment, resource_id: Integer.to_string(record.id), resource_type: "WikiPage")
 
-      {:ok, result} = DeleteManyAssociatedComments.call("Customer", record.id, Mock.system_user())
+      {:ok, result} = DeleteManyAssociatedComments.call("WikiPage", record.id, Mock.system_user())
 
       assert result.total == 3
       assert Repo.get(Comment, hd(comments).id) == nil
     end
 
     test "succeeds associated comments when passed valid resource type" do
-      comments = insert_list(3, :comment, resource_type: "Customer")
+      comments = insert_list(3, :comment, resource_type: "WikiPage")
 
-      {:ok, result} = DeleteManyAssociatedComments.call("Customer", Mock.system_user())
+      {:ok, result} = DeleteManyAssociatedComments.call("WikiPage", Mock.system_user())
 
       assert result.total == 3
       assert Repo.get(Comment, hd(comments).id) == nil

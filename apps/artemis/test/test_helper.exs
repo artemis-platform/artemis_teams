@@ -1,7 +1,7 @@
 {:ok, _} = Application.ensure_all_started(:ex_machina)
 
-configuration = ExUnit.configuration()
-excludes = Keyword.fetch!(configuration, :exclude)
+# configuration = ExUnit.configuration()
+# excludes = Keyword.fetch!(configuration, :exclude)
 
 ExUnit.configure(exclude: [pending: true])
 ExUnit.start()

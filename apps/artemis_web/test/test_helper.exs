@@ -1,7 +1,7 @@
 {:ok, _} = Application.ensure_all_started(:hound)
 
-configuration = ExUnit.configuration()
-excludes = Keyword.fetch!(configuration, :exclude)
+# configuration = ExUnit.configuration()
+# excludes = Keyword.fetch!(configuration, :exclude)
 
 ExUnit.start()
 

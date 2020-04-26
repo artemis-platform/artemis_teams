@@ -154,8 +154,8 @@ defmodule ArtemisWeb.EventInstancePageTest do
   # Helpers
 
   defp get_url(event_template) do
-    event_instance = insert(:event_instance, event_template: event_template)
+    _event_instance = insert(:event_instance, event_template: event_template)
 
-    event_instance_url(ArtemisWeb.Endpoint, :index, event_templatek)
+    event_instance_url(ArtemisWeb.Endpoint, :index, event_template)
   end
 end

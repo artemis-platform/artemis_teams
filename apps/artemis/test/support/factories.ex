@@ -83,7 +83,7 @@ defmodule Artemis.Factories do
       extra_params: %{
         "reason" => "Testing"
       },
-      type: Enum.random(Artemis.SystemTask.allowed_system_tasks()).type
+      type: "delete_all_comments"
     }
   end
 
