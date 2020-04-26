@@ -152,7 +152,6 @@ defmodule Artemis.ContextCache do
 
           false ->
             child_options = [
-              cache_reset_on_cloudant_changes: Keyword.get(unquote(options), :cache_reset_on_cloudant_changes, []),
               cache_reset_on_events: Keyword.get(unquote(options), :cache_reset_on_events, []),
               cachex_options: Keyword.get(unquote(options), :cachex_options, []),
               module: __MODULE__

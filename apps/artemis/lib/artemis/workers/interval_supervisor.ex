@@ -11,9 +11,7 @@ defmodule Artemis.IntervalSupervisor do
 
   def init(:ok) do
     children = [
-      supervisor(Artemis.Worker.IBMCloudantChangeSupervisor, []),
       worker(Artemis.Worker.IBMCloudIAMAccessToken, []),
-      worker(Artemis.Worker.IBMCloudantMigrator, []),
       worker(Artemis.Worker.RepoResetOnInterval, [])
     ]
 

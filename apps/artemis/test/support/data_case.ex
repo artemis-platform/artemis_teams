@@ -14,8 +14,6 @@ defmodule Artemis.DataCase do
 
   use ExUnit.CaseTemplate
 
-  alias Artemis.Drivers.IBMCloudant
-
   using do
     quote do
       import Ecto
@@ -36,15 +34,6 @@ defmodule Artemis.DataCase do
     end
 
     :ok
-  end
-
-  @doc """
-  Delete all documents in database
-  """
-  def cloudant_delete_all(schema) do
-    {:ok, _} = IBMCloudant.Delete.call(schema)
-    {:ok, _} = IBMCloudant.Create.call(schema)
-    {:ok, _} = IBMCloudant.CreateSearch.call(schema)
   end
 
   @doc """

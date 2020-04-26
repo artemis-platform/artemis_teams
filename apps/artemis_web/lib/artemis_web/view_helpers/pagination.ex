@@ -34,53 +34,6 @@ defmodule ArtemisWeb.ViewHelper.Pagination do
     end
   end
 
-  def render_pagination(conn, %Artemis.CloudantPage{} = params, _) do
-    links =
-      []
-      |> maybe_add_next_button(conn, params)
-      |> maybe_add_previous_button(conn, params)
-
-    assigns = [
-      links: links,
-      type: "bookmarks"
-    ]
-
-    case length(links) > 0 do
-      true -> Phoenix.View.render(ArtemisWeb.LayoutView, "pagination.html", assigns)
-      false -> nil
-    end
-  end
-
-  defp maybe_add_next_button(links, conn, %{is_last_page: false, bookmark_next: next}) when not is_nil(next) do
-    params = %{
-      bookmark: next
-    }
-
-    path = get_path_with_query_params(conn, params)
-    label = raw("Next Page&nbsp;<i class=\"icon angle right\" style=\"margin-right: 0px;\"></i>")
-    link = link(label, to: path, class: "item")
-
-    [link | links]
-  end
-
-  defp maybe_add_next_button(links, _, _), do: links
-
-  defp maybe_add_previous_button(links, conn, %{bookmark_previous: previous}) when not is_nil(previous) do
-    query_string =
-      conn
-      |> Map.get(:query_params)
-      |> Map.delete("bookmark")
-      |> Plug.Conn.Query.encode()
-
-    path = "#{conn.request_path}?#{query_string}"
-    label = raw("<i class=\"icon reply all\"></i> First Page")
-    link = link(label, to: path, class: "item")
-
-    [link | links]
-  end
-
-  defp maybe_add_previous_button(links, _, _), do: links
-
   @doc """
   Returns the current request path and query params.
 

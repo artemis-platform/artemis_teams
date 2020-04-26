@@ -8,12 +8,6 @@ config :artemis, :actions,
   ibm_cloud_iam_access_token: [
     enabled: System.get_env("ARTEMIS_ACTION_IBM_CLOUD_IAM_ACCESS_TOKEN_ENABLED")
   ],
-  ibm_cloudant_change_listener: [
-    enabled: System.get_env("ARTEMIS_ACTION_IBM_CLOUDANT_CHANGE_LISTENER")
-  ],
-  ibm_cloudant_migrator: [
-    enabled: System.get_env("ARTEMIS_ACTION_IBM_CLOUDANT_MIGRATOR")
-  ],
   repo_delete_all: [
     enabled: System.get_env("ARTEMIS_ACTION_REPO_DELETE_ALL_ENABLED")
   ],
@@ -38,13 +32,8 @@ config :artemis, :users,
 config :artemis, :ibm_cloud,
   iam_api_url: System.get_env("ARTEMIS_IBM_CLOUD_IAM_API_URL"),
   iam_api_keys: [
-    ibm_cloud_iam_access_groups: System.get_env("ARTEMIS_IBM_CLOUD_IAM_API_KEY_IBM_CLOUD_IAM_ACCESS_GROUPS"),
-    ibm_cloudant_shared: System.get_env("ARTEMIS_IBM_CLOUD_IAM_API_KEY_IBM_CLOUDANT_SHARED")
+    ibm_cloud_iam_access_groups: System.get_env("ARTEMIS_IBM_CLOUD_IAM_API_KEY_IBM_CLOUD_IAM_ACCESS_GROUPS")
   ]
-
-config :artemis, :ibm_cloudant,
-  hosts: [],
-  databases: []
 
 config :artemis, :interval_worker, default_log_limit: System.get_env("ARTEMIS_INTERVAL_WORKER_DEFAULT_LOG_LIMIT")
 

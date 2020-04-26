@@ -18,17 +18,6 @@ defmodule ArtemisWeb.ViewHelper.Search do
     Phoenix.View.render(ArtemisWeb.LayoutView, "search.html", conn: conn, options: options)
   end
 
-  @doc """
-  Diplay search limit notification
-  """
-  def render_cloudant_search_limit_notification(conn) do
-    if search_present?(conn) do
-      body = "Cloudant search returns a maximum of 200 results"
-
-      ArtemisWeb.ViewHelper.Notifications.render_notification("info", body: body)
-    end
-  end
-
   # Helpers
 
   defp search_present?(conn) do

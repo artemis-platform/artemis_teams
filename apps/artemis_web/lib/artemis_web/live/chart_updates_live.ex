@@ -20,14 +20,12 @@ defmodule ArtemisWeb.ChartUpdatesLive do
       |> assign(:chart_id, session.chart_id)
       |> assign(:chart_options, session.chart_options)
       |> assign(:fetch_data_on_cache_resets, session.fetch_data_on_cache_resets)
-      |> assign(:fetch_data_on_cloudant_changes, session.fetch_data_on_cloudant_changes)
       |> assign(:fetch_data_on_events, session.fetch_data_on_events)
       |> assign(:fetch_data_timer, nil)
       |> assign(:module, session.module)
       |> assign(:user, session.user)
 
     subscribe_to_cache_events(socket.assigns)
-    subscribe_to_cloudant_changes(socket.assigns)
     subscribe_to_events(socket.assigns)
 
     {:ok, socket}
@@ -60,12 +58,6 @@ defmodule ArtemisWeb.ChartUpdatesLive do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: _event, payload: %{type: "cloudant-change"} = payload}, socket) do
-    socket = parse_cloudant_change(payload, socket)
-
-    {:noreply, socket}
-  end
-
   def handle_info(%{event: event}, socket) do
     socket = parse_event(event, socket)
 
@@ -84,17 +76,6 @@ defmodule ArtemisWeb.ChartUpdatesLive do
 
   defp subscribe_to_cache_events(_state), do: :skipped
 
-  defp subscribe_to_cloudant_changes(%{fetch_data_on_cloudant_changes: changes}) when length(changes) > 0 do
-    Enum.map(changes, fn change ->
-      schema = Map.get(change, :schema)
-      topic = Artemis.CloudantChange.topic(schema)
-
-      :ok = ArtemisPubSub.subscribe(topic)
-    end)
-  end
-
-  defp subscribe_to_cloudant_changes(_), do: :skipped
-
   defp subscribe_to_events(%{fetch_data_on_events: events}) when length(events) > 0 do
     topic = Artemis.Event.get_broadcast_topic()
 
@@ -110,22 +91,11 @@ defmodule ArtemisWeb.ChartUpdatesLive do
     end
   end
 
-  defp parse_cloudant_change(payload, socket) do
-    case matches_any?(socket.assigns.fetch_data_on_cloudant_changes, payload) do
-      true -> fetch_data_debounce(socket)
-      false -> socket
-    end
-  end
-
   defp parse_event(event, socket) do
     case Enum.member?(socket.assigns.fetch_data_on_events, event) do
       true -> fetch_data_debounce(socket)
       false -> socket
     end
-  end
-
-  defp matches_any?(items, target) do
-    Enum.any?(items, &Artemis.Helpers.subset?(&1, target))
   end
 
   defp fetch_data_debounce(socket, delay \\ @refresh_rate) do
