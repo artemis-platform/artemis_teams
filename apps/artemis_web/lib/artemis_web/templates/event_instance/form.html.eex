@@ -45,22 +45,29 @@
         <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][type]" value="<%= event_answer.changes[:type] || event_answer.data.type %>">
         <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][user_id]" value="<%= event_answer.changes[:user_id] || event_answer.data.user_id %>">
 
-        <div class="field">
-          <input
-            name="event_instance[<%= event_question.id %>][<%= index %>][category]"
-            type="text"
-            value="<%= event_answer.changes[:category] || event_answer.data.category %>"
-            placeholder="Category"
-          />
-        </div>
+        <div class="inline-fields">
+          <div class="field category-field">
+            <select
+              class="enhanced creatable search clearable"
+              name="event_instance[<%= event_question.id %>][<%= index %>][category]"
+              type="text"
+              placeholder="Category"
+              selected="<%= event_answer.changes[:category] || event_answer.data.category %>"
+            >
+              <option value=""></option>
+              <option value="Example 1">Example 1</option>
+              <option value="Example 2">Example 2</option>
+            </select>
+          </div>
 
-        <div class="field">
-          <input
-            name="event_instance[<%= event_question.id %>][<%= index %>][value]"
-            type="text"
-            value="<%= event_answer.changes[:value] || event_answer.data.value %>"
-            placeholder="Answer"
-          />
+          <div class="field answer-field">
+            <input
+              name="event_instance[<%= event_question.id %>][<%= index %>][value]"
+              type="text"
+              value="<%= event_answer.changes[:value] || event_answer.data.value %>"
+              placeholder="Answer"
+            />
+          </div>
         </div>
 
       <% end %>

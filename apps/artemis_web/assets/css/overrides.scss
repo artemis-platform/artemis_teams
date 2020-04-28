@@ -44,6 +44,10 @@ select {
     margin: 4px 4px 0 0;
   }
 
+  .select2-selection__placeholder {
+    color: rgba(0, 0, 0, 0.2) !important;
+  }
+
   .select2-selection--multiple {
 
     .select2-selection__choice {
