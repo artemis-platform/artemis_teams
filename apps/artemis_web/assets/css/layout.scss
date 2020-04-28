@@ -13,7 +13,7 @@ code {
 }
 
 #body h2 {
-  border-bottom: 2px solid $purple_muted;
+  border-bottom: 1px solid $blue_muted;
   font-size: 1.625rem;
   font-weight: 500;
   margin-bottom: 1.25rem;
@@ -31,7 +31,7 @@ code {
 
 #login {
   align-items: center;
-  background: linear-gradient(100deg, #7e3fa4, #b62779);
+  background: linear-gradient(100deg, $gradient_blue, $gradient_teal);
   display: flex;
   height: 100vh;
   justify-content: center;
@@ -96,7 +96,7 @@ code {
 
 #primary-header {
   $background: #fff;
-  $height: 5rem;
+  $height: 4.5rem;
   $logo_width: 210px;
 
   section {
@@ -110,14 +110,17 @@ code {
       display: flex;
       flex-shrink: 0;
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 500;
       height: $height;
       line-height: $height;
       padding: 0 0 0 2rem;
       width: $logo_width;
 
-      .emphasis {
-        font-weight: 700;
+      strong {
+        color: rgba(0, 0, 0, 0.9);
+        display: inline-block;
+        margin-right: 2px;
+        font-weight: 600;
       }
     }
 
@@ -232,9 +235,9 @@ code {
         }
 
         footer {
-          background: linear-gradient(90deg, #e14eca, #2f87ff, #e14eca);
-          background-size: 200% 200%;
-          height: 3px;
+          background: linear-gradient(90deg, $gradient_blue, $gradient_teal);
+          background: #e2e2e2;
+          height: 1px;
           width: 100%;
         }
       }
@@ -386,14 +389,10 @@ code {
   }
 
   footer {
-    background: linear-gradient(90deg, #e14eca, #2f87ff, #e14eca);
-    background-size: 200% 200%;
-    height: 3px;
+    background: linear-gradient(90deg, $gradient_blue, $gradient_teal);
+    background: #e2e2e2;
+    height: 1px;
     width: 100%;
-
-    // -webkit-animation: GradientAnimation 20s linear infinite;
-    // -moz-animation: GradientAnimation 20s linear infinite;
-    // animation: GradientAnimation 20s linear infinite;
   }
 }
 
@@ -417,8 +416,9 @@ body.error-page {
 /* === Content === */
 
 #content-header {
-  background: #222529;
-  padding: 2rem;
+  background: #fff;
+  border-bottom: 1px solid #e2e2e2;
+  padding: 1.5rem 2rem;
   width: 100%;
 
   header {
@@ -426,8 +426,8 @@ body.error-page {
     justify-content: space-between;
 
     h1 {
-      color: #fff;
-      font-size: 2.5rem;
+      color: $light_blue;
+      font-size: 2rem;
       font-weight: 300;
       margin: 0;
 
@@ -457,67 +457,12 @@ body.error-page {
     }
   }
 
-  article.statistics {
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-    margin: 0 0 -1rem 0;
-    padding: 2rem 0 1rem 0;
-
-    section {
-
-      h4 {
-        color: #826de6;
-        font-size: 1.25rem;
-        font-weight: 500;
-        margin: 0 0 -1.5rem 0;
-        text-align: center;
-      }
-
-      .chart-container {
-
-        .apexcharts-legend-text {
-          text-shadow: 0px 1px 1px #181818;
-        }
-
-        .apexcharts-datalabel-label {
-          fill: #bbb;
-        }
-
-        .apexcharts-datalabel-value {
-          fill: #fff;
-        }
-      }
-    }
-  }
-
-  article.statistics {
-    color: #fff;
-    display: flex;
-    justify-content: space-between;
-    margin: 0 0 -1rem 0;
-
-    section {
-      .apexcharts-legend-text {
-        text-shadow: 0px 1px 1px #181818;
-      }
-
-      .apexcharts-datalabel-label {
-        fill: #bbb;
-      }
-
-      .apexcharts-datalabel-value {
-        fill: #fff;
-      }
-    }
-  }
-
   nav {
     $height: 3.75rem;
 
-    background: #141618;
+    background: #fff;
     height: $height;
-    margin: 2rem -2rem -2rem -2rem;
+    margin: 0rem -2rem -1.5rem -2rem;
     width: 100vw;
 
     ul {
@@ -530,7 +475,7 @@ body.error-page {
 
       li {
         align-self: center;
-        color: #888;
+        color: #555;
         display: flex;
         height: 100%;
         line-height: $height;
@@ -541,11 +486,11 @@ body.error-page {
 
         a {
           align-items: center;
-          color: #888;
+          color: #555;
           display: flex;
-          font-weight: 600;
+          font-weight: 500;
           height: 100%;
-          margin: 0 1.75rem 0 0;
+          margin: 0 1.5rem 0 0;
 
           .count-label {
             display: flex;
@@ -560,27 +505,27 @@ body.error-page {
               text-align: center;
 
               &.grey {
-                background: #222529 !important;
+                background: #e8e8e8 !important;
                 color: #888 !important;
               }
             }
           }
 
           &:hover {
-            color: #fff;
+            color: $blue;
 
             .label.grey {
-              background: #3a3a3a !important;
+              background: $blue !important;
               color: #fff !important;
             }
           }
 
           &.selected {
-            color: #fff;
+            color: #333;
 
             .label.grey {
-              background: #3a3a3a !important;
-              color: #fff !important;
+              background: #ddd !important;
+              color: #333 !important;
             }
           }
         }
@@ -631,7 +576,7 @@ body.error-page {
         align-self: center;
         color: #666;
         display: inline-block;
-        font-weight: 600;
+        font-weight: 500;
 
         &:hover {
           color: $blue;

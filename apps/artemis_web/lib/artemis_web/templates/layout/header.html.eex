@@ -1,12 +1,18 @@
 <header id="primary-header">
   <section>
     <a href="/" id="logo">
-      <i class="fire icon"></i>
-      Artemis Teams
+      <i class="child icon"></i>
+      <strong>Artemis</strong>
+      Teams
     </a>
     <nav id="primary-navigation" role="navigation">
       <% nav_items = primary_nav_items_for_current_user(@user) %>
       <ul>
+        <li>
+          <a href="/">
+            Home
+          </a>
+        </li>
         <%= if render_primary_nav_section?(nav_items, ["Teams"]) do %>
           <li>
             <a href="<%= Routes.team_path(@conn, :index) %>">
@@ -18,6 +24,13 @@
           <li>
             <a href="<%= Routes.event_path(@conn, :index) %>">
               Events
+            </a>
+          </li>
+        <% end %>
+        <%= if render_primary_nav_section?(nav_items, ["Documentation"]) do %>
+          <li>
+            <a href="<%= Routes.wiki_page_path(@conn, :index) %>">
+              Docs
             </a>
           </li>
         <% end %>
@@ -37,13 +50,6 @@
               </content>
               <footer></footer>
             </div>
-          </li>
-        <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Documentation"]) do %>
-          <li>
-            <a href="<%= Routes.wiki_page_path(@conn, :index) %>">
-              Docs
-            </a>
           </li>
         <% end %>
         <li class="primary-navigation-link">

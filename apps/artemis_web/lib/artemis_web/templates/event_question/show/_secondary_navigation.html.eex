@@ -1,0 +1,16 @@
+<%=
+  secondary_navigation_items = [
+    [
+      label: "Overview",
+      path: &Routes.event_question_path(&1, :show, @event_question.event_template, @event_question),
+      path_match_type: :exact,
+      verify: &has?(&1, "event-questions:show")
+    ]
+  ]
+
+  render_secondary_navigation(
+    @conn,
+    current_user(@conn),
+    secondary_navigation_items
+  )
+%>

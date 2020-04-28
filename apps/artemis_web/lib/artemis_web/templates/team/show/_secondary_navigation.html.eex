@@ -1,0 +1,22 @@
+<%=
+  secondary_navigation_items = [
+    [
+      label: "Overview",
+      path: &Routes.team_path(&1, :show, @team),
+      path_match_type: :exact,
+      verify: &has?(&1, "teams:show")
+    ],
+    [
+      label: "Event Logs",
+      path: &Routes.team_event_log_path(&1, :show_event_log_list, @team),
+      path_match_type: :starts_with,
+      verify: &has?(&1, "teams:show")
+    ]
+  ]
+
+  render_secondary_navigation(
+    @conn,
+    current_user(@conn),
+    secondary_navigation_items
+  )
+%>

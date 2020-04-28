@@ -11,21 +11,4 @@
       <% end %>
     </div>
   </header>
-
-  <%=
-    secondary_navigation_items = [
-      [
-        label: "Overview",
-        path: &Routes.event_instance_path(&1, :show, @event_template, @date),
-        path_match_type: :exact,
-        verify: &has?(&1, "event-answers:show")
-      ]
-    ]
-
-    render_secondary_navigation(
-      @conn,
-      current_user(@conn),
-      secondary_navigation_items
-    )
-  %>
 </div>
