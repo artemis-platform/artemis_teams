@@ -50,6 +50,12 @@ defmodule Artemis.ListTeams do
 
   defp filter(query, "name", value), do: where(query, [r], r.name in ^split(value))
 
+  defp filter(query, "user_id", value) do
+    query
+    |> join(:left, [team], user_teams in assoc(team, :user_teams))
+    |> where([..., user_teams], user_teams.user_id in ^split(value))
+  end
+
   defp get_records(query, %{"paginate" => true} = params), do: Repo.paginate(query, pagination_params(params))
   defp get_records(query, _params), do: Repo.all(query)
 end

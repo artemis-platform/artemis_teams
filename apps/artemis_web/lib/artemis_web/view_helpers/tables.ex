@@ -195,11 +195,20 @@ defmodule ArtemisWeb.ViewHelper.Tables do
   def render_data_table(conn, data, options \\ []) do
     format = get_request_format(conn)
     columns = get_data_table_columns(conn, options)
+    headers? = Keyword.get(options, :headers, true)
+
+    class =
+      case headers? do
+        true -> "data-table-container with-headers"
+        false -> "data-table-container without-headers"
+      end
 
     params = [
+      class: class,
       columns: columns,
       conn: conn,
       data: data,
+      headers?: headers?,
       selectable: Keyword.get(options, :selectable)
     ]
 

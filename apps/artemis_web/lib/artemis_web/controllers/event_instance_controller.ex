@@ -12,11 +12,13 @@ defmodule ArtemisWeb.EventInstanceController do
       user = current_user(conn)
       today = Date.to_iso8601(Date.utc_today())
       event_template = GetEventTemplate.call!(event_template_id, user)
-      event_answers = get_event_answers_for_index(event_template_id, params, user)
       event_questions = get_event_questions(event_template_id, user)
+      event_answers = get_event_answers_for_index(event_template_id, params, user)
+      event_answers_by_date = get_event_answers_by_date(event_answers)
 
       assigns = [
         event_answers: event_answers,
+        event_answers_by_date: event_answers_by_date,
         event_questions: event_questions,
         event_template: event_template,
         today: today
@@ -101,6 +103,23 @@ defmodule ArtemisWeb.EventInstanceController do
   #   end
 
   # Helpers
+
+  defp get_event_answers_by_date(event_answers) do
+    grouped =
+      event_answers
+      |> Map.get(:entries)
+      |> Enum.group_by(& &1.date)
+
+    grouped
+    |> Map.keys()
+    |> Artemis.Helpers.DateTime.sort_by_date()
+    |> Enum.reduce([], fn date, acc ->
+      records = Map.get(grouped, date)
+      date_string = Date.to_iso8601(date)
+
+      [{date_string, records} | acc]
+    end)
+  end
 
   defp get_event_answers_for_index(event_template_id, params, user) do
     required_params =

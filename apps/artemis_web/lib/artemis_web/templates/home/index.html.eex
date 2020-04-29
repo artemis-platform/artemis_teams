@@ -14,7 +14,31 @@
 
   <article id="home-page" class="page">
     <content>
+      <section class="related-resources">
+        <%= h3 "My Events" %>
+        <%=
+          render_data_table(
+            @conn,
+            @event_templates,
+            allowed_columns: ArtemisWeb.EventView.data_table_allowed_columns(),
+            default_columns: ["instances", "team"],
+            headers: false
+          )
+        %>
+      </section>
 
+      <section class="related-resources">
+        <%= h3 "My Teams" %>
+        <%=
+          render_data_table(
+            @conn,
+            @user_teams,
+            allowed_columns: ArtemisWeb.TeamMemberView.data_table_allowed_columns(),
+            default_columns: ["team", "type"],
+            headers: false
+          )
+        %>
+      </section>
     </content>
   </article>
 </div>

@@ -133,6 +133,12 @@ select[multiple] {
   }
 }
 
+.without-headers .data-table {
+  border-top: 1px solid #e2e2e2;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
 .bulk-actions-form {
 
   .extra-fields > * {
@@ -948,7 +954,49 @@ a.summary-count:hover {
   }
 }
 
-/* === Components - Home Page === */
+/* === Components - Event Instance === */
+
+ul.event-instances {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &>li {
+    margin: 2rem 0;
+
+    .event-question {
+      margin: 1rem 0;
+    }
+
+    ul.event-answers {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      &>li {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+
+        .user {
+          flex-grow: 0;
+          margin-right: 1rem;
+          width: 120px;
+        }
+
+        .category {
+          flex-grow: 0;
+          margin-right: 1rem;
+          width: 120px;
+        }
+
+        .value {
+          flex-grow: 1;
+        }
+      }
+    }
+  }
+}
 
 #event-instance-form {
 

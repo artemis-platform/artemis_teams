@@ -8,11 +8,10 @@ defmodule Artemis.EventTemplate do
     field :description, :string
     field :title, :string
 
-    # TODO: add description field
-
     belongs_to :team, Artemis.Team, on_replace: :delete
 
     has_many :event_questions, Artemis.EventQuestion, on_delete: :delete_all, on_replace: :delete
+    has_many :user_teams, through: [:team, :user_teams]
 
     timestamps()
   end

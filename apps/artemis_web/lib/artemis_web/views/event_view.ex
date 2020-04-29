@@ -29,6 +29,8 @@ defmodule ArtemisWeb.EventView do
   def data_table_available_columns() do
     [
       {"Actions", "actions"},
+      {"Instances", "instances"},
+      {"Team", "team"},
       {"Title", "title"}
     ]
   end
@@ -39,6 +41,29 @@ defmodule ArtemisWeb.EventView do
         label: fn _conn -> nil end,
         value: fn _conn, _row -> nil end,
         value_html: &data_table_actions_column_html/2
+      ],
+      "instances" => [
+        label: fn _conn -> "Instances" end,
+        label_html: fn conn ->
+          sortable_table_header(conn, "title", "Instances")
+        end,
+        value: fn _conn, row -> row.title end,
+        value_html: fn conn, row ->
+          case has?(conn, "event-answers:list") do
+            true -> link(row.title, to: Routes.event_instance_path(conn, :index, row))
+            false -> row.title
+          end
+        end
+      ],
+      "team" => [
+        label: fn _conn -> "Team" end,
+        value: fn _conn, row -> row.team.name end,
+        value_html: fn conn, row ->
+          case has?(conn, "teams:show") do
+            true -> link(row.team.name, to: Routes.team_path(conn, :show, row.team))
+            false -> row.team.name
+          end
+        end
       ],
       "title" => [
         label: fn _conn -> "Title" end,

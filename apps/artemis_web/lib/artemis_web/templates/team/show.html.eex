@@ -20,6 +20,21 @@
   </section>
 
   <section>
+    <%= h3 "Events" %>
+
+    <%=
+      render_data_table(
+        @conn,
+        @team.event_templates,
+        allowed_columns: ArtemisWeb.EventView.data_table_allowed_columns(),
+        default_columns: ["title", "actions"]
+      )
+    %>
+
+    <%= action "New Event", to: Routes.event_path(@conn, :new, team_id: @team.id), color: "blue" %>
+  </section>
+
+  <section>
     <%= h3 "Team Members" %>
 
     Total Members: <%= @team.user_count %>
@@ -34,20 +49,5 @@
     %>
 
     <%= action "New Team Member", to: Routes.team_member_path(@conn, :new, @team), color: "blue" %>
-  </section>
-
-  <section>
-    <%= h3 "Events" %>
-
-    <%=
-      render_data_table(
-        @conn,
-        @team.event_templates,
-        allowed_columns: ArtemisWeb.EventView.data_table_allowed_columns(),
-        default_columns: ["title", "actions"]
-      )
-    %>
-
-    <%= action "New Event", to: Routes.event_path(@conn, :new, team_id: @team.id), color: "blue" %>
   </section>
 </div>

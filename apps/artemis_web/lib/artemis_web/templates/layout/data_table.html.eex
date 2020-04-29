@@ -1,15 +1,17 @@
-<div class="data-table-container">
+<div class="<%= @class %>">
   <%= if @selectable do %><form class="ui form selectable" action="#"><% end %>
     <table class="data-table">
-      <thead>
-        <tr>
-          <%= Enum.map @columns, fn (column) -> %>
-            <th>
-              <%= render_data_table_label(@conn, column, :html) %>
-            </th>
-          <% end %>
-        </tr>
-      </thead>
+      <%= if @headers? do %>
+        <thead>
+          <tr>
+            <%= Enum.map @columns, fn (column) -> %>
+              <th>
+                <%= render_data_table_label(@conn, column, :html) %>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+      <% end %>
       <tbody>
         <%= render_table_row_if_empty(@data) %>
         <%= Enum.map @data, fn (row) -> %>

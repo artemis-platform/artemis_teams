@@ -11,6 +11,7 @@
 
   <section>
     <%= h2 "Event Answers" %>
+
     <div class="table-header">
       <div class="table-filters">
         <div>
@@ -54,27 +55,56 @@
       <p>No records found</p>
     <% end %>
 
-    <%= Enum.map @event_answers, fn event_answer -> %>
-      <%= h4 event_answer.event_question.title %>
+    <ul class="event-instances">
+      <%= Enum.map @event_answers_by_date, fn {date_string, event_answers_for_date} -> %>
+        <li>
+          <div class="date">
+            <a href="<%= Routes.event_instance_path(@conn, :show, @event_template, date_string) %>">
+              <%= h3 date_string %>
+            </a>
+          </div>
 
-      <a href="<%= Routes.event_instance_path(@conn, :show, @event_template, Date.to_iso8601(event_answer.date)) %>">
-        <div>
-          <%= event_answer.date %>
-        </div>
+          <div class="event-instance">
+            <%
+              event_answers_by_event_question = Enum.group_by(event_answers_for_date, &(&1.event_question))
 
-        <div>
-          <%= event_answer.user.name %>
-        </div>
+              ordered_event_questions =
+                event_answers_by_event_question
+                |> Map.keys()
+                |> Enum.sort_by(&(&1.order))
+            %>
 
-        <div>
-          <%= event_answer.category %>
-        </div>
+            <%= Enum.map ordered_event_questions, fn event_question -> %>
+              <%
+                event_answers_for_event_question = Map.get(event_answers_by_event_question, event_question)
+              %>
 
-        <div>
-          <%= event_answer.value %>
-        </div>
-      </a>
-    <% end %>
+              <div class="event-question">
+                <%= h4 event_question.title %>
+              </div>
+
+              <ul class="event-answers">
+                <%= Enum.map event_answers_for_event_question, fn event_answer -> %>
+                  <li>
+                    <div class="user">
+                      <%= event_answer.user.name %>
+                    </div>
+
+                    <div class="category">
+                      <%= event_answer.category %>
+                    </div>
+
+                    <div class="value">
+                      <%= event_answer.value %>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
 
     <%=
       pagination_options = [
