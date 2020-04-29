@@ -62,4 +62,8 @@ defmodule ArtemisWeb.EventInstanceView do
   def render_show_link(conn, record) do
     link(record.title, to: Routes.event_instance_path(conn, :show, record.event_template, record))
   end
+
+  def render_event_instance_date(date) do
+    render_date(date, "{WDfull}, {Mfull} {D}, {YYYY}")
+  end
 end

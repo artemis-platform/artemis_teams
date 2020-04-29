@@ -115,9 +115,8 @@ defmodule ArtemisWeb.EventInstanceController do
     |> Artemis.Helpers.DateTime.sort_by_date()
     |> Enum.reduce([], fn date, acc ->
       records = Map.get(grouped, date)
-      date_string = Date.to_iso8601(date)
 
-      [{date_string, records} | acc]
+      [{date, records} | acc]
     end)
   end
 
