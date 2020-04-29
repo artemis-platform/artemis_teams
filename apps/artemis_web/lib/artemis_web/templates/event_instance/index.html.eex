@@ -12,44 +12,6 @@
   <section>
     <%= h2 "Event Answers" %>
 
-    <div class="table-header">
-      <div class="table-filters">
-        <div>
-          <%=
-            options = Artemis.EventAnswer.unique_values_for(:category)
-
-            filter_multi_select(@conn, "Category", :category, options)
-          %>
-        </div>
-
-        <div>
-          <%=
-            options =
-              :date
-              |> Artemis.EventAnswer.unique_values_for()
-              |> Enum.map(&Date.to_iso8601(&1))
-
-            filter_multi_select(@conn, "Date", :date, options)
-          %>
-        </div>
-
-        <div>
-          <%=
-            options = Artemis.EventAnswer.unique_values_for(:user_id)
-
-            filter_multi_select(@conn, "User", :user_id, options)
-          %>
-        </div>
-
-        <div>
-          <%=
-            options = Artemis.EventAnswer.unique_values_for(:event_question_id)
-
-            filter_multi_select(@conn, "Event Question", :event_question_id, options)
-          %>
-        </div>
-      </div>
-    </div>
 
     <%= if length(@event_answers.entries) == 0 do %>
       <p>No records found</p>
@@ -86,13 +48,17 @@
               <ul class="event-answers">
                 <%= Enum.map event_answers_for_event_question, fn event_answer -> %>
                   <li>
-                    <div class="user">
+                    <div class="username">
+                      <i class="user outline icon"></i>
                       <%= event_answer.user.name %>
                     </div>
 
-                    <div class="category">
-                      <%= event_answer.category %>
-                    </div>
+                    <%= if event_answer.category do %>
+                      <div class="category">
+                        <i class="tag icon"></i>
+                        <%= event_answer.category %>
+                      </div>
+                    <% end %>
 
                     <div class="value">
                       <%= event_answer.value %>
@@ -116,4 +82,50 @@
       render_pagination @conn, @event_answers, params: pagination_options
     %>
   </section>
+
+  <section>
+    <%= h3 "Filters" %>
+
+    <div class="filters">
+      <div>
+        <i class="tag icon"></i>
+        <%=
+          options = Artemis.EventAnswer.unique_values_for(:category)
+
+          filter_multi_select(@conn, "Category", :category, options)
+        %>
+      </div>
+
+      <div>
+        <i class="calendar icon"></i>
+        <%=
+          options =
+            :date
+            |> Artemis.EventAnswer.unique_values_for()
+            |> Enum.map(&Date.to_iso8601(&1))
+
+          filter_multi_select(@conn, "Date", :date, options)
+        %>
+      </div>
+
+      <div>
+        <i class="user icon"></i>
+        <%=
+          options = Artemis.EventAnswer.unique_values_for(:user_id)
+
+          filter_multi_select(@conn, "User", :user_id, options)
+        %>
+      </div>
+
+      <div>
+        <i class="question icon"></i>
+        <%=
+          options = Artemis.EventAnswer.unique_values_for(:event_question_id)
+
+          filter_multi_select(@conn, "Event Question", :event_question_id, options)
+        %>
+      </div>
+    </div>
+  </section>
+
 </div>
