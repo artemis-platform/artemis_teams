@@ -21,7 +21,8 @@ defmodule ArtemisWeb.ViewHelper.HTML do
   All other options are passed directly to the `Phoenix.HTML` function.
   """
   def action(label, options \\ []) do
-    color = Keyword.get(options, :color, "basic")
+    basic = Keyword.get(options, :basic, "basic")
+    color = Keyword.get(options, :color, "")
     size = Keyword.get(options, :size, "small")
     method = Keyword.get(options, :method, "get")
     live? = Keyword.get(options, :live, false)
@@ -29,7 +30,7 @@ defmodule ArtemisWeb.ViewHelper.HTML do
     tag_options =
       options
       |> Enum.into(%{})
-      |> Map.put(:class, "button ui #{size} #{color}")
+      |> Map.put(:class, "button ui #{basic} #{size} #{color}")
       |> Enum.into([])
 
     cond do

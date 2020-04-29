@@ -319,6 +319,8 @@ select[multiple] {
 }
 
 #sidebar-primary-navigation {
+  background: linear-gradient(100deg, $gradient_blue, $gradient_teal);
+  color: #fff;
   padding: 1.5rem;
   width: 100%;
 
@@ -333,6 +335,10 @@ select[multiple] {
     }
   }
 
+  .close-sidebar-primary-navigation {
+    background: #fff;
+  }
+
   section {
     display: flex;
     justify-content: space-between;
@@ -345,6 +351,15 @@ select[multiple] {
 
       article {
         width: 100%;
+        max-width: 50%;
+
+        a {
+          color: #fff;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
       }
     }
   }
