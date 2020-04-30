@@ -40,6 +40,17 @@ defmodule Artemis.CreateEventTemplateTest do
       assert event_template.title == params.title
     end
 
+    test "supports markdown" do
+      team = insert(:team)
+
+      params = params_for(:event_template, description: "# Test", team: team)
+
+      {:ok, event_template} = CreateEventTemplate.call(params, Mock.system_user())
+
+      assert event_template.description == params.description
+      assert event_template.description_html == "<h1>Test</h1>\n"
+    end
+
     test "converts categories string to list" do
       team = insert(:team)
 

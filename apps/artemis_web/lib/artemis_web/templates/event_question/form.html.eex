@@ -5,18 +5,25 @@
   </div>
 
   <div class="field">
-    <%= label_with_errors f, :type %>
-    <%= select f, :type, Artemis.EventQuestion.allowed_types(), class: "enhanced clearable", placeholder: "" %>
+    <%= label_with_errors f, :description %>
+    <%= textarea f, :description, rows: 3 %>
   </div>
 
-  <div class="field">
-    <%= label_with_errors f, :order %>
-    <%= text_input f, :order, placeholder: "Order" %>
-  </div>
+  <div class="inline-fields">
+    <div class="field" style="min-width: 150px;">
+      <%= label_with_errors f, :type %>
+      <%= select f, :type, Artemis.EventQuestion.allowed_types(), class: "enhanced clearable", placeholder: "" %>
+    </div>
 
-  <div class="field">
-    <%= label f, :active %>
-    <%= checkbox f, :active %>
+    <div class="field">
+      <%= label_with_errors f, :order %>
+      <%= text_input f, :order, placeholder: "Order" %>
+    </div>
+
+    <div class="field">
+      <%= label f, :active %>
+      <%= checkbox f, :active, class: "ui checkbox" %>
+    </div>
   </div>
 
   <%= hidden_input f, :event_template_id, value: @event_template.id %>
