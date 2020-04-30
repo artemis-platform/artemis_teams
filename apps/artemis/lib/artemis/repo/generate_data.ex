@@ -1,6 +1,8 @@
 defmodule Artemis.Repo.GenerateData do
   import Ecto.Query
 
+  require Logger
+
   alias Artemis.Feature
   alias Artemis.Permission
   alias Artemis.Repo
@@ -23,7 +25,11 @@ defmodule Artemis.Repo.GenerateData do
   """
 
   def call() do
+    Logger.info("Generating Data")
+
     # Features
+
+    log("Features")
 
     features = [
       %{slug: "global-search", name: "Global Search", active: true}
@@ -43,14 +49,18 @@ defmodule Artemis.Repo.GenerateData do
 
     # Roles
 
+    log("Roles")
+
     roles = [
       %{slug: "default", name: "Default"},
+      %{slug: "operator", name: "Operator"},
       %{slug: "site-developer", name: "Site Developer"},
       %{
         slug: "system-user",
         name: "System User",
         description: "WARNING. For the non-human privileged system user only."
-      }
+      },
+      %{slug: "viewer", name: "Viewer"}
     ]
 
     Enum.map(roles, fn params ->
@@ -66,6 +76,8 @@ defmodule Artemis.Repo.GenerateData do
     end)
 
     # Permissions
+
+    log("Permissions")
 
     admin_only = "Should be restricted to administrators"
 
@@ -175,6 +187,8 @@ defmodule Artemis.Repo.GenerateData do
 
     # Role Permissions - System Users Role
 
+    log("Role Permissions - System User Role")
+
     permissions = Repo.all(Permission)
 
     role =
@@ -188,6 +202,8 @@ defmodule Artemis.Repo.GenerateData do
 
     # Role Permissions - Site Developer Role
 
+    log("Role Permissions - Site Developer Role")
+
     permissions = Repo.all(Permission)
 
     role =
@@ -199,7 +215,131 @@ defmodule Artemis.Repo.GenerateData do
     |> Role.associations_changeset(%{permissions: permissions})
     |> Repo.update!()
 
+    # Role Permissions - Operator Role
+
+    log("Role Permissions - Operator Role")
+
+    permission_slugs = [
+      "comments:access:self",
+      "event-answers:create",
+      "event-answers:delete",
+      "event-answers:list",
+      "event-answers:show",
+      "event-answers:update",
+      "event-questions:create",
+      "event-questions:delete",
+      "event-questions:list",
+      "event-questions:show",
+      "event-questions:update",
+      "event-templates:create",
+      "event-templates:delete",
+      "event-templates:list",
+      "event-templates:show",
+      "event-templates:update",
+      "teams:create",
+      "teams:delete",
+      "teams:list",
+      "teams:show",
+      "teams:update",
+      "user-teams:create",
+      "user-teams:delete",
+      "user-teams:list",
+      "user-teams:show",
+      "user-teams:update",
+      "wiki-pages:create",
+      "wiki-pages:delete",
+      "wiki-pages:list",
+      "wiki-pages:show",
+      "wiki-pages:update",
+      "wiki-pages:create:comments",
+      "wiki-pages:delete:comments",
+      "wiki-pages:list:comments",
+      "wiki-pages:update:comments",
+      "wiki-pages:create:tags",
+      "wiki-pages:update:tags",
+      # "wiki-revisions:delete",
+      "wiki-revisions:list",
+      "wiki-revisions:show"
+    ]
+
+    permissions =
+      Permission
+      |> where([p], p.slug in ^permission_slugs)
+      |> Repo.all()
+
+    role =
+      Role
+      |> preload([:permissions, :user_roles])
+      |> Repo.get_by(slug: "operator")
+
+    role
+    |> Role.associations_changeset(%{permissions: permissions})
+    |> Repo.update!()
+
+    # Role Permissions - Viewer Role
+
+    log("Role Permissions - Viewer Role")
+
+    permission_slugs = [
+      # "comments:access:self",
+      # "event-answers:create",
+      # "event-answers:delete",
+      "event-answers:list",
+      "event-answers:show",
+      # "event-answers:update",
+      # "event-questions:create",
+      # "event-questions:delete",
+      "event-questions:list",
+      "event-questions:show",
+      # "event-questions:update",
+      # "event-templates:create",
+      # "event-templates:delete",
+      "event-templates:list",
+      "event-templates:show",
+      # "event-templates:update",
+      # "teams:create",
+      # "teams:delete",
+      "teams:list",
+      "teams:show",
+      # "teams:update",
+      # "user-teams:create",
+      # "user-teams:delete",
+      "user-teams:list",
+      "user-teams:show",
+      # "user-teams:update",
+      # "wiki-pages:create",
+      # "wiki-pages:delete",
+      "wiki-pages:list",
+      "wiki-pages:show",
+      # "wiki-pages:update",
+      # "wiki-pages:create:comments",
+      # "wiki-pages:delete:comments",
+      "wiki-pages:list:comments",
+      # "wiki-pages:update:comments",
+      # "wiki-pages:create:tags",
+      # "wiki-pages:update:tags",
+      # "wiki-revisions:delete",
+      "wiki-revisions:list",
+      "wiki-revisions:show"
+    ]
+
+    permissions =
+      Permission
+      |> where([p], p.slug in ^permission_slugs)
+      |> Repo.all()
+
+    role =
+      Role
+      |> preload([:permissions, :user_roles])
+      |> Repo.get_by(slug: "viewer")
+
+    role
+    |> Role.associations_changeset(%{permissions: permissions})
+    |> Repo.update!()
+
     # Role Permissions - Default Role
+
+    log("Role Permissions - Default Role")
 
     permission_slugs = [
       "event-logs:access:self",
@@ -222,6 +362,8 @@ defmodule Artemis.Repo.GenerateData do
     |> Repo.update!()
 
     # Users
+
+    log("Users")
 
     users = [
       Application.fetch_env!(:artemis, :users)[:root_user],
@@ -246,6 +388,8 @@ defmodule Artemis.Repo.GenerateData do
     end)
 
     # User Roles - System User
+
+    log("User Roles - System User")
 
     role = Repo.get_by!(Role, slug: "system-user")
 
@@ -275,6 +419,8 @@ defmodule Artemis.Repo.GenerateData do
 
     # User Roles - Site Developer
 
+    log("User Roles - Site Developer")
+
     role = Repo.get_by!(Role, slug: "site-developer")
 
     user_emails = [
@@ -303,6 +449,8 @@ defmodule Artemis.Repo.GenerateData do
 
     # Tags
 
+    log("Tags")
+
     tags = [
       %{name: "Help", slug: "help", type: "wiki-pages"},
       %{name: "Links", slug: "links", type: "wiki-pages"}
@@ -321,6 +469,8 @@ defmodule Artemis.Repo.GenerateData do
     end)
 
     # Wiki Pages
+
+    log("Wiki Pages")
 
     system_user = Artemis.GetSystemUser.call!()
     help_tag = Repo.get_by(Tag, slug: "help", type: "wiki-pages")
@@ -467,5 +617,9 @@ defmodule Artemis.Repo.GenerateData do
     # Return Value
 
     {:ok, []}
+  end
+
+  defp log(message) do
+    Logger.info("Generating Data - #{message}")
   end
 end
