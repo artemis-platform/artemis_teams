@@ -14,7 +14,8 @@
       render_key_value_list([
         ["Title", @event_template.title],
         ["Active", @event_template.active],
-        ["Team", ArtemisWeb.TeamView.render_show_link(@conn, @event_template.team)]
+        ["Team", ArtemisWeb.TeamView.render_show_link(@conn, @event_template.team)],
+        ["Description", raw @event_template.description_html]
       ])
     %>
   </section>

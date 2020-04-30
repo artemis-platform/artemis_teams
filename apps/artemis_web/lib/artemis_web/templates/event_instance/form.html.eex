@@ -54,7 +54,7 @@
               placeholder="Category"
             >
               <option value=""></option>
-              <%= deprecated_options_for_select(@event_template_categories, event_answer.changes[:category] || event_answer.data.category) %>
+              <%= deprecated_options_for_select(@event_template.categories, event_answer.changes[:category] || event_answer.data.category) %>
             </select>
           </div>
 

@@ -5,7 +5,9 @@ defmodule Artemis.EventTemplate do
 
   schema "event_templates" do
     field :active, :boolean, default: true
+    field :categories, {:array, :string}
     field :description, :string
+    field :description_html, :string
     field :title, :string
 
     belongs_to :team, Artemis.Team, on_replace: :delete
@@ -21,7 +23,9 @@ defmodule Artemis.EventTemplate do
   def updatable_fields,
     do: [
       :active,
+      :categories,
       :description,
+      :description_html,
       :team_id,
       :title
     ]

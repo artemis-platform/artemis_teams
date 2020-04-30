@@ -48,9 +48,13 @@ defmodule Artemis.Factories do
   end
 
   def event_template_factory do
+    description = Faker.Lorem.paragraph()
+
     %Artemis.EventTemplate{
       active: true,
-      description: Faker.Lorem.paragraph(),
+      categories: ["one", "two", "three"],
+      description: description,
+      description_html: description,
       title: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
       team: build(:team)
     }

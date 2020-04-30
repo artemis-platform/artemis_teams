@@ -39,6 +39,16 @@ defmodule Artemis.CreateEventTemplateTest do
 
       assert event_template.title == params.title
     end
+
+    test "converts categories string to list" do
+      team = insert(:team)
+
+      params = params_for(:event_template, categories: "one\ntwo", team: team)
+
+      {:ok, event_template} = CreateEventTemplate.call(params, Mock.system_user())
+
+      assert event_template.categories == ["one", "two"]
+    end
   end
 
   describe "broadcasts" do

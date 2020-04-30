@@ -16,7 +16,11 @@
   <%= render_flash_notifications @conn %>
 
   <section>
+    <%= h2 @event_template.title %>
+    <%= raw @event_template.description_html %>
+  </section>
 
+  <section>
     <%=
       form_assigns =
         assigns

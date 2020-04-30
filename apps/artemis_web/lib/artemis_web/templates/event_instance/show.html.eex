@@ -9,6 +9,11 @@
   <%= render "show/_notifications.html", assigns %>
 
   <section>
+    <%= h2 @event_template.title %>
+    <%= raw @event_template.description_html %>
+  </section>
+
+  <section>
     <%= h2 "Questions" %>
 
     <%= Enum.map @event_questions, fn event_question -> %>

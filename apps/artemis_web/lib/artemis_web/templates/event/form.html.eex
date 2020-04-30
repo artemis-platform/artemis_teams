@@ -14,6 +14,20 @@
   </div>
 
   <div class="field">
+    <%= label_with_errors f, :description %>
+    <%= textarea f, :description, rows: 3 %>
+  </div>
+
+  <%
+    categories = Map.get(@changeset.data, :categories) || @changeset.changes[:categories] || []
+  %>
+
+  <div class="field">
+    <%= label_with_errors f, :categories %>
+    <%= textarea f, :categories, value: Enum.join(categories, "\n"), rows: 4 %>
+  </div>
+
+  <div class="field">
     <%= label f, :active %>
     <%= checkbox f, :active %>
   </div>
