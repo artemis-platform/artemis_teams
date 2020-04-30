@@ -52,12 +52,14 @@ defmodule ArtemisWeb.EventInstanceController do
       event_template = GetEventTemplate.call!(event_template_id, user)
       event_answers = get_event_answers_for_update(event_template_id, date, user)
       event_questions = get_event_questions(event_template_id, user)
+      event_template_categories = get_event_template_categories(event_template_id)
 
       assigns = [
         date: date,
         event_answers: event_answers,
         event_questions: event_questions,
-        event_template: event_template
+        event_template: event_template,
+        event_template_categories: event_template_categories
       ]
 
       render(conn, "edit.html", assigns)
@@ -78,12 +80,14 @@ defmodule ArtemisWeb.EventInstanceController do
 
         {:error, event_answers} ->
           event_questions = get_event_questions(event_template_id, user)
+          event_template_categories = get_event_template_categories(event_template_id)
 
           assigns = [
             date: date,
             event_answers: event_answers,
             event_questions: event_questions,
-            event_template: event_template
+            event_template: event_template,
+            event_template_categories: event_template_categories
           ]
 
           render(conn, "edit.html", assigns)
@@ -167,6 +171,13 @@ defmodule ArtemisWeb.EventInstanceController do
     |> Enum.map(&EventAnswer.changeset(&1))
   end
 
+  defp get_event_template_categories(_event_template_id) do
+    [
+      "Example 1",
+      "Example 2"
+    ]
+  end
+
   # TODO: update questions with a deleted_at date field. Then only return those in range.
   defp get_event_questions(event_template_id, user) do
     params = %{
@@ -213,7 +224,14 @@ defmodule ArtemisWeb.EventInstanceController do
       {:error, _} -> {:error, EventAnswer.changeset(%EventAnswer{}, params)}
     end
   rescue
-    _ in DBConnection.ConnectionError -> {:error, EventAnswer.changeset(%EventAnswer{}, params)}
-    error -> reraise error, __STACKTRACE__
+    _ in DBConnection.ConnectionError ->
+      id = Map.get(params, "id")
+      struct = %EventAnswer{id: id}
+      changeset = EventAnswer.changeset(struct, params)
+
+      {:error, changeset}
+
+    error ->
+      reraise error, __STACKTRACE__
   end
 end

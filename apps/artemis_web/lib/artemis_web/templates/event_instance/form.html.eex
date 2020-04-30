@@ -52,11 +52,9 @@
               name="event_instance[<%= event_question.id %>][<%= index %>][category]"
               type="text"
               placeholder="Category"
-              selected="<%= event_answer.changes[:category] || event_answer.data.category %>"
             >
               <option value=""></option>
-              <option value="Example 1">Example 1</option>
-              <option value="Example 2">Example 2</option>
+              <%= deprecated_options_for_select(@event_template_categories, event_answer.changes[:category] || event_answer.data.category) %>
             </select>
           </div>
 
