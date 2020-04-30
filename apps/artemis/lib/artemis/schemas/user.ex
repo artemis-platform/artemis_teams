@@ -82,7 +82,7 @@ defmodule Artemis.User do
   # Validators
 
   defp validate_username(%{changes: %{username: username}} = changeset) do
-    case String.match?(username, ~r/^[a-zA-Z0-9-_]+$/) do
+    case String.match?(username, ~r/^[a-zA-Z0-9-_\.]+$/) do
       true -> changeset
       false -> add_error(changeset, :username, "is invalid")
     end
