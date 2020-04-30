@@ -21,7 +21,7 @@
             @conn,
             @event_templates,
             allowed_columns: ArtemisWeb.EventView.data_table_allowed_columns(),
-            default_columns: ["instances", "team"],
+            default_columns: ["event_instances", "team", "actions_current_event_instance"],
             headers: false
           )
         %>

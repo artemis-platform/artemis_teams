@@ -30,6 +30,7 @@ defmodule ArtemisWeb.EventView do
     [
       {"Actions", "actions"},
       {"Instances", "instances"},
+      {"Current Instance", "actions_current_instance"},
       {"Team", "team"},
       {"Title", "title"}
     ]
@@ -42,7 +43,12 @@ defmodule ArtemisWeb.EventView do
         value: fn _conn, _row -> nil end,
         value_html: &data_table_actions_column_html/2
       ],
-      "instances" => [
+      "actions_current_event_instance" => [
+        label: fn _conn -> "View" end,
+        value: fn _conn, _row -> nil end,
+        value_html: &data_table_actions_current_event_instance_column_html/2
+      ],
+      "event_instances" => [
         label: fn _conn -> "Instances" end,
         label_html: fn conn ->
           sortable_table_header(conn, "title", "Instances")
@@ -94,6 +100,32 @@ defmodule ArtemisWeb.EventView do
     ]
 
     content_tag(:div, class: "actions") do
+      Enum.reduce(allowed_actions, [], fn action, acc ->
+        case Keyword.get(action, :verify) do
+          true -> [acc | Keyword.get(action, :link)]
+          _ -> acc
+        end
+      end)
+    end
+  end
+
+  defp data_table_actions_current_event_instance_column_html(conn, row) do
+    today = Date.to_iso8601(Date.utc_today())
+
+    allowed_actions = [
+      [
+        verify: has?(conn, "event-answers:update"),
+        link:
+          action("Update Answers", to: Routes.event_instance_path(conn, :edit, row, today), color: "green", size: "tiny")
+      ],
+      [
+        verify: has?(conn, "event-answers:show"),
+        link:
+          action("View Current", to: Routes.event_instance_path(conn, :show, row, today), color: "blue", size: "tiny")
+      ]
+    ]
+
+    content_tag(:div, class: "actions-current-event-instance") do
       Enum.reduce(allowed_actions, [], fn action, acc ->
         case Keyword.get(action, :verify) do
           true -> [acc | Keyword.get(action, :link)]

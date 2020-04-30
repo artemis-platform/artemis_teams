@@ -1,6 +1,7 @@
 <%= form_for @conn, @action, [method: :put, class: "ui form", id: "event-instance-form"], fn f -> %>
   <%= Enum.map @event_questions, fn event_question -> %>
     <%= h4 event_question.title %>
+    <%= raw event_question.description_html %>
 
     <%
       existing_event_answers =
