@@ -1048,12 +1048,42 @@ ul.event-answers {
 
 #event-instance-form {
 
+  .event-question {
+    margin: 0 0 1rem 0;
+
+    h4 {
+      margin: 0 0 0.5rem 0;
+    }
+  }
+
   .category-field {
+    font-size: 13px;
     width: 150px;
   }
 
   .answer-field {
     flex-grow: 1;
+
+    textarea {
+      line-height: 18px;
+      font-size: 13px;
+      height: 38px;
+    }
+  }
+
+  .ui.message {
+    background: #f9f0f2;
+    color: #9f3a38 !important;
+    margin: 1rem 0 0.75rem 0;
+    padding: 0.75rem;
+    box-shadow: none;
+
+    i.red.icon {
+      color: #9f3a38 !important;
+      display: inline-block;
+      margin-right: 0 !important;
+      opacity: 0.8;
+    }
   }
 }
 
