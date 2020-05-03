@@ -250,7 +250,7 @@ defmodule ArtemisWeb.EventInstanceController do
       end
 
     case action.(params, user) do
-      {:ok, _record} -> {:ok, EventAnswer.changeset(%EventAnswer{}, params)}
+      {:ok, record} -> {:ok, EventAnswer.changeset(record, params)}
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
       {:error, _} -> {:error, EventAnswer.changeset(%EventAnswer{}, params)}
     end
