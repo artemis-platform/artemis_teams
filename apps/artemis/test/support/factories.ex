@@ -37,6 +37,17 @@ defmodule Artemis.Factories do
     }
   end
 
+  def event_integration_factory do
+    %Artemis.EventIntegration{
+      active: true,
+      integration_type: "Slack Incoming Webhook",
+      name: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
+      notification_type: Enum.random(Artemis.EventIntegration.allowed_notification_types()),
+      settings: %{webhook_url: "https://api.slack.com"},
+      event_template: build(:event_template)
+    }
+  end
+
   def event_question_factory do
     description = Faker.Lorem.paragraph()
 
@@ -47,7 +58,7 @@ defmodule Artemis.Factories do
       order: 1,
       multiple: true,
       required: true,
-      title: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
+      title: sequence(:title, &"#{Faker.Name.name()}-#{&1}"),
       type: Enum.random(Artemis.EventQuestion.allowed_types()),
       event_template: build(:event_template)
     }
@@ -61,7 +72,7 @@ defmodule Artemis.Factories do
       categories: ["one", "two", "three"],
       description: description,
       description_html: description,
-      title: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
+      title: sequence(:title, &"#{Faker.Name.name()}-#{&1}"),
       team: build(:team)
     }
   end
