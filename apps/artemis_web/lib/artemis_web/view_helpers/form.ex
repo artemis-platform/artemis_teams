@@ -85,6 +85,4 @@ defmodule ArtemisWeb.ViewHelper.Form do
     {:safe, contents} = content_tag(:option, option_key, opts)
     contents
   end
-
-  defp field_to_string(field) when is_binary(field), do: field
 end

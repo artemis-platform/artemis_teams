@@ -7,7 +7,9 @@ defmodule Artemis.EventQuestion do
     field :active, :boolean, default: true
     field :description, :string
     field :description_html, :string
+    field :multiple, :boolean, default: false
     field :order, :integer
+    field :required, :boolean, default: true
     field :title, :string
     field :type, :string
 
@@ -26,7 +28,9 @@ defmodule Artemis.EventQuestion do
       :description,
       :description_html,
       :event_template_id,
+      :multiple,
       :order,
+      :required,
       :title,
       :type
     ]

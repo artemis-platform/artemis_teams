@@ -38,9 +38,15 @@ defmodule Artemis.Factories do
   end
 
   def event_question_factory do
+    description = Faker.Lorem.paragraph()
+
     %Artemis.EventQuestion{
       active: true,
-      description: Faker.Lorem.paragraph(),
+      description: description,
+      description_html: description,
+      order: 1,
+      multiple: true,
+      required: true,
       title: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
       type: Enum.random(Artemis.EventQuestion.allowed_types()),
       event_template: build(:event_template)

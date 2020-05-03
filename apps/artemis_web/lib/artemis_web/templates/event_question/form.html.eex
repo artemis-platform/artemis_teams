@@ -19,9 +19,21 @@
       <%= label_with_errors f, :order %>
       <%= text_input f, :order, placeholder: "Order" %>
     </div>
+  </div>
+
+  <div class="inline-fields">
+    <div class="field">
+      <%= label f, :required, "Answer Required" %>
+      <%= checkbox f, :required, class: "ui checkbox" %>
+    </div>
 
     <div class="field">
-      <%= label f, :active %>
+      <%= label f, :multiple, "Allow Multiple Answers" %>
+      <%= checkbox f, :multiple, class: "ui checkbox" %>
+    </div>
+
+    <div class="field">
+      <%= label f, :active, "Active" %>
       <%= checkbox f, :active, class: "ui checkbox" %>
     </div>
   </div>

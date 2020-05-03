@@ -1,7 +1,13 @@
 <%= form_for @conn, @action, [method: :put, class: "ui form", id: "event-instance-form"], fn f -> %>
   <%= Enum.map @event_questions, fn event_question -> %>
     <div class="event-question">
-      <%= h4 event_question.title %>
+      <h4>
+        <%= event_question.title %>
+        <span class="required">
+          <%= if event_question.required, do: "Required", else: "Optional" %>
+        </span>
+      </h4>
+
       <%= raw event_question.description_html %>
 
       <%

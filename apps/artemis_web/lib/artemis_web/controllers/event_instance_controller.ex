@@ -70,16 +70,16 @@ defmodule ArtemisWeb.EventInstanceController do
     authorize(conn, "event-answers:update", fn ->
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
+      event_questions = get_event_questions(event_template_id, user)
       event_answer_params = get_event_answer_params(params)
 
-      case create_or_update_event_answers(event_answer_params, user) do
+      case record_event_answers(event_answer_params, event_questions, user) do
         {:ok, _changesets} ->
           conn
           |> put_flash(:info, "Event Instance updated successfully.")
           |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
 
         {:error, event_answers} ->
-          event_questions = get_event_questions(event_template_id, user)
           event_template_categories = get_event_template_categories(event_template_id)
 
           assigns = [
@@ -198,9 +198,13 @@ defmodule ArtemisWeb.EventInstanceController do
     |> Enum.flat_map(&Map.values(&1))
   end
 
-  defp create_or_update_event_answers(event_answer_params, user) do
+  defp record_event_answers(event_answer_params, event_questions, user) do
     Artemis.Repo.Helpers.with_transaction(fn ->
-      results = Enum.map(event_answer_params, &create_or_update_event_answer(&1, user))
+      results =
+        event_answer_params
+        |> filter_event_answer_params(event_questions)
+        |> Enum.map(&record_event_answer(&1, user))
+
       error? = Enum.any?(results, &(elem(&1, 0) == :error))
       changesets = Enum.map(results, &elem(&1, 1))
 
@@ -211,7 +215,34 @@ defmodule ArtemisWeb.EventInstanceController do
     end)
   end
 
-  defp create_or_update_event_answer(params, user) do
+  defp filter_event_answer_params(event_answer_params, event_questions) do
+    event_answer_params
+    |> Enum.reduce([], fn params, acc ->
+      event_question = get_event_question(params, event_questions)
+
+      value_present? =
+        params
+        |> Map.get("value")
+        |> Artemis.Helpers.present?()
+
+      case event_question.required || value_present? do
+        true -> [params | acc]
+        false -> acc
+      end
+    end)
+    |> Enum.reverse()
+  end
+
+  defp get_event_question(event_answer_params, event_questions) do
+    event_question_id =
+      event_answer_params
+      |> Map.fetch!("event_question_id")
+      |> String.to_integer()
+
+    Enum.find(event_questions, &(&1.id == event_question_id))
+  end
+
+  defp record_event_answer(params, user) do
     action =
       case Map.get(params, "id") do
         nil -> fn params, user -> Artemis.CreateEventAnswer.call(params, user) end
