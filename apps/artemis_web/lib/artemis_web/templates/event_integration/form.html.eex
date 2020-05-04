@@ -1,0 +1,58 @@
+<%= form_for @changeset, @action, [class: "ui form", id: "event-integration-form"], fn f -> %>
+  <div class="field">
+    <%= label_with_errors f, :integration_type %>
+    <%= select f, :integration_type, Artemis.EventIntegration.allowed_integration_types(), class: "enhanced clearable", placeholder: "" %>
+  </div>
+
+  <div class="field">
+    <%= label_with_errors f, :notification_type %>
+    <%= select f, :notification_type, Artemis.EventIntegration.allowed_notification_types(), class: "enhanced clearable", placeholder: "" %>
+  </div>
+
+  <div class="field">
+    <%= label_with_errors f, :name %>
+    <%= text_input f, :name, placeholder: "Name" %>
+  </div>
+
+  <div class="field">
+    <%= label f, :active, "Active" %>
+    <%= checkbox f, :active, class: "ui checkbox" %>
+  </div>
+
+  <div class="settings-fields-container field">
+    <h4>Integration Fields</h4>
+
+    <%
+      settings_field_error =
+        f.errors
+        |> Keyword.get_values(:settings)
+        |> List.first()
+    %>
+
+    <%= if @changeset.action && settings_field_error do %>
+      <%= render_notification :error, body: "Error: #{elem(settings_field_error, 0)}", header?: false, icon?: false %>
+    <% end %>
+
+    <div class="settings-fields" for="Slack Incoming Webhook">
+      <div class="field">
+        <label>Slack Webhook URL</label>
+        <input
+          name="event_integration[settings][webhook_url]"
+          placeholder="Slack Webhook URL"
+          value="<%= get_event_integration_setting(@changeset, "webhook_url") %>"
+        />
+      </div>
+    </div>
+
+  </div>
+
+  <%= hidden_input f, :event_template_id, value: @event_template.id %>
+
+  <div>
+    <%= if @changeset.action do %>
+      <%= render_notification :error, body: "Error Submitting Form" %>
+    <% end %>
+
+    <%= submit "Save", class: "ui button primary" %>
+  </div>
+<% end %>

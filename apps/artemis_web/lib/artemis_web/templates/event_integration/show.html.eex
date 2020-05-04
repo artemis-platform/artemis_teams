@@ -1,0 +1,35 @@
+<%= render "show/_header.html", assigns %>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render "show/_notifications.html", assigns %>
+
+  <section>
+    <%= h2 "Details" %>
+    <%=
+      render_key_value_list([
+        ["Integration Type", @event_integration.integration_type],
+        ["Notification Type", @event_integration.notification_type],
+        ["Name", render_event_integration_name(@event_integration)],
+        ["Active", @event_integration.active],
+        ["Event Template", ArtemisWeb.EventView.render_show_link(@conn, @event_integration.event_template)],
+      ])
+    %>
+  </section>
+
+  <section>
+    <%= h2 "Settings" %>
+
+    <%= if @event_integration.integration_type == "Slack Incoming Webhook" do %>
+      <%=
+        render_key_value_list([
+          ["Webhook URL", Map.get(@event_integration.settings, "webhook_url")]
+        ])
+      %>
+    <% end %>
+  </section>
+</div>

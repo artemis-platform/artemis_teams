@@ -25,7 +25,8 @@ defmodule Artemis.EventIntegrationTest do
     test "integration type must in allowed integration types" do
       event_template = insert(:event_template)
 
-      params = params_for(:event_integration, event_template: event_template, integration_type: "test-invalid-integration-type")
+      params =
+        params_for(:event_integration, event_template: event_template, integration_type: "test-invalid-integration-type")
 
       {:error, changeset} =
         %EventIntegration{}
@@ -38,7 +39,11 @@ defmodule Artemis.EventIntegrationTest do
     test "notification type must in allowed notification types" do
       event_template = insert(:event_template)
 
-      params = params_for(:event_integration, event_template: event_template, notification_type: "test-invalid-notification-type")
+      params =
+        params_for(:event_integration,
+          event_template: event_template,
+          notification_type: "test-invalid-notification-type"
+        )
 
       {:error, changeset} =
         %EventIntegration{}

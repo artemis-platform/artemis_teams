@@ -1,0 +1,16 @@
+<%=
+  secondary_navigation_items = [
+    [
+      label: "Overview",
+      path: &Routes.event_integration_path(&1, :show, @event_integration.event_template, @event_integration),
+      path_match_type: :exact,
+      verify: &has?(&1, "event-integrations:show")
+    ]
+  ]
+
+  render_secondary_navigation(
+    @conn,
+    current_user(@conn),
+    secondary_navigation_items
+  )
+%>

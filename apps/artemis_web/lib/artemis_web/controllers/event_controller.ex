@@ -5,6 +5,7 @@ defmodule ArtemisWeb.EventController do
   alias Artemis.EventTemplate
   alias Artemis.DeleteEventTemplate
   alias Artemis.GetEventTemplate
+  alias Artemis.ListEventIntegrations
   alias Artemis.ListEventQuestions
   alias Artemis.ListEventTemplates
   alias Artemis.UpdateEventTemplate
@@ -57,11 +58,17 @@ defmodule ArtemisWeb.EventController do
 
   def show(conn, %{"id" => id}) do
     authorize(conn, "event-templates:show", fn ->
-      event_template = GetEventTemplate.call!(id, current_user(conn))
+      user = current_user(conn)
+      event_template = GetEventTemplate.call!(id, user)
+
       event_questions_params = %{filters: %{event_template_id: event_template.id}}
-      event_questions = ListEventQuestions.call(event_questions_params, current_user(conn))
+      event_questions = ListEventQuestions.call(event_questions_params, user)
+
+      event_integrations_params = %{filters: %{event_template_id: event_template.id}}
+      event_integrations = ListEventIntegrations.call(event_integrations_params, user)
 
       assigns = [
+        event_integrations: event_integrations,
         event_questions: event_questions,
         event_template: event_template
       ]

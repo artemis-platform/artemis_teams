@@ -31,7 +31,9 @@
       )
     %>
 
-    <%= action "New Event", to: Routes.event_path(@conn, :new, team_id: @team.id), color: "blue" %>
+    <%= if has?(@conn, "event-templates:create") do %>
+      <%= action "New Event", to: Routes.event_path(@conn, :new, team_id: @team.id), color: "blue" %>
+    <% end %>
   </section>
 
   <section>
@@ -48,6 +50,8 @@
       )
     %>
 
-    <%= action "New Team Member", to: Routes.team_member_path(@conn, :new, @team), color: "blue" %>
+    <%= if has?(@conn, "user-teams:create") do %>
+      <%= action "New Team Member", to: Routes.team_member_path(@conn, :new, @team), color: "blue" %>
+    <% end %>
   </section>
 </div>

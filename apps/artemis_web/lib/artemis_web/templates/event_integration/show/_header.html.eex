@@ -1,0 +1,17 @@
+<div id="content-header">
+  <header>
+    <h1>
+      Event Integration
+      <span class="subheading"><%= render_event_integration_name(@event_integration) %></span>
+    </h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "event-integrations:delete") do %>
+        <%= delete_confirmation "Delete", Routes.event_integration_path(@conn, :delete, @event_integration.event_template, @event_integration) %>
+      <% end %>
+      <%= if has?(@conn, "event-integrations:update") do %>
+        <%= action "Edit", to: Routes.event_integration_path(@conn, :edit, @event_integration.event_template, @event_integration), color: "green" %>
+      <% end %>
+    </div>
+  </header>
+</div>

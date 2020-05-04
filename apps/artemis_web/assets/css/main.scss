@@ -150,6 +150,28 @@ select[multiple] {
   display: none;
 }
 
+form {
+
+  .field,
+  .fields {
+
+    .ui.message {
+      background: #f9f0f2;
+      color: #9f3a38 !important;
+      margin: 1rem 0 0.75rem 0;
+      padding: 0.75rem;
+      box-shadow: none;
+
+      i.red.icon {
+        color: #9f3a38 !important;
+        display: inline-block;
+        margin-right: 0 !important;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
 /* === Components === */
 
 .primary-navigation-items {
@@ -1075,21 +1097,6 @@ ul.event-answers {
       line-height: 18px;
       font-size: 13px;
       height: 38px;
-    }
-  }
-
-  .ui.message {
-    background: #f9f0f2;
-    color: #9f3a38 !important;
-    margin: 1rem 0 0.75rem 0;
-    padding: 0.75rem;
-    box-shadow: none;
-
-    i.red.icon {
-      color: #9f3a38 !important;
-      display: inline-block;
-      margin-right: 0 !important;
-      opacity: 0.8;
     }
   }
 }

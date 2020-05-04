@@ -4,7 +4,7 @@ defmodule Artemis.EventIntegration do
   use Assoc.Schema, repo: Artemis.Repo
 
   schema "event_integrations" do
-    field :active, :boolean
+    field :active, :boolean, default: true
     field :integration_type, :string
     field :name, :string
     field :notification_type, :string
@@ -26,6 +26,7 @@ defmodule Artemis.EventIntegration do
       :integration_type,
       :notification_type,
       :settings,
+      :event_template_id
     ]
 
   def required_fields,
@@ -92,7 +93,7 @@ defmodule Artemis.EventIntegration do
     missing_fields = get_missing_fields(settings, required_fields)
 
     case length(missing_fields) > 0 do
-      true -> add_error(changeset, :settings, "Required fields: #{Enum.join(missing_fields)}")
+      true -> add_error(changeset, :settings, "#{Enum.join(missing_fields)} is required")
       false -> changeset
     end
   end
@@ -103,9 +104,12 @@ defmodule Artemis.EventIntegration do
 
   defp get_missing_fields(map, fields) do
     Enum.reduce(fields, [], fn field, acc ->
-      case Map.get(map, field, nil) do
-        nil -> [field | acc]
-        _ -> acc
+      value = Map.get(map, field)
+      present? = Artemis.Helpers.present?(value)
+
+      case present? do
+        true -> acc
+        false -> [field | acc]
       end
     end)
   end

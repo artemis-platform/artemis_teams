@@ -12,6 +12,7 @@ defmodule Artemis.EventTemplate do
 
     belongs_to :team, Artemis.Team, on_replace: :delete
 
+    has_many :event_integrations, Artemis.EventIntegration, on_delete: :delete_all, on_replace: :delete
     has_many :event_questions, Artemis.EventQuestion, on_delete: :delete_all, on_replace: :delete
     has_many :user_teams, through: [:team, :user_teams]
 

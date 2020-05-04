@@ -20,7 +20,7 @@
     %>
   </section>
 
-  <section>
+  <section class="related-resources">
     <%= h3 "Event Questions" %>
 
     <%=
@@ -32,6 +32,25 @@
       )
     %>
 
-    <%= action "New Question", to: Routes.event_question_path(@conn, :new, @event_template), color: "blue" %>
+    <%= if has?(@conn, "event-questions:create") do %>
+      <%= action "New Question", to: Routes.event_question_path(@conn, :new, @event_template), color: "blue" %>
+    <% end %>
+  </section>
+
+  <section class="related-resources">
+    <%= h3 "Event Integrations" %>
+
+    <%=
+      render_data_table(
+        @conn,
+        @event_integrations,
+        allowed_columns: ArtemisWeb.EventIntegrationView.data_table_allowed_columns(),
+        default_columns: ["name", "actions"]
+      )
+    %>
+
+    <%= if has?(@conn, "event-integrations:create") do %>
+      <%= action "New Integration", to: Routes.event_integration_path(@conn, :new, @event_template), color: "blue" %>
+    <% end %>
   </section>
 </div>

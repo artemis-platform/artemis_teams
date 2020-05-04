@@ -1,0 +1,27 @@
+<div id="content-header">
+  <header>
+    <h1>Edit Event Integration</h1>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+  <%= render_event_log_notifications @conn, "EventIntegration", @event_integration.id %>
+
+  <section>
+
+    <%=
+      form_assigns =
+        assigns
+        |> Map.put(:action, Routes.event_integration_path(@conn, :update, @event_integration.event_template, @event_integration))
+        |> Map.put(:event_template, @event_template)
+
+      render "form.html", form_assigns
+    %>
+  </section>
+</div>
