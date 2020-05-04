@@ -18,7 +18,9 @@
 
     <%= Enum.map @event_questions, fn event_question -> %>
       <div class="event-question">
-        <%= h4 event_question.title %>
+        <h4>
+          <%= event_question.title %>
+        </h4>
         <%= raw event_question.description_html %>
       </div>
 
