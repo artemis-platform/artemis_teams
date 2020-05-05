@@ -75,7 +75,10 @@ defmodule ArtemisWeb.Router do
       # Events
 
       resources "/events", EventController do
-        resources "/instances", EventInstanceController, as: :instance, except: [:new, :create, :delete]
+        resources "/instances", EventInstanceController, as: :instance, except: [:new, :create, :delete] do
+          post "/notifications", EventInstanceNotificationController, :create, as: :notification
+        end
+
         resources "/integrations", EventIntegrationController, as: :integration
         resources "/questions", EventQuestionController, as: :question
       end

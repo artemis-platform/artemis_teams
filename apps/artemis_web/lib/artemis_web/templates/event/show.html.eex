@@ -15,7 +15,8 @@
         ["Title", @event_template.title],
         ["Active", @event_template.active],
         ["Team", ArtemisWeb.TeamView.render_show_link(@conn, @event_template.team)],
-        ["Description", raw @event_template.description_html]
+        ["Description", raw @event_template.description_html],
+        ["Categories", render_categories(@event_template)]
       ])
     %>
   </section>

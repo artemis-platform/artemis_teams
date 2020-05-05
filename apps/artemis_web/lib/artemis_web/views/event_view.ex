@@ -137,6 +137,12 @@ defmodule ArtemisWeb.EventView do
 
   # Helpers
 
+  def render_categories(%{categories: categories}) when is_list(categories) do
+    raw(Enum.join(categories, "<br/>"))
+  end
+
+  def render_categories(_), do: nil
+
   def render_show_link(_conn, nil), do: nil
 
   def render_show_link(conn, record) do

@@ -4,6 +4,7 @@ defmodule ArtemisWeb.EventInstanceController do
   alias Artemis.EventAnswer
   alias Artemis.GetEventTemplate
   alias Artemis.ListEventAnswers
+  alias Artemis.ListEventIntegrations
   alias Artemis.ListEventQuestions
 
   # TODO: filter by username and question
@@ -33,12 +34,14 @@ defmodule ArtemisWeb.EventInstanceController do
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
       event_answers = get_event_answers_for_show(event_template_id, date, user)
+      event_integrations = get_event_integrations(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
 
       assigns = [
         date: date,
         event_answers: event_answers,
         event_questions: event_questions,
+        event_integrations: event_integrations,
         event_template: event_template
       ]
 
@@ -176,6 +179,17 @@ defmodule ArtemisWeb.EventInstanceController do
       "Example 1",
       "Example 2"
     ]
+  end
+
+  defp get_event_integrations(event_template_id, user) do
+    params = %{
+      filters: %{
+        event_template_id: event_template_id
+      },
+      preload: [:event_template]
+    }
+
+    ListEventIntegrations.call(params, user)
   end
 
   # TODO: update questions with a deleted_at date field. Then only return those in range.

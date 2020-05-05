@@ -50,14 +50,13 @@ defmodule Artemis.EventIntegration do
 
   def allowed_integration_types,
     do: [
-      "Email",
       "Slack Incoming Webhook"
     ]
 
   def allowed_notification_types,
     do: [
       "Reminder",
-      "Summary"
+      "Summary - By Category"
     ]
 
   # Changesets

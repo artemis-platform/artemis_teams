@@ -1101,6 +1101,21 @@ ul.event-answers {
   }
 }
 
+.event-instance-notifications {
+  border: 1px solid #e2e2e2 !important;
+  box-shadow: none !important;
+
+  .item .ui.basic.button {
+    border: none !important;
+    box-shadow: none !important;
+    margin: -0.5rem -1rem;
+
+    &:hover {
+      background: #f2f2f2 !important;
+    }
+  }
+}
+
 /* === Components - Documentation Page === */
 
 .wiki-page-filters {

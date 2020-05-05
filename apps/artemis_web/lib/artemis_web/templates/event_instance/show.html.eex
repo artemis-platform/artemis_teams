@@ -54,4 +54,31 @@
       </ul>
     <% end %>
   </section>
+
+  <%= if has?(@conn, "event-integrations:create") do %>
+    <section>
+      <%= h2 "Event Integrations" %>
+
+      <%= if has?(@conn, "event-integrations:create") do %>
+        <div class="ui compact menu event-instance-notifications">
+          <div class="ui simple dropdown item">
+            Send Notification
+            <i class="dropdown icon"></i>
+            <div class="menu">
+              <%= Enum.map @event_integrations, fn event_integration -> %>
+                <div class="item">
+                  <%=
+                    label = ArtemisWeb.EventIntegrationView.render_event_integration_name(event_integration)
+                    to = Routes.event_instance_notification_path(@conn, :create, @event_template, @date)
+
+                    action(label, to: to, method: :post)
+                  %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </section>
+  <% end %>
 </div>
