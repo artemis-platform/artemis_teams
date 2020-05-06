@@ -39,10 +39,10 @@
               <%= event_answer.user.name %>
             </div>
 
-            <%= if event_answer.category do %>
-              <div class="category">
-                <i class="tag icon"></i>
-                <%= event_answer.category %>
+            <%= if event_answer.project do %>
+              <div class="project">
+                <i class="object group outline icon"></i>
+                <%= event_answer.project.title %>
               </div>
             <% end %>
 

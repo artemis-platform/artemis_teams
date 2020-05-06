@@ -28,7 +28,6 @@ defmodule Artemis.Factories do
 
   def event_answer_factory do
     %Artemis.EventAnswer{
-      category: Faker.Lorem.word(),
       date: Date.utc_today(),
       type: Enum.random(Artemis.EventAnswer.allowed_types()),
       value: Faker.Lorem.paragraph(),
@@ -69,7 +68,6 @@ defmodule Artemis.Factories do
 
     %Artemis.EventTemplate{
       active: true,
-      categories: ["one", "two", "three"],
       description: description,
       description_html: description,
       title: sequence(:title, &"#{Faker.Name.name()}-#{&1}"),

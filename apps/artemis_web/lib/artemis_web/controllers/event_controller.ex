@@ -67,6 +67,8 @@ defmodule ArtemisWeb.EventController do
       event_integrations_params = %{filters: %{event_template_id: event_template.id}}
       event_integrations = ListEventIntegrations.call(event_integrations_params, user)
 
+      projects = []
+
       assigns = [
         event_integrations: event_integrations,
         event_questions: event_questions,

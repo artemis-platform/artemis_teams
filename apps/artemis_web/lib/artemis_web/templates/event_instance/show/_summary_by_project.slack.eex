@@ -30,14 +30,14 @@
     {
       "type": "divider"
     },
-    <% categories = Enum.map @event_answers, fn {category, event_answers} -> %>
+    <% sections = Enum.map @event_answers, fn {project, event_answers} -> %>
       <%
         entries =
           event_answers
           |> Enum.map(&"*#{&1.event_question.title}* _#{&1.user.name}_ #{&1.value}")
           |> Enum.join("\\n")
 
-        text = ":star: *#{category}*\\n\\n#{entries}"
+        text = ":star: *#{project}*\\n\\n#{entries}"
       %>
       {
         "type": "section",
@@ -47,6 +47,6 @@
         }
       }
     <% end %>
-    <%= Enum.join(categories, ",{\"type\": \"divider\"},") %>
+    <%= Enum.join(sections, ",{\"type\": \"divider\"},") %>
   ]
 }

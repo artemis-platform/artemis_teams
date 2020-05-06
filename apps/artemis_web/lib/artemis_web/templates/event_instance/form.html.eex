@@ -54,15 +54,15 @@
           <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][user_id]" value="<%= event_answer.changes[:user_id] || event_answer.data.user_id %>">
 
           <div class="inline-fields">
-            <div class="field category-field">
+            <div class="field project-field">
               <select
                 class="enhanced creatable search clearable"
-                name="event_instance[<%= event_question.id %>][<%= index %>][category]"
+                name="event_instance[<%= event_question.id %>][<%= index %>][project_id]"
                 type="text"
-                placeholder="Category"
+                placeholder="Project"
               >
                 <option value=""></option>
-                <%= deprecated_options_for_select(@event_template.categories, event_answer.changes[:category] || event_answer.data.category) %>
+                <%= deprecated_options_for_select(@event_template.projects, event_answer.changes[:project_id] || event_answer.data.project_id) %>
               </select>
             </div>
 

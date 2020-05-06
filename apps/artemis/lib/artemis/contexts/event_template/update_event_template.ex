@@ -38,20 +38,8 @@ defmodule Artemis.UpdateEventTemplate do
   defp update_params(_record, params) do
     params
     |> Artemis.Helpers.keys_to_strings()
-    |> maybe_update_categories()
     |> maybe_update_description_html()
   end
-
-  defp maybe_update_categories(%{"categories" => categories} = params) when is_bitstring(categories) do
-    value =
-      categories
-      |> String.replace("\r", "")
-      |> String.split("\n")
-
-    Map.put(params, "categories", value)
-  end
-
-  defp maybe_update_categories(params), do: params
 
   defp maybe_update_description_html(%{"description" => description} = params) do
     value = Markdown.to_html!(description)

@@ -12,7 +12,7 @@ defmodule ArtemisWeb.EventInstanceController do
     authorize(conn, "event-answers:show", fn ->
       user = current_user(conn)
       today = Date.to_iso8601(Date.utc_today())
-      event_template = GetEventTemplate.call!(event_template_id, user)
+      event_template = get_event_template(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
       event_answers = get_event_answers_for_index(event_template_id, params, user)
       event_answers_by_date = get_event_answers_by_date(event_answers)
@@ -32,7 +32,7 @@ defmodule ArtemisWeb.EventInstanceController do
   def show(conn, %{"event_id" => event_template_id, "id" => date}) do
     authorize(conn, "event-answers:show", fn ->
       user = current_user(conn)
-      event_template = GetEventTemplate.call!(event_template_id, user)
+      event_template = get_event_template(event_template_id, user)
       event_answers = get_event_answers_for_show(event_template_id, date, user)
       event_integrations = get_event_integrations(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
@@ -52,17 +52,17 @@ defmodule ArtemisWeb.EventInstanceController do
   def edit(conn, %{"event_id" => event_template_id, "id" => date}) do
     authorize(conn, "event-answers:update", fn ->
       user = current_user(conn)
-      event_template = GetEventTemplate.call!(event_template_id, user)
+      event_template = get_event_template(event_template_id, user)
       event_answers = get_event_answers_for_update(event_template_id, date, user)
       event_questions = get_event_questions(event_template_id, user)
-      event_template_categories = get_event_template_categories(event_template_id)
+      team_projects = get_team_projects(event_template_id.team_id)
 
       assigns = [
         date: date,
         event_answers: event_answers,
         event_questions: event_questions,
         event_template: event_template,
-        event_template_categories: event_template_categories
+        team_projects: team_projects
       ]
 
       render(conn, "edit.html", assigns)
@@ -72,7 +72,7 @@ defmodule ArtemisWeb.EventInstanceController do
   def update(conn, %{"id" => date, "event_id" => event_template_id, "event_instance" => params}) do
     authorize(conn, "event-answers:update", fn ->
       user = current_user(conn)
-      event_template = GetEventTemplate.call!(event_template_id, user)
+      event_template = get_event_template(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
       event_answer_params = get_event_answer_params(params)
 
@@ -83,14 +83,14 @@ defmodule ArtemisWeb.EventInstanceController do
           |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
 
         {:error, event_answers} ->
-          event_template_categories = get_event_template_categories(event_template_id)
+          team_projects = get_team_projects(event_template.team_id)
 
           assigns = [
             date: date,
             event_answers: event_answers,
             event_questions: event_questions,
             event_template: event_template,
-            event_template_categories: event_template_categories
+            team_projects: team_projects
           ]
 
           render(conn, "edit.html", assigns)
@@ -110,6 +110,14 @@ defmodule ArtemisWeb.EventInstanceController do
   #   end
 
   # Helpers
+
+  defp get_event_template(event_template_id, user) do
+    options = [
+      preload: [:projects]
+    ]
+
+    GetEventTemplate.call!(event_template_id, user, options)
+  end
 
   defp get_event_answers_by_date(event_answers) do
     grouped =
@@ -134,7 +142,7 @@ defmodule ArtemisWeb.EventInstanceController do
           event_template_id: event_template_id
         },
         paginate: true,
-        preload: [:event_question, :user]
+        preload: [:event_question, :project, :user]
       }
       |> Artemis.Helpers.keys_to_strings()
 
@@ -153,7 +161,7 @@ defmodule ArtemisWeb.EventInstanceController do
         date: Date.from_iso8601!(date),
         event_template_id: event_template_id
       },
-      preload: [:user]
+      preload: [:project, :user]
     }
 
     ListEventAnswers.call(params, user)
@@ -166,7 +174,7 @@ defmodule ArtemisWeb.EventInstanceController do
         event_template_id: event_template_id,
         user_id: user.id
       },
-      preload: [:user]
+      preload: [:project, :user]
     }
 
     params
@@ -174,11 +182,9 @@ defmodule ArtemisWeb.EventInstanceController do
     |> Enum.map(&EventAnswer.changeset(&1))
   end
 
-  defp get_event_template_categories(_event_template_id) do
-    [
-      "Example 1",
-      "Example 2"
-    ]
+  # TODO: fetch related projects
+  defp get_team_projects(_team_id) do
+    []
   end
 
   defp get_event_integrations(event_template_id, user) do

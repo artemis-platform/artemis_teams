@@ -47,9 +47,9 @@ defmodule Artemis.ListEventAnswers do
 
   defp filter_query(query, _params, _user), do: query
 
-  defp filter(query, "category", value), do: where(query, [i], i.category in ^split(value))
   defp filter(query, "date", value), do: where(query, [i], i.date in ^split(value))
   defp filter(query, "event_question_id", value), do: where(query, [i], i.event_question_id in ^split(value))
+  defp filter(query, "project_id", value), do: where(query, [i], i.project_id in ^split(value))
 
   defp filter(query, "event_template_id", value) do
     query

@@ -55,10 +55,10 @@
                       <%= event_answer.user.name %>
                     </div>
 
-                    <%= if event_answer.category do %>
-                      <div class="category">
-                        <i class="tag icon"></i>
-                        <%= event_answer.category %>
+                    <%= if event_answer.project do %>
+                      <div class="project">
+                        <i class="object group outline icon"></i>
+                        <%= event_answer.project.title %>
                       </div>
                     <% end %>
 
@@ -93,9 +93,9 @@
         <i class="tag icon"></i>
         <%=
           # TODO: cannot use `unique_values_for` helper since it does not filter by `team`
-          options = Artemis.EventAnswer.unique_values_for(:category)
+          options = Artemis.EventAnswer.unique_values_for(:project)
 
-          filter_multi_select(@conn, "Category", :category, options)
+          filter_multi_select(@conn, "Project", :project, options)
         %>
       </div>
 

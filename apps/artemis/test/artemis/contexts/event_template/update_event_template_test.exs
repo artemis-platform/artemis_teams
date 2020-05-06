@@ -87,15 +87,6 @@ defmodule Artemis.UpdateEventTemplateTest do
       assert updated.description == params.description
       assert updated.description_html == "<h1>Test</h1>\n"
     end
-
-    test "converts categories string to list" do
-      event_template = insert(:event_template)
-      params = params_for(:event_template, categories: "one\ntwo")
-
-      {:ok, updated} = UpdateEventTemplate.call(event_template.id, params, Mock.system_user())
-
-      assert updated.categories == ["one", "two"]
-    end
   end
 
   describe "broadcast" do

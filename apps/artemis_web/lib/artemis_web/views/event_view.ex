@@ -137,11 +137,16 @@ defmodule ArtemisWeb.EventView do
 
   # Helpers
 
-  def render_categories(%{categories: categories}) when is_list(categories) do
-    raw(Enum.join(categories, "<br/>"))
+  def render_projects(%{projects: projects}) when is_list(projects) do
+    html =
+      projects
+      |> Enum.map(& &1.title)
+      |> Enum.join("<br/>")
+
+    raw html
   end
 
-  def render_categories(_), do: nil
+  def render_projects(_), do: nil
 
   def render_show_link(_conn, nil), do: nil
 

@@ -29,14 +29,14 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
   defp create_event_instance_notification(conn, event_template_id, date) do
     user = current_user(conn)
     module = ArtemisWeb.EventInstanceView
-    template = "show/_summary_by_category.slack"
+    template = "show/_summary_by_project.slack"
     event_template = GetEventTemplate.call!(event_template_id, user)
 
     event_answers =
       event_template
       |> Map.get(:id)
       |> get_event_answers(date, user)
-      |> group_event_answers_by(:category)
+      |> group_event_answers_by(:project)
 
     assigns = [
       conn: conn,
@@ -66,13 +66,14 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
     ListEventAnswers.call(params, user)
   end
 
-  defp group_event_answers_by(event_answers, :category) do
+  defp group_event_answers_by(event_answers, :project) do
     event_answers
-    |> Enum.map(&add_default_category(&1))
-    |> Enum.sort_by(&{&1.category, &1.event_question.order, &1.event_question.inserted_at, &1.user.name})
-    |> Enum.group_by(& &1.category)
+    |> Enum.sort_by(&{
+      Artemis.Helpers.deep_get(&1, [:project, :title]),
+      &1.event_question.order,
+      &1.event_question.inserted_at,
+      &1.user.name
+    })
+    |> Enum.group_by(& &1.project)
   end
-
-  defp add_default_category(%{category: nil} = event_answer), do: Map.put(event_answer, :category, "Uncategorized")
-  defp add_default_category(event_answer), do: event_answer
 end

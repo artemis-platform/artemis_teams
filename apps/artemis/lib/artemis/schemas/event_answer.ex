@@ -4,7 +4,6 @@ defmodule Artemis.EventAnswer do
   use Assoc.Schema, repo: Artemis.Repo
 
   schema "event_answers" do
-    field :category, :string
     field :date, :date
     field :type, :string
     field :value, :string
@@ -21,7 +20,6 @@ defmodule Artemis.EventAnswer do
 
   def updatable_fields,
     do: [
-      :category,
       :date,
       :event_question_id,
       :type,
@@ -46,7 +44,6 @@ defmodule Artemis.EventAnswer do
   def event_log_fields,
     do: [
       :id,
-      :category,
       :date,
       :event_question_id,
       :type,

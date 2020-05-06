@@ -47,7 +47,7 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
       assert redirected_to(conn) == Routes.event_instance_path(conn, :show, event_template, date)
 
       conn = get(conn, Routes.event_instance_path(conn, :show, event_template, date))
-      assert html_response(conn, 200) =~ event_answer_params.category
+      assert html_response(conn, 200) =~ event_answer_params.value
     end
 
     test "renders errors when passed invalid params", %{
@@ -78,7 +78,7 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
     test "shows event_instance", %{conn: conn, date: date, event_answers: event_answers, event_template: event_template} do
       conn = get(conn, Routes.event_instance_path(conn, :show, event_template, date))
 
-      assert html_response(conn, 200) =~ hd(event_answers).category
+      assert html_response(conn, 200) =~ hd(event_answers).value
     end
   end
 
@@ -105,7 +105,7 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
       event_template: event_template,
       event_answers: event_answers
     } do
-      event_answer_params = %{id: hd(event_answers).id, category: "updated category"}
+      event_answer_params = %{id: hd(event_answers).id, value: "updated value"}
 
       params = %{
         event_template.id => %{
@@ -119,7 +119,7 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
       assert redirected_to(conn) == Routes.event_instance_path(conn, :show, event_template, date)
 
       conn = get(conn, Routes.event_instance_path(conn, :show, event_template, date))
-      assert html_response(conn, 200) =~ "updated category"
+      assert html_response(conn, 200) =~ "updated value"
     end
 
     test "renders errors when passed invalid params", %{
