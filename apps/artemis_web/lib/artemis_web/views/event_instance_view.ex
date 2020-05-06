@@ -63,6 +63,12 @@ defmodule ArtemisWeb.EventInstanceView do
     link(record.title, to: Routes.event_instance_path(conn, :show, record.event_template, record))
   end
 
+  def render_event_instance_date(date) when is_bitstring(date) do
+    date
+    |> Date.from_iso8601!()
+    |> render_event_instance_date()
+  end
+
   def render_event_instance_date(date) do
     render_date(date, "{WDfull}, {Mfull} {D}, {YYYY}")
   end
