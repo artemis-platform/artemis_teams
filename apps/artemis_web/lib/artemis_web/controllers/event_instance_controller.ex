@@ -55,7 +55,7 @@ defmodule ArtemisWeb.EventInstanceController do
       event_template = get_event_template(event_template_id, user)
       event_answers = get_event_answers_for_update(event_template_id, date, user)
       event_questions = get_event_questions(event_template_id, user)
-      team_projects = get_team_projects(event_template_id.team_id)
+      team_projects = get_team_projects(event_template.team_id)
 
       assigns = [
         date: date,
@@ -257,7 +257,7 @@ defmodule ArtemisWeb.EventInstanceController do
     event_question_id =
       event_answer_params
       |> Map.fetch!("event_question_id")
-      |> String.to_integer()
+      |> Artemis.Helpers.to_integer()
 
     Enum.find(event_questions, &(&1.id == event_question_id))
   end

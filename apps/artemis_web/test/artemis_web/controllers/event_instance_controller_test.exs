@@ -102,10 +102,14 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
     test "redirects when data is valid", %{
       conn: conn,
       date: date,
-      event_template: event_template,
-      event_answers: event_answers
+      event_answers: event_answers,
+      event_template: event_template
     } do
-      event_answer_params = %{id: hd(event_answers).id, value: "updated value"}
+      event_answer_params = %{
+        event_question_id: hd(event_answers).event_question_id,
+        id: hd(event_answers).id,
+        value: "updated value"
+      }
 
       params = %{
         event_template.id => %{
@@ -128,7 +132,11 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
       event_answers: event_answers,
       event_template: event_template
     } do
-      event_answer_params = %{id: hd(event_answers).id, value: ""}
+      event_answer_params = %{
+        event_question_id: hd(event_answers).event_question_id,
+        id: hd(event_answers).id,
+        value: ""
+      }
 
       invalid_params = %{
         event_template.id => %{

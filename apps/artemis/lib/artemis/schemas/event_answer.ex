@@ -9,6 +9,7 @@ defmodule Artemis.EventAnswer do
     field :value, :string
 
     belongs_to :event_question, Artemis.EventQuestion, on_replace: :delete
+    belongs_to :project, Artemis.Project, on_replace: :delete
     belongs_to :user, Artemis.User, on_replace: :delete
 
     has_one :team, through: [:event_question, :event_template, :team]
@@ -22,6 +23,7 @@ defmodule Artemis.EventAnswer do
     do: [
       :date,
       :event_question_id,
+      :project_id,
       :type,
       :user_id,
       :value
@@ -38,6 +40,7 @@ defmodule Artemis.EventAnswer do
   def updatable_associations,
     do: [
       event_question: Artemis.EventQuestion,
+      project: Artemis.Project,
       user: Artemis.User
     ]
 
@@ -46,6 +49,7 @@ defmodule Artemis.EventAnswer do
       :id,
       :date,
       :event_question_id,
+      :project_id,
       :type,
       :value,
       :user_id

@@ -143,7 +143,7 @@ defmodule ArtemisWeb.EventView do
       |> Enum.map(& &1.title)
       |> Enum.join("<br/>")
 
-    raw html
+    raw(html)
   end
 
   def render_projects(_), do: nil

@@ -32,6 +32,7 @@ defmodule Artemis.Factories do
       type: Enum.random(Artemis.EventAnswer.allowed_types()),
       value: Faker.Lorem.paragraph(),
       event_question: build(:event_question),
+      project: build(:project),
       user: build(:user)
     }
   end
@@ -87,6 +88,18 @@ defmodule Artemis.Factories do
     %Artemis.Permission{
       name: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
       slug: sequence(:slug, &"#{Faker.Internet.slug()}-#{&1}")
+    }
+  end
+
+  def project_factory do
+    description = Faker.Lorem.paragraph()
+
+    %Artemis.Project{
+      active: true,
+      description: description,
+      description_html: description,
+      title: sequence(:title, &"#{Faker.Name.name()}-#{&1}"),
+      team: build(:team)
     }
   end
 

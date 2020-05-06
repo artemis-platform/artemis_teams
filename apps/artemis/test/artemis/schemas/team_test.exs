@@ -6,11 +6,12 @@ defmodule Artemis.TeamTest do
   import Artemis.Factories
 
   alias Artemis.EventTemplate
+  alias Artemis.Project
   alias Artemis.Repo
   alias Artemis.Team
   alias Artemis.UserTeam
 
-  @preload [:event_templates, :user_teams, :users]
+  @preload [:event_templates, :projects, :user_teams, :users]
 
   describe "associations - event templates" do
     setup do
@@ -70,6 +71,68 @@ defmodule Artemis.TeamTest do
 
       Enum.map(team.event_templates, fn event_template ->
         assert Repo.get(EventTemplate, event_template.id) == nil
+      end)
+    end
+  end
+
+  describe "associations - projects" do
+    setup do
+      team = insert(:team)
+
+      insert_list(3, :project, team: team)
+
+      {:ok, team: Repo.preload(team, @preload)}
+    end
+
+    test "cannot update associations through parent", %{team: team} do
+      new_project = insert(:project, team: team)
+
+      team =
+        Team
+        |> preload(^@preload)
+        |> Repo.get(team.id)
+
+      assert length(team.projects) == 4
+
+      {:ok, updated} =
+        team
+        |> Team.changeset(%{projects: [new_project]})
+        |> Repo.update()
+
+      updated = Repo.preload(updated, @preload)
+
+      assert length(updated.projects) == 4
+    end
+
+    test "deleting association does not remove record", %{team: team} do
+      assert Repo.get(Team, team.id) != nil
+      assert length(team.projects) == 3
+
+      Enum.map(team.projects, &Repo.delete(&1))
+
+      team =
+        Team
+        |> preload(^@preload)
+        |> Repo.get(team.id)
+
+      assert Repo.get(Team, team.id) != nil
+      assert length(team.projects) == 0
+    end
+
+    test "deleting record deletes associations", %{team: team} do
+      assert Repo.get(Team, team.id) != nil
+      assert length(team.projects) == 3
+
+      Enum.map(team.projects, fn project ->
+        assert Repo.get(Project, project.id).team_id == team.id
+      end)
+
+      Repo.delete(team)
+
+      assert Repo.get(Team, team.id) == nil
+
+      Enum.map(team.projects, fn project ->
+        assert Repo.get(Project, project.id) == nil
       end)
     end
   end

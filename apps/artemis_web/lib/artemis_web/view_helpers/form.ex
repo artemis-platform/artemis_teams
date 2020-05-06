@@ -9,6 +9,11 @@ defmodule ArtemisWeb.ViewHelper.Form do
   def blank_option(), do: [key: " ", value: ""]
 
   @doc """
+  Returns the value of a changeset field
+  """
+  def get_changeset_value(changeset, field), do: Ecto.Changeset.get_field(changeset, field)
+
+  @doc """
   Render a standalone select input form field. Note, if using `form_for`, use
   the Phoenix built-in function `select` instead.
 

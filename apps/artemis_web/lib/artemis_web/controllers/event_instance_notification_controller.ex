@@ -68,12 +68,14 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
   defp group_event_answers_by(event_answers, :project) do
     event_answers
-    |> Enum.sort_by(&{
-      Artemis.Helpers.deep_get(&1, [:project, :title]),
-      &1.event_question.order,
-      &1.event_question.inserted_at,
-      &1.user.name
-    })
+    |> Enum.sort_by(
+      &{
+        Artemis.Helpers.deep_get(&1, [:project, :title]),
+        &1.event_question.order,
+        &1.event_question.inserted_at,
+        &1.user.name
+      }
+    )
     |> Enum.group_by(& &1.project)
   end
 end

@@ -13,10 +13,7 @@
       <%
         existing_event_answers =
           Enum.filter(@event_answers, fn event_answer ->
-            data_match? = event_answer.data.event_question_id == event_question.id
-            changes_match? = event_answer.changes[:event_question_id] == event_question.id
-
-            data_match? || changes_match?
+            get_changeset_value(event_answer, :event_question_id) == event_question.id
           end)
 
         empty_event_answer = %Artemis.EventAnswer{
@@ -44,14 +41,14 @@
             <%= render_notification :error, body: "Error: Invalid Event Answer", header?: false, icon?: false %>
           <% end %>
 
-          <%= if event_answer.changes[:id] || event_answer.data.id do %>
-            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][id]" value="<%= event_answer.changes[:id] || event_answer.data.id %>">
+          <%= if get_changeset_value(event_answer, :id) do %>
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][id]" value="<%= get_changeset_value(event_answer, :id) %>">
           <% end %>
 
           <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][date]" value="<%= @date %>">
           <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][event_question_id]" value="<%= event_question.id %>">
-          <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][type]" value="<%= event_answer.changes[:type] || event_answer.data.type %>">
-          <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][user_id]" value="<%= event_answer.changes[:user_id] || event_answer.data.user_id %>">
+          <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][type]" value="<%= get_changeset_value(event_answer, :type) %>">
+          <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][user_id]" value="<%= get_changeset_value(event_answer, :user_id) %>">
 
           <div class="inline-fields">
             <div class="field project-field">
@@ -62,7 +59,7 @@
                 placeholder="Project"
               >
                 <option value=""></option>
-                <%= deprecated_options_for_select(@event_template.projects, event_answer.changes[:project_id] || event_answer.data.project_id) %>
+                <%= deprecated_options_for_select(@event_template.projects, get_changeset_value(event_answer, :project_id)) %>
               </select>
             </div>
 
@@ -71,7 +68,7 @@
                 name="event_instance[<%= event_question.id %>][<%= index %>][value]"
                 rows="1"
                 placeholder="Answer"
-              ><%= event_answer.changes[:value] || event_answer.data.value %></textarea>
+              ><%= get_changeset_value(event_answer, :value) %></textarea>
             </div>
           </div>
 

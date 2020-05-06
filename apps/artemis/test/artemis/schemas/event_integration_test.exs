@@ -68,7 +68,7 @@ defmodule Artemis.EventIntegrationTest do
         |> EventIntegration.changeset(params)
         |> Repo.insert()
 
-      assert errors_on(changeset) == %{settings: ["Required fields: webhook_url"]}
+      assert errors_on(changeset) == %{settings: ["webhook_url is required"]}
 
       # With Valid Params
 
