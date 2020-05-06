@@ -75,8 +75,7 @@ defmodule ArtemisWeb.ProjectControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, event_template: event_template, record: record} do
-      conn =
-        put(conn, Routes.project_path(conn, :update, event_template, record), project: @invalid_attrs)
+      conn = put(conn, Routes.project_path(conn, :update, event_template, record), project: @invalid_attrs)
 
       assert html_response(conn, 200) =~ "Edit Event Question"
     end

@@ -60,7 +60,7 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
         date: Date.from_iso8601!(date),
         event_template_id: event_template_id
       },
-      preload: [:event_question, :user]
+      preload: [:event_question, :project, :user]
     }
 
     ListEventAnswers.call(params, user)

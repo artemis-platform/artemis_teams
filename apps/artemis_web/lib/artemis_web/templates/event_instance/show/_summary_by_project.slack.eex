@@ -2,18 +2,20 @@
   "blocks": [
     {
       "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": "*Event Summary*:\n<<%= Routes.event_instance_url(@conn, :show, @event_template, @date) %>|<%= @event_template.title %>>"
-      }
+      "fields": [
+        {
+          "type": "mrkdwn",
+          "text": "*Event Summary*:\n<<%= Routes.event_instance_url(@conn, :show, @event_template, @date) %>|<%= @event_template.title %>>"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Date:*\n<%= render_event_instance_date(@date) %>"
+        }
+      ]
     },
-    {
-      "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": "*Date:*\n<%= render_event_instance_date(@date) %>"
-      }
-    },
+    <%# { %>
+    <%#   "type": "divider" %>
+    <%# }, %>
     <%# { %>
     <%#   "type": "section", %>
     <%#   "fields": [ %>
@@ -37,7 +39,9 @@
           |> Enum.map(&"*#{&1.event_question.title}* _#{&1.user.name}_ #{&1.value}")
           |> Enum.join("\\n")
 
-        text = ":star: *#{project}*\\n\\n#{entries}"
+        project_title = if is_map(project), do: project.title, else: "Other"
+
+        text = ":star: *#{project_title}*\\n\\n#{entries}"
       %>
       {
         "type": "section",
