@@ -1,0 +1,22 @@
+<%= render "show/_header.html", assigns %>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render "show/_notifications.html", assigns %>
+
+  <section>
+    <%= h2 "Details" %>
+    <%=
+      render_key_value_list([
+        ["Team", ArtemisWeb.TeamView.render_show_link(@conn, @project.team)],
+        ["Title", @project.title],
+        ["Active", @project.active],
+        ["Description", raw @project.description_html]
+      ])
+    %>
+  </section>
+</div>

@@ -19,7 +19,7 @@
     %>
   </section>
 
-  <section>
+  <section class="related-resources">
     <%= h3 "Events" %>
 
     <%=
@@ -36,7 +36,24 @@
     <% end %>
   </section>
 
-  <section>
+  <section class="related-resources">
+    <%= h3 "Projects" %>
+
+    <%=
+      render_data_table(
+        @conn,
+        @projects,
+        allowed_columns: ArtemisWeb.ProjectView.data_table_allowed_columns(),
+        default_columns: ["title", "active", "actions"]
+      )
+    %>
+
+    <%= if has?(@conn, "projects:create") do %>
+      <%= action "New Project", to: Routes.team_project_path(@conn, :new, @team), color: "blue" %>
+    <% end %>
+  </section>
+
+  <section class="related-resources">
     <%= h3 "Team Members" %>
 
     Total Members: <%= @team.user_count %>

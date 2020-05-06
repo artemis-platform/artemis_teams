@@ -1,0 +1,27 @@
+<div id="content-header">
+  <header>
+    <h1>Edit Event Question</h1>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+  <%= render_event_log_notifications @conn, "Project", @project.id %>
+
+  <section>
+
+    <%=
+      form_assigns =
+        assigns
+        |> Map.put(:action, Routes.team_project_path(@conn, :update, @project.team, @project))
+        |> Map.put(:team, @team)
+
+      render "form.html", form_assigns
+    %>
+  </section>
+</div>

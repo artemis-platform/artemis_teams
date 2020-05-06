@@ -6,13 +6,14 @@ defmodule ArtemisWeb.EventInstanceController do
   alias Artemis.ListEventAnswers
   alias Artemis.ListEventIntegrations
   alias Artemis.ListEventQuestions
+  alias Artemis.ListProjects
 
   # TODO: filter by username and question
   def index(conn, %{"event_id" => event_template_id} = params) do
     authorize(conn, "event-answers:show", fn ->
       user = current_user(conn)
       today = Date.to_iso8601(Date.utc_today())
-      event_template = get_event_template(event_template_id, user)
+      event_template = get_event_template!(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
       event_answers = get_event_answers_for_index(event_template_id, params, user)
       event_answers_by_date = get_event_answers_by_date(event_answers)
@@ -32,7 +33,7 @@ defmodule ArtemisWeb.EventInstanceController do
   def show(conn, %{"event_id" => event_template_id, "id" => date}) do
     authorize(conn, "event-answers:show", fn ->
       user = current_user(conn)
-      event_template = get_event_template(event_template_id, user)
+      event_template = get_event_template!(event_template_id, user)
       event_answers = get_event_answers_for_show(event_template_id, date, user)
       event_integrations = get_event_integrations(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
@@ -52,17 +53,17 @@ defmodule ArtemisWeb.EventInstanceController do
   def edit(conn, %{"event_id" => event_template_id, "id" => date}) do
     authorize(conn, "event-answers:update", fn ->
       user = current_user(conn)
-      event_template = get_event_template(event_template_id, user)
+      event_template = get_event_template!(event_template_id, user)
       event_answers = get_event_answers_for_update(event_template_id, date, user)
       event_questions = get_event_questions(event_template_id, user)
-      team_projects = get_team_projects(event_template.team_id)
+      projects = get_projects(event_template.team_id, user)
 
       assigns = [
         date: date,
         event_answers: event_answers,
         event_questions: event_questions,
         event_template: event_template,
-        team_projects: team_projects
+        projects: projects
       ]
 
       render(conn, "edit.html", assigns)
@@ -72,7 +73,7 @@ defmodule ArtemisWeb.EventInstanceController do
   def update(conn, %{"id" => date, "event_id" => event_template_id, "event_instance" => params}) do
     authorize(conn, "event-answers:update", fn ->
       user = current_user(conn)
-      event_template = get_event_template(event_template_id, user)
+      event_template = get_event_template!(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
       event_answer_params = get_event_answer_params(params)
 
@@ -83,14 +84,14 @@ defmodule ArtemisWeb.EventInstanceController do
           |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
 
         {:error, event_answers} ->
-          team_projects = get_team_projects(event_template.team_id)
+          projects = get_projects(event_template.team_id, user)
 
           assigns = [
             date: date,
             event_answers: event_answers,
             event_questions: event_questions,
             event_template: event_template,
-            team_projects: team_projects
+            projects: projects
           ]
 
           render(conn, "edit.html", assigns)
@@ -111,7 +112,7 @@ defmodule ArtemisWeb.EventInstanceController do
 
   # Helpers
 
-  defp get_event_template(event_template_id, user) do
+  defp get_event_template!(event_template_id, user) do
     options = [
       preload: [:projects]
     ]
@@ -182,9 +183,15 @@ defmodule ArtemisWeb.EventInstanceController do
     |> Enum.map(&EventAnswer.changeset(&1))
   end
 
-  # TODO: fetch related projects
-  defp get_team_projects(_team_id) do
-    []
+  defp get_projects(team_id, user) do
+    params = %{
+      filters: %{
+        team_id: team_id
+      },
+      preload: [:team]
+    }
+
+    ListProjects.call(params, user)
   end
 
   defp get_event_integrations(event_template_id, user) do

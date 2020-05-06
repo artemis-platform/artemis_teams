@@ -35,6 +35,7 @@ defmodule ArtemisWeb.EventQuestionController do
     authorize(conn, "event-questions:create", fn ->
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
+      params = Map.put(params, "event_template_id", event_template_id)
 
       case CreateEventQuestion.call(params, user) do
         {:ok, _event_question} ->
@@ -85,6 +86,7 @@ defmodule ArtemisWeb.EventQuestionController do
     authorize(conn, "event-questions:update", fn ->
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
+      params = Map.put(params, "event_template_id", event_template_id)
 
       case UpdateEventQuestion.call(id, params, user) do
         {:ok, _event_question} ->

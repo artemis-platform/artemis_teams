@@ -1,0 +1,28 @@
+<%= form_for @changeset, @action, [class: "ui form", id: "project-form"], fn f -> %>
+  <div class="field">
+    <%= label_with_errors f, :title %>
+    <%= text_input f, :title, placeholder: "Title" %>
+  </div>
+
+  <div class="field">
+    <%= label_with_errors f, :description %>
+    <%= textarea f, :description %>
+  </div>
+
+  <div class="inline-fields">
+    <div class="field">
+      <%= label f, :active %>
+      <%= checkbox f, :active, class: "ui checkbox" %>
+    </div>
+  </div>
+
+  <%= hidden_input f, :team_id, value: @team.id %>
+
+  <div>
+    <%= if @changeset.action do %>
+      <%= render_notification :error, body: "Error Submitting Form" %>
+    <% end %>
+
+    <%= submit "Save", class: "ui button primary" %>
+  </div>
+<% end %>

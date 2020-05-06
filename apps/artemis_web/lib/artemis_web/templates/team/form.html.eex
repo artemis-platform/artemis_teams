@@ -9,8 +9,6 @@
     <%= textarea f, :description %>
   </div>
 
-  <%= reason_field f %>
-
   <div>
     <%= if @changeset.action do %>
       <%= render_notification :error, body: "Error Submitting Form" %>

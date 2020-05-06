@@ -1,0 +1,16 @@
+<%=
+  secondary_navigation_items = [
+    [
+      label: "Overview",
+      path: &Routes.team_project_path(&1, :show, @project.team, @project),
+      path_match_type: :exact,
+      verify: &has?(&1, "projects:show")
+    ]
+  ]
+
+  render_secondary_navigation(
+    @conn,
+    current_user(@conn),
+    secondary_navigation_items
+  )
+%>

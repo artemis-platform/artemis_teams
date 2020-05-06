@@ -20,11 +20,12 @@ defmodule ArtemisWeb.TeamController do
     resource_variable: :team
 
   alias Artemis.CreateTeam
-  alias Artemis.Team
   alias Artemis.DeleteTeam
   alias Artemis.GetTeam
+  alias Artemis.ListProjects
   alias Artemis.ListTeams
   alias Artemis.ListUserTeams
+  alias Artemis.Team
   alias Artemis.UpdateTeam
 
   @preload []
@@ -76,9 +77,11 @@ defmodule ArtemisWeb.TeamController do
     authorize(conn, "teams:show", fn ->
       user = current_user(conn)
       team = GetTeam.call!(id, current_user(conn), preload: [:event_templates])
+      projects = get_projects(id, user)
       user_teams = get_user_teams(id, user)
 
       assigns = [
+        projects: projects,
         team: team,
         user_teams: user_teams
       ]
@@ -98,7 +101,10 @@ defmodule ArtemisWeb.TeamController do
 
   def update(conn, %{"id" => id, "team" => params}) do
     authorize(conn, "teams:update", fn ->
-      update_params = Map.delete(params, "user_teams")
+      update_params =
+        params
+        |> Map.delete("projects")
+        |> Map.delete("user_teams")
 
       case UpdateTeam.call(id, update_params, current_user(conn)) do
         {:ok, team} ->
@@ -125,6 +131,17 @@ defmodule ArtemisWeb.TeamController do
   end
 
   # Helpers
+
+  defp get_projects(team_id, user) do
+    params = %{
+      filters: %{
+        team_id: team_id
+      },
+      preload: [:team]
+    }
+
+    ListProjects.call(params, user)
+  end
 
   defp get_user_teams(team_id, user) do
     params = %{

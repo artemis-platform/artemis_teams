@@ -1,0 +1,17 @@
+<div id="content-header">
+  <header>
+    <h1>
+      Project
+      <span class="subheading"><%= @project.title %></span>
+    </h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "projects:delete") do %>
+        <%= delete_confirmation "Delete", Routes.team_project_path(@conn, :delete, @project.team, @project) %>
+      <% end %>
+      <%= if has?(@conn, "projects:update") do %>
+        <%= action "Edit", to: Routes.team_project_path(@conn, :edit, @project.team, @project), color: "green" %>
+      <% end %>
+    </div>
+  </header>
+</div>

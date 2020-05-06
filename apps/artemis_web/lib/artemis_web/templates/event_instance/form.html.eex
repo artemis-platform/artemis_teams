@@ -53,13 +53,18 @@
           <div class="inline-fields">
             <div class="field project-field">
               <select
-                class="enhanced creatable search clearable"
+                class="enhanced clearable"
                 name="event_instance[<%= event_question.id %>][<%= index %>][project_id]"
                 type="text"
                 placeholder="Project"
               >
                 <option value=""></option>
-                <%= deprecated_options_for_select(@event_template.projects, get_changeset_value(event_answer, :project_id)) %>
+                <%=
+                  current_value = get_changeset_value(event_answer, :project_id)
+                  values = Enum.map(@projects, &[key: &1.title, value: &1.id])
+
+                  deprecated_options_for_select(values, current_value)
+                %>
               </select>
             </div>
 
