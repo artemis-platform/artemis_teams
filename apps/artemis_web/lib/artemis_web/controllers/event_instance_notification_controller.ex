@@ -28,15 +28,17 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
   defp create_event_instance_notification(conn, event_template_id, date) do
     user = current_user(conn)
-    module = ArtemisWeb.EventInstanceView
-    template = "show/_summary_by_project.slack"
     event_template = GetEventTemplate.call!(event_template_id, user)
 
     event_answers =
       event_template
       |> Map.get(:id)
       |> get_event_answers(date, user)
-      |> group_event_answers_by(:project)
+
+    # Summary Overview Section
+
+    module = ArtemisWeb.EventInstanceView
+    template = "show/_summary_overview.slack"
 
     assigns = [
       conn: conn,
@@ -46,12 +48,35 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
       user: user
     ]
 
-    # payload = Phoenix.View.render_to_string(module, template, assigns)
-    # url = ""
+    payload = Phoenix.View.render_to_string(module, template, assigns)
 
-    # IO.inspect(Artemis.Drivers.Slack.Request.post(url, payload))
+    {:ok, _} = create_slack_notification(payload)
+
+    # Summary By Project Sections
+
+    event_answers
+    |> group_event_answers_by(:project)
+    |> Enum.map(fn {project, grouped_event_answers} ->
+      module = ArtemisWeb.EventInstanceView
+      template = "show/_summary_by_project.slack"
+
+      assigns = [
+        event_answers: grouped_event_answers,
+        project: project
+      ]
+
+      payload = Phoenix.View.render_to_string(module, template, assigns)
+
+      {:ok, _} = create_slack_notification(payload)
+    end)
 
     {:ok, true}
+  end
+
+  defp create_slack_notification(payload) do
+    url = ""
+
+    Artemis.Drivers.Slack.Request.post(url, payload)
   end
 
   defp get_event_answers(event_template_id, date, user) do

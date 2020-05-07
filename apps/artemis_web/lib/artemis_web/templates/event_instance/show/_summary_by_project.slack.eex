@@ -1,56 +1,24 @@
+<%
+  entries =
+    @event_answers
+    |> Enum.map(&"*#{&1.event_question.title}* _#{&1.user.name}_ #{&1.value}")
+    |> Enum.join("\\n")
+
+  project_title = if is_map(@project), do: @project.title, else: "Other"
+
+  text = ":star: *#{project_title}*\\n\\n#{entries}"
+%>
 {
   "blocks": [
     {
-      "type": "section",
-      "fields": [
-        {
-          "type": "mrkdwn",
-          "text": "*Event Summary*:\n<<%= Routes.event_instance_url(@conn, :show, @event_template, @date) %>|<%= @event_template.title %>>"
-        },
-        {
-          "type": "mrkdwn",
-          "text": "*Date:*\n<%= render_event_instance_date(@date) %>"
-        }
-      ]
-    },
-    <%# { %>
-    <%#   "type": "divider" %>
-    <%# }, %>
-    <%# { %>
-    <%#   "type": "section", %>
-    <%#   "fields": [ %>
-    <%#     { %>
-    <%#       "type": "mrkdwn", %>
-    <%#       "text": "*Respondants:*\nChris Laskey\nOther Person" %>
-    <%#     }, %>
-    <%#     { %>
-    <%#       "type": "mrkdwn", %>
-    <%#       "text": "*No Response:*\nThird Person" %>
-    <%#     } %>
-    <%#   ] %>
-    <%# }, %>
-    {
       "type": "divider"
     },
-    <% sections = Enum.map @event_answers, fn {project, event_answers} -> %>
-      <%
-        entries =
-          event_answers
-          |> Enum.map(&"*#{&1.event_question.title}* _#{&1.user.name}_ #{&1.value}")
-          |> Enum.join("\\n")
-
-        project_title = if is_map(project), do: project.title, else: "Other"
-
-        text = ":star: *#{project_title}*\\n\\n#{entries}"
-      %>
-      {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": "<%= text %>"
-        }
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "<%= text %>"
       }
-    <% end %>
-    <%= Enum.join(sections, ",{\"type\": \"divider\"},") %>
+    }
   ]
 }

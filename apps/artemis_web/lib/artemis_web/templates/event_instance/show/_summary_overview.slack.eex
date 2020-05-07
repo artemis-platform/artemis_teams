@@ -1,0 +1,33 @@
+{
+  "blocks": [
+    {
+      "type": "section",
+      "fields": [
+        {
+          "type": "mrkdwn",
+          "text": "*Event Summary*:\n<<%= Routes.event_instance_url(@conn, :show, @event_template, @date) %>|<%= @event_template.title %>>"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*Date:*\n<%= render_event_instance_date(@date) %>"
+        }
+      ]
+    },
+    <%# { %>
+    <%#   "type": "divider" %>
+    <%# }, %>
+    <%# { %>
+    <%#   "type": "section", %>
+    <%#   "fields": [ %>
+    <%#     { %>
+    <%#       "type": "mrkdwn", %>
+    <%#       "text": "*Respondants:*\nChris Laskey\nOther Person" %>
+    <%#     }, %>
+    <%#     { %>
+    <%#       "type": "mrkdwn", %>
+    <%#       "text": "*No Response:*\nThird Person" %>
+    <%#     } %>
+    <%#   ] %>
+    <%# } %>
+  ]
+}
