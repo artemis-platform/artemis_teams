@@ -1,9 +1,10 @@
 defmodule ArtemisWeb.EventInstanceNotificationController do
   use ArtemisWeb, :controller
 
+  alias Artemis.GetEventIntegration
   alias Artemis.GetEventTemplate
   alias Artemis.ListEventAnswers
-  alias Artemis.GetEventIntegration
+  alias Artemis.ListUserTeams
 
   def create(conn, %{"event_id" => event_template_id, "event_instance_id" => date, "id" => id}) do
     authorize(conn, "event-integrations:create", fn ->
@@ -27,12 +28,14 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
     user = current_user(conn)
     event_template = GetEventTemplate.call!(event_template_id, user)
     event_integration = GetEventIntegration.call!([id: id, event_template_id: event_template_id], user)
-    url = Artemis.Helpers.deep_get(event_integration, [:settings, "webhook_url"])
 
     event_answers =
       event_template
       |> Map.get(:id)
       |> get_event_answers(date, user)
+
+    respondents = get_respondents(event_template.team_id, event_answers, user)
+    url = Artemis.Helpers.deep_get(event_integration, [:settings, "webhook_url"])
 
     # Summary Overview Section
 
@@ -44,6 +47,7 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
       date: date,
       event_template: event_template,
       event_answers: event_answers,
+      respondents: respondents,
       user: user
     ]
 
@@ -100,5 +104,29 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
       {project, grouped_by_event_question}
     end)
+  end
+
+  defp get_respondents(team_id, event_answers, user) do
+    params = %{
+      filters: %{
+        team_id: team_id,
+        type: ["admin", "member"]
+      },
+      preload: [:user]
+    }
+
+    potential_respondents = ListUserTeams.call(params, user)
+
+    actual_respondent_ids =
+      event_answers
+      |> Enum.map(& &1.user.id)
+      |> Enum.uniq()
+
+    grouped = Enum.split_with(potential_respondents, &Enum.member?(actual_respondent_ids, &1.user.id))
+
+    %{
+      responded: elem(grouped, 0),
+      no_response: elem(grouped, 1)
+    }
   end
 end

@@ -13,19 +13,32 @@
         }
       ]
     },
-    <%# { %>
-    <%#   "type": "section", %>
-    <%#   "fields": [ %>
-    <%#     { %>
-    <%#       "type": "mrkdwn", %>
-    <%#       "text": "*Respondants:*\nChris Laskey\nOther Person" %>
-    <%#     }, %>
-    <%#     { %>
-    <%#       "type": "mrkdwn", %>
-    <%#       "text": "*No Response:*\nThird Person" %>
-    <%#     } %>
-    <%#   ] %>
-    <%# } %>
+    <%
+      responded_text =
+        @respondents
+        |> Map.get(:responded)
+        |> Enum.map(&"#{&1.user.name}")
+        |> Enum.join("\\n")
+
+      no_response_text =
+        @respondents
+        |> Map.get(:no_response)
+        |> Enum.map(&"#{&1.user.name}")
+        |> Enum.join("\\n")
+    %>
+    {
+      "type": "section",
+      "fields": [
+        {
+          "type": "mrkdwn",
+          "text": "*Responded:*\n<%= responded_text %>"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "*No Response:*\n<%= no_response_text %>"
+        }
+      ]
+    },
     {
       "type": "divider"
     }
