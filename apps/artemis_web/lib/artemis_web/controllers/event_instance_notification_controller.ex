@@ -56,12 +56,12 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
     event_answers
     |> group_event_answers_by(:project)
-    |> Enum.map(fn {project, grouped_event_answers} ->
+    |> Enum.map(fn {project, grouped_event_questions} ->
       module = ArtemisWeb.EventInstanceView
       template = "show/_summary_by_project.slack"
 
       assigns = [
-        event_answers: grouped_event_answers,
+        event_questions: grouped_event_questions,
         project: project
       ]
 
@@ -102,5 +102,10 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
       }
     )
     |> Enum.group_by(& &1.project)
+    |> Enum.map(fn {project, event_answers} ->
+      grouped_by_event_question = Enum.group_by(event_answers, & &1.event_question)
+
+      {project, grouped_by_event_question}
+    end)
   end
 end

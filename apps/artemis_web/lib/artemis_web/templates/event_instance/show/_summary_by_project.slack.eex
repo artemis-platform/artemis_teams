@@ -1,24 +1,33 @@
 <%
   entries =
-    @event_answers
-    |> Enum.map(&"*#{&1.event_question.title}* _#{&1.user.name}_ #{&1.value}")
+    @event_questions
+    |> Enum.map(fn {event_question, event_answers} ->
+      label = "\\n*#{event_question.title}*\\n"
+
+      values =
+        event_answers
+        |> Enum.map(&"_#{&1.user.name}_ - #{&1.value}")
+        |> Enum.join("\\n")
+
+      "#{label}#{values}"
+    end)
     |> Enum.join("\\n")
 
   project_title = if is_map(@project), do: @project.title, else: "Other"
 
-  text = ":star: *#{project_title}*\\n\\n#{entries}"
+  text = ":books: *#{project_title}*\\n\\n#{entries}"
 %>
 {
   "blocks": [
-    {
-      "type": "divider"
-    },
     {
       "type": "section",
       "text": {
         "type": "mrkdwn",
         "text": "<%= text %>"
       }
+    },
+    {
+      "type": "divider"
     }
   ]
 }
