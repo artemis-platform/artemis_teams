@@ -3,14 +3,11 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
   alias Artemis.GetEventTemplate
   alias Artemis.ListEventAnswers
-  alias Artemis.ListEventIntegrations
+  alias Artemis.GetEventIntegration
 
-  def create(conn, %{"event_id" => event_template_id, "event_instance_id" => date}) do
+  def create(conn, %{"event_id" => event_template_id, "event_instance_id" => date, "id" => id}) do
     authorize(conn, "event-integrations:create", fn ->
-      user = current_user(conn)
-      event_template = GetEventTemplate.call!(event_template_id, user)
-
-      case create_event_instance_notification(conn, event_template.id, date) do
+      case create_event_instance_notification(conn, event_template_id, date, id) do
         {:ok, _event_question} ->
           conn
           |> put_flash(:info, "Event Notification created successfully.")
@@ -26,9 +23,11 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
   # Helpers
 
-  defp create_event_instance_notification(conn, event_template_id, date) do
+  defp create_event_instance_notification(conn, event_template_id, date, id) do
     user = current_user(conn)
     event_template = GetEventTemplate.call!(event_template_id, user)
+    event_integration = GetEventIntegration.call!([id: id, event_template_id: event_template_id], user)
+    url = Artemis.Helpers.deep_get(event_integration, [:settings, "webhook_url"])
 
     event_answers =
       event_template
@@ -50,7 +49,7 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
     payload = Phoenix.View.render_to_string(module, template, assigns)
 
-    {:ok, _} = create_slack_notification(payload)
+    {:ok, _} = Artemis.Drivers.Slack.Request.post(url, payload)
 
     # Summary By Project Sections
 
@@ -67,16 +66,10 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
       payload = Phoenix.View.render_to_string(module, template, assigns)
 
-      {:ok, _} = create_slack_notification(payload)
+      {:ok, _} = Artemis.Drivers.Slack.Request.post(url, payload)
     end)
 
     {:ok, true}
-  end
-
-  defp create_slack_notification(payload) do
-    url = ""
-
-    Artemis.Drivers.Slack.Request.post(url, payload)
   end
 
   defp get_event_answers(event_template_id, date, user) do

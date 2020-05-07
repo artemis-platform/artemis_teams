@@ -51,13 +51,12 @@
                 <%= Enum.map event_answers_for_event_question, fn event_answer -> %>
                   <li>
                     <div class="username">
-                      <i class="user outline icon"></i>
                       <%= event_answer.user.name %>
                     </div>
 
                     <%= if event_answer.project do %>
                       <div class="project">
-                        <i class="object group outline icon"></i>
+                        <i class="thumbtack icon"></i>
                         <%= event_answer.project.title %>
                       </div>
                     <% end %>

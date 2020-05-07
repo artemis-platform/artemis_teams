@@ -35,13 +35,12 @@
         <%= Enum.map matching_event_answers, fn event_answer -> %>
           <li>
             <div class="username">
-              <i class="user outline icon"></i>
               <%= event_answer.user.name %>
             </div>
 
             <%= if event_answer.project do %>
               <div class="project">
-                <i class="object group outline icon"></i>
+                <i class="thumbtack icon"></i>
                 <%= event_answer.project.title %>
               </div>
             <% end %>
@@ -69,7 +68,7 @@
                 <div class="item">
                   <%=
                     label = ArtemisWeb.EventIntegrationView.render_event_integration_name(event_integration)
-                    to = Routes.event_instance_notification_path(@conn, :create, @event_template, @date)
+                    to = Routes.event_instance_notification_path(@conn, :create, @event_template, @date, id: event_integration.id)
 
                     action(label, to: to, method: :post)
                   %>

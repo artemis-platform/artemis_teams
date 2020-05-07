@@ -1026,6 +1026,7 @@ ul.event-instances {
 
     .date h3 {
       font-weight: 300 !important;
+      border-bottom: 1px solid #e2e2e2;
     }
   }
 }
@@ -1047,23 +1048,27 @@ ul.event-answers {
   padding: 0;
 
   &>li {
-    // background: #fafafa;
-    border: 1px solid #e2e2e2;
-    border-left: 3px solid $light_blue;
-    border-radius: 3px;
+    background: #fafafa;
+    border: 1px solid #e8e8e8;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
     padding: 0.375rem 0.5rem;
+
+    .icon {
+      font-size: 0.875em;
+      opacity: 0.75;
+    }
 
     .username {
       font-size: 0.875rem;
       flex-grow: 0;
+      font-weight: 600;
       margin-right: 1rem;
     }
 
-    .category {
+    .project {
       font-size: 0.875rem;
       flex-grow: 0;
       margin-right: 1rem;
@@ -1085,9 +1090,9 @@ ul.event-answers {
     }
   }
 
-  .category-field {
+  .project-field {
     font-size: 13px;
-    width: 150px;
+    width: 180px;
   }
 
   .answer-field {
