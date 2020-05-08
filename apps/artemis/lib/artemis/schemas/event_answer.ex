@@ -8,6 +8,7 @@ defmodule Artemis.EventAnswer do
     field :type, :string
     field :value, :string
 
+    field :changeset_id, :string, virtual: true
     field :delete, :boolean, default: false, virtual: true
 
     belongs_to :event_question, Artemis.EventQuestion, on_replace: :delete
@@ -23,7 +24,9 @@ defmodule Artemis.EventAnswer do
 
   def updatable_fields,
     do: [
+      :changeset_id,
       :date,
+      :delete,
       :event_question_id,
       :project_id,
       :type,
@@ -65,11 +68,27 @@ defmodule Artemis.EventAnswer do
   # Changesets
 
   def changeset(struct, params \\ %{}) do
+    params = get_changeset_params(params)
+
     struct
     |> cast(params, updatable_fields())
     |> validate_required(required_fields())
     |> validate_inclusion(:type, allowed_types())
     |> foreign_key_constraint(:event_question_id)
     |> foreign_key_constraint(:user_id)
+  end
+
+  # Helpers
+
+  defp get_changeset_params(params) do
+    existing =
+      params
+      |> Artemis.Helpers.keys_to_strings()
+      |> Map.get("changeset_id")
+
+    case Artemis.Helpers.present?(existing) do
+      false -> Map.put(params, "changeset_id", Artemis.Helpers.UUID.call())
+      true -> params
+    end
   end
 end

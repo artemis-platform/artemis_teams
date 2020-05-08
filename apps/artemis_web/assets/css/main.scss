@@ -1083,25 +1083,63 @@ ul.event-answers {
 #event-instance-form {
 
   .event-question {
-    margin: 0 0 1rem 0;
+    position: relative;
+    margin: 0rem 0 2rem 0;
 
     h4 {
       margin: 0 0 0.5rem 0;
     }
-  }
 
-  .project-field {
-    font-size: 13px;
-    width: 180px;
-  }
-
-  .answer-field {
-    flex-grow: 1;
-
-    textarea {
-      line-height: 18px;
+    .add-event-answer {
+      box-shadow: none;
+      color: $light_blue !important;
       font-size: 13px;
-      height: 38px;
+      padding: 0;
+
+      &:hover {
+        color: $blue_muted !important;
+      }
+    }
+
+    .event-answer {
+
+      &.marked-for-deletion {
+        visibility: hidden;
+        height: 1px;
+        left: 0px;
+        overflow: none;
+        position: absolute;
+        top: 0px;
+        width: 1px;
+      }
+
+      .project-field {
+        font-size: 13px;
+        width: 180px;
+      }
+
+      .answer-field {
+        flex-grow: 1;
+
+        textarea {
+          line-height: 18px;
+          font-size: 13px;
+          height: 38px;
+        }
+      }
+
+      .delete-field {
+
+        button {
+          background: #fff;
+          height: 38px;
+          width: 38px;
+
+          &:hover {
+            color: $status_red;
+          }
+        }
+      }
     }
   }
 }

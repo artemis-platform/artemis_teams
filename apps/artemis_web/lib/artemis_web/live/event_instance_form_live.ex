@@ -5,12 +5,13 @@ defmodule ArtemisWeb.EventInstanceFormLive do
 
   @impl true
   def mount(session, socket) do
-    event_answers_with_defaults = add_default_event_answers(
-      session.date,
-      session.event_questions,
-      session.event_answers,
-      session.user
-    )
+    event_answers_with_defaults =
+      add_default_event_answers(
+        session.event_answers,
+        session.date,
+        session.event_questions,
+        session.user
+      )
 
     assigns =
       socket
@@ -48,26 +49,46 @@ defmodule ArtemisWeb.EventInstanceFormLive do
     {:noreply, socket}
   end
 
+  def handle_event("delete", %{"changeset_id" => changeset_id}, socket) do
+    updated_event_answers =
+      socket.assigns.event_answers
+      |> Enum.map(fn event_answer ->
+        match? = Ecto.Changeset.get_field(event_answer, :changeset_id) == changeset_id
+
+        case match? do
+          true -> Ecto.Changeset.put_change(event_answer, :delete, true)
+          false -> event_answer
+        end
+      end)
+      |> add_default_event_answers(socket.assigns.date, socket.assigns.event_questions, socket.assigns.user)
+
+    socket = assign(socket, :event_answers, updated_event_answers)
+
+    {:noreply, socket}
+  end
+
   # Helpers
 
-  defp add_default_event_answers(date, event_questions, event_answers, user) do
+  defp add_default_event_answers(event_answers, date, event_questions, user) do
     Enum.reduce(event_questions, event_answers, fn event_question, acc ->
       filtered =
         Enum.filter(event_answers, fn event_answer ->
           current = Ecto.Changeset.get_field(event_answer, :event_question_id)
-          match = event_question.id
+          match? = current == event_question.id
+          marked_for_delete? = Ecto.Changeset.get_field(event_answer, :delete)
 
-          current == match
+          match? && !marked_for_delete?
         end)
 
       case length(filtered) do
         0 ->
-          default_answer_changeset = create_event_answer_changeset(
-            date,
-            event_question.id,
-            event_question.type,
-            user.id
-          )
+          default_answer_changeset =
+            create_event_answer_changeset(
+              date,
+              event_question.id,
+              event_question.type,
+              user.id
+            )
 
           [default_answer_changeset | acc]
 
