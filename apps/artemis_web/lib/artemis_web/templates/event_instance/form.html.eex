@@ -3,39 +3,23 @@
     <div class="event-question">
       <h4>
         <%= event_question.title %>
-        <span class="required">
-          <%= if event_question.required, do: "Required", else: "Optional" %>
+        <span class="subheading">
+          <%= unless event_question.required, do: "Optional" %>
         </span>
       </h4>
 
       <%= raw event_question.description_html %>
 
       <%
-        existing_event_answers =
-          Enum.filter(@event_answers, fn event_answer ->
-            get_changeset_value(event_answer, :event_question_id) == event_question.id
-          end)
-
-        empty_event_answer = %Artemis.EventAnswer{
-          date: @date,
-          event_question_id: event_question.id,
-          type: event_question.type,
-          user_id: current_user(@conn).id
-        }
-
-        empty_event_answer_changeset = Artemis.EventAnswer.changeset(empty_event_answer)
-
-        event_answers =
-          case length(existing_event_answers) do
-            0 -> [empty_event_answer_changeset]
-            _ -> existing_event_answers
-          end
-
-        event_answers = Enum.with_index(event_answers)
+        event_answers_for_event_question =
+          @event_answers
+          |> Enum.filter(&(get_changeset_value(&1, :event_question_id) == event_question.id))
+          |> Enum.with_index()
       %>
 
-      <%= if length(event_answers) > 0 do %>
-        <%= Enum.map event_answers, fn {event_answer, index} -> %>
+      <%= if length(event_answers_for_event_question) > 0 do %>
+
+        <%= Enum.map event_answers_for_event_question, fn {event_answer, index} -> %>
 
           <%= if !event_answer.valid? && event_answer.action do %>
             <%= render_notification :error, body: "Error: Invalid Event Answer", header?: false, icon?: false %>

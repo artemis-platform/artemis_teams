@@ -54,9 +54,11 @@ defmodule ArtemisWeb.EventInstanceController do
     authorize(conn, "event-answers:update", fn ->
       user = current_user(conn)
       event_template = get_event_template!(event_template_id, user)
-      event_answers = get_event_answers_for_update(event_template_id, date, user)
       event_questions = get_event_questions(event_template_id, user)
       projects = get_projects(event_template.team_id, user)
+
+      existing_event_answers = get_event_answers_for_update(event_template_id, date, user)
+      event_answers = add_default_event_answers(date, event_questions, existing_event_answers, user)
 
       assigns = [
         date: date,
@@ -83,8 +85,9 @@ defmodule ArtemisWeb.EventInstanceController do
           |> put_flash(:info, "Event Instance updated successfully.")
           |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
 
-        {:error, event_answers} ->
+        {:error, existing_event_answers} ->
           projects = get_projects(event_template.team_id, user)
+          event_answers = add_default_event_answers(date, event_questions, existing_event_answers, user)
 
           assigns = [
             date: date,
@@ -181,6 +184,32 @@ defmodule ArtemisWeb.EventInstanceController do
     params
     |> ListEventAnswers.call(user)
     |> Enum.map(&EventAnswer.changeset(&1))
+  end
+
+  defp add_default_event_answers(date, event_questions, event_answers, user) do
+    Enum.reduce(event_questions, event_answers, fn event_question, acc ->
+      filtered =
+        Enum.filter(event_answers, fn event_answer ->
+          current = Ecto.Changeset.get_field(event_answer, :event_question_id)
+          match = event_question.id
+
+          current == match
+        end)
+
+      empty_event_answer = %Artemis.EventAnswer{
+        date: date,
+        event_question_id: event_question.id,
+        type: event_question.type,
+        user_id: user.id
+      }
+
+      empty_event_answer_changeset = Artemis.EventAnswer.changeset(empty_event_answer)
+
+      case length(filtered) do
+        0 -> [empty_event_answer_changeset | acc]
+        _ -> acc
+      end
+    end)
   end
 
   defp get_projects(team_id, user) do
