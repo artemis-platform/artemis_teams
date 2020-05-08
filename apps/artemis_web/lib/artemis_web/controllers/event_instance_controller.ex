@@ -299,10 +299,15 @@ defmodule ArtemisWeb.EventInstanceController do
   end
 
   defp record_event_answer(params, user) do
+    id = Map.get(params, "id")
+    id? = !is_nil(id)
+    delete? = Map.get(params, "delete") == "true"
+
     action =
-      case Map.get(params, "id") do
-        nil -> fn params, user -> Artemis.CreateEventAnswer.call(params, user) end
-        id -> fn params, user -> Artemis.UpdateEventAnswer.call(id, params, user) end
+      cond do
+        id? && delete? -> fn _params, user -> Artemis.DeleteEventAnswer.call(id, user) end
+        id? -> fn params, user -> Artemis.UpdateEventAnswer.call(id, params, user) end
+        true -> fn params, user -> Artemis.CreateEventAnswer.call(params, user) end
       end
 
     case action.(params, user) do

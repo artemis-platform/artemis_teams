@@ -8,6 +8,8 @@ defmodule Artemis.EventAnswer do
     field :type, :string
     field :value, :string
 
+    field :delete, :boolean, default: false, virtual: true
+
     belongs_to :event_question, Artemis.EventQuestion, on_replace: :delete
     belongs_to :project, Artemis.Project, on_replace: :delete
     belongs_to :user, Artemis.User, on_replace: :delete

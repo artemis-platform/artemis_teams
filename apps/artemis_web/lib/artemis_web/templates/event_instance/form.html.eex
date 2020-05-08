@@ -29,6 +29,10 @@
             <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][id]" value="<%= get_changeset_value(event_answer, :id) %>">
           <% end %>
 
+          <%= if get_changeset_value(event_answer, :delete) do %>
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][delete]" value="true">
+          <% end %>
+
           <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][date]" value="<%= @date %>">
           <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][event_question_id]" value="<%= event_question.id %>">
           <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][type]" value="<%= get_changeset_value(event_answer, :type) %>">
