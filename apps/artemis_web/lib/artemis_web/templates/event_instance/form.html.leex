@@ -1,4 +1,12 @@
-<%= form_for @conn, @action, [method: :put, class: "ui form", id: "event-instance-form"], fn f -> %>
+<form accept-charset="UTF-8" action="<%= @action %>" class="ui form" id="event-instance-form" method="post">
+  <input name="_utf8" type="hidden" value="✓">
+  <input name="_method" type="hidden" value="put">
+  <input name="_csrf_token" type="hidden" value="<%= @csrf_token %>">
+
+  <input name="id" type="hidden" value="<%= @date %>">
+  <input name="date" type="hidden" value="<%= @date %>">
+  <input name="event_template_id" type="hidden" value="<%= @event_template.id %>">
+
   <%= Enum.map @event_questions, fn event_question -> %>
     <div class="event-question">
       <h4>
@@ -70,13 +78,7 @@
     </div>
   <% end %>
 
-  <%= hidden_input f, :id, value: @date %>
-
-  <%= hidden_input f, :date, value: @date %>
-
-  <%= hidden_input f, :event_template_id, value: @event_template.id %>
-
   <div>
     <%= submit "Save", class: "ui button primary" %>
   </div>
-<% end %>
+</form>

@@ -61,6 +61,7 @@ defmodule ArtemisWeb.EventInstanceController do
       event_answers = add_default_event_answers(date, event_questions, existing_event_answers, user)
 
       assigns = [
+        csrf_token: Phoenix.Controller.get_csrf_token(),
         date: date,
         event_answers: event_answers,
         event_questions: event_questions,
@@ -90,6 +91,7 @@ defmodule ArtemisWeb.EventInstanceController do
           event_answers = add_default_event_answers(date, event_questions, existing_event_answers, user)
 
           assigns = [
+            csrf_token: Phoenix.Controller.get_csrf_token(),
             date: date,
             event_answers: event_answers,
             event_questions: event_questions,
