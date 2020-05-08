@@ -29,52 +29,65 @@
 
         <%= Enum.map event_answers_for_event_question, fn {event_answer, index} -> %>
 
-          <%= if !event_answer.valid? && event_answer.action do %>
-            <%= render_notification :error, body: "Error: Invalid Event Answer", header?: false, icon?: false %>
-          <% end %>
+          <div class="event-answer">
 
-          <%= if get_changeset_value(event_answer, :id) do %>
-            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][id]" value="<%= get_changeset_value(event_answer, :id) %>">
-          <% end %>
+            <%= if !event_answer.valid? && event_answer.action do %>
+              <%= render_notification :error, body: "Error: Invalid Event Answer", header?: false, icon?: false %>
+            <% end %>
 
-          <%= if get_changeset_value(event_answer, :delete) do %>
-            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][delete]" value="true">
-          <% end %>
+            <%= if get_changeset_value(event_answer, :id) do %>
+              <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][id]" value="<%= get_changeset_value(event_answer, :id) %>">
+            <% end %>
 
-          <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][date]" value="<%= @date %>">
-          <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][event_question_id]" value="<%= event_question.id %>">
-          <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][type]" value="<%= get_changeset_value(event_answer, :type) %>">
-          <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][user_id]" value="<%= get_changeset_value(event_answer, :user_id) %>">
+            <%= if get_changeset_value(event_answer, :delete) do %>
+              <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][delete]" value="true">
+            <% end %>
 
-          <div class="inline-fields">
-            <div class="field project-field">
-              <select
-                class="enhanced clearable"
-                name="event_instance[<%= event_question.id %>][<%= index %>][project_id]"
-                type="text"
-                placeholder="Project"
-              >
-                <option value=""></option>
-                <%=
-                  current_value = get_changeset_value(event_answer, :project_id)
-                  values = Enum.map(@projects, &[key: &1.title, value: &1.id])
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][date]" value="<%= @date %>">
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][event_question_id]" value="<%= event_question.id %>">
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][type]" value="<%= get_changeset_value(event_answer, :type) %>">
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][user_id]" value="<%= get_changeset_value(event_answer, :user_id) %>">
 
-                  deprecated_options_for_select(values, current_value)
-                %>
-              </select>
-            </div>
+            <div class="inline-fields">
+              <div class="field project-field">
+                <select
+                  class="enhanced clearable"
+                  name="event_instance[<%= event_question.id %>][<%= index %>][project_id]"
+                  type="text"
+                  placeholder="Project"
+                >
+                  <option value=""></option>
+                  <%=
+                    current_value = get_changeset_value(event_answer, :project_id)
+                    values = Enum.map(@projects, &[key: &1.title, value: &1.id])
 
-            <div class="field answer-field">
-              <textarea
-                name="event_instance[<%= event_question.id %>][<%= index %>][value]"
-                rows="1"
-                placeholder="Answer"
-              ><%= get_changeset_value(event_answer, :value) %></textarea>
+                    deprecated_options_for_select(values, current_value)
+                  %>
+                </select>
+              </div>
+
+              <div class="field answer-field">
+                <textarea
+                  name="event_instance[<%= event_question.id %>][<%= index %>][value]"
+                  rows="1"
+                  placeholder="Answer"
+                ><%= get_changeset_value(event_answer, :value) %></textarea>
+              </div>
             </div>
           </div>
 
         <% end %>
       <% end %>
+
+      <button
+        type="button"
+        class="ui button basic"
+        phx-click="create"
+        phx-value-date="<%= @date %>"
+        phx-value-event_question_id="<%= event_question.id %>"
+        phx-value-event_question_type="<%= event_question.type %>"
+        phx-value-user_id="<%= @user.id %>"
+      >+ Answer</button>
     </div>
   <% end %>
 

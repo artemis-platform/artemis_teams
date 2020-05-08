@@ -376,3 +376,7 @@ $(document).ready(function() {
   initializeSelectTableRow()
   initializeWikiSidenav()
 })
+
+window.vendor_initializers = {
+  select2: initializeSelect2
+}
