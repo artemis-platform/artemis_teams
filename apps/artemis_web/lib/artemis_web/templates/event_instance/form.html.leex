@@ -77,33 +77,37 @@
                 ><%= get_changeset_value(event_answer, :value) %></textarea>
               </div>
 
-              <div class="field delete-field">
-                <button
-                  type="button"
-                  class="ui icon button"
-                  phx-click="delete"
-                  phx-value-changeset_id="<%= get_changeset_value(event_answer, :changeset_id) %>"
-                >
-                  <i class="trash icon"></i>
-                </button>
-              </div>
+              <%= if event_question.multiple do %>
+                <div class="field delete-field">
+                  <button
+                    type="button"
+                    class="ui icon button"
+                    phx-click="delete"
+                    phx-value-changeset_id="<%= get_changeset_value(event_answer, :changeset_id) %>"
+                  >
+                    <i class="trash icon"></i>
+                  </button>
+                </div>
+              <% end %>
             </div>
           </div>
 
         <% end %>
       <% end %>
 
-      <button
-        class="ui button basic add-event-answer"
-        phx-click="create"
-        phx-value-date="<%= @date %>"
-        phx-value-event_question_id="<%= event_question.id %>"
-        phx-value-event_question_type="<%= event_question.type %>"
-        phx-value-user_id="<%= @user.id %>"
-        type="button"
-      >
-        + Add Answer
-      </button>
+      <%= if event_question.multiple do %>
+        <button
+          class="ui button basic add-event-answer"
+          phx-click="create"
+          phx-value-date="<%= @date %>"
+          phx-value-event_question_id="<%= event_question.id %>"
+          phx-value-event_question_type="<%= event_question.type %>"
+          phx-value-user_id="<%= @user.id %>"
+          type="button"
+        >
+          + Add Answer
+        </button>
+      <% end %>
     </div>
   <% end %>
 

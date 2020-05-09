@@ -249,12 +249,24 @@ defmodule ArtemisWeb.EventInstanceController do
     |> Enum.reduce([], fn params, acc ->
       event_question = get_event_question(params, event_questions)
 
+      # TODO: handle `required` and `multiple` combination better. Should check
+      # for at least one answer. Not allow zero answers of them when multiple
+      # is set.
+      required? = event_question.required && !event_question.multiple
+
       value_present? =
         params
         |> Map.get("value")
         |> Artemis.Helpers.present?()
 
-      case event_question.required || value_present? do
+      id_present? =
+        params
+        |> Map.get("id")
+        |> Artemis.Helpers.present?()
+
+      existing_to_be_deleted? = id_present? && (Map.get(params, "delete") == "true")
+
+      case required? || value_present? || existing_to_be_deleted? do
         true -> [params | acc]
         false -> acc
       end
@@ -274,11 +286,11 @@ defmodule ArtemisWeb.EventInstanceController do
   defp record_event_answer(params, user) do
     id = Map.get(params, "id")
     id? = !is_nil(id)
-    delete? = Map.get(params, "delete") == "true"
+    to_be_deleted? = Map.get(params, "delete") == "true"
 
     action =
       cond do
-        id? && delete? -> fn _params, user -> Artemis.DeleteEventAnswer.call(id, user) end
+        id? && to_be_deleted? -> fn _params, user -> Artemis.DeleteEventAnswer.call(id, user) end
         id? -> fn params, user -> Artemis.UpdateEventAnswer.call(id, params, user) end
         true -> fn params, user -> Artemis.CreateEventAnswer.call(params, user) end
       end
