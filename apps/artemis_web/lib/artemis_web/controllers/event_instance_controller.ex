@@ -249,10 +249,13 @@ defmodule ArtemisWeb.EventInstanceController do
     |> Enum.reduce([], fn params, acc ->
       event_question = get_event_question(params, event_questions)
 
-      # TODO: handle `required` and `multiple` combination better. Should check
-      # for at least one answer. Not allow zero answers of them when multiple
-      # is set.
-      required? = event_question.required && !event_question.multiple
+      required? = event_question.required
+
+      multiple? = event_question.multiple
+      single? = !multiple?
+
+      delete_present? = Map.get(params, "delete") == "true"
+      active? = !delete_present?
 
       value_present? =
         params
@@ -264,11 +267,14 @@ defmodule ArtemisWeb.EventInstanceController do
         |> Map.get("id")
         |> Artemis.Helpers.present?()
 
-      existing_to_be_deleted? = id_present? && (Map.get(params, "delete") == "true")
-
-      case required? || value_present? || existing_to_be_deleted? do
-        true -> [params | acc]
-        false -> acc
+      cond do
+        single? && required? -> [params | acc]
+        single? && id_present? -> [params | acc]
+        single? && value_present? -> [params | acc]
+        multiple? && required? && active? -> [params | acc]
+        multiple? && id_present? -> [params | acc]
+        multiple? && value_present? -> [params | acc]
+        true -> acc
       end
     end)
     |> Enum.reverse()
