@@ -1,8 +1,14 @@
 <%
   entries =
     @event_questions
-    |> Enum.map(fn {event_question, event_answers} ->
+    |> Map.keys()
+    |> Enum.sort_by(&{
+      &1.order,
+      &1.inserted_at
+    })
+    |> Enum.map(fn event_question ->
       label = "\\n*#{event_question.title}*\\n"
+      event_answers = Map.get(@event_questions, event_question)
 
       values =
         event_answers

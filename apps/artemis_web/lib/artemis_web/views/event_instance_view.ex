@@ -55,6 +55,19 @@ defmodule ArtemisWeb.EventInstanceView do
     end
   end
 
+  @doc """
+  Render event instance form
+  """
+  def render_event_instance_form(conn, assigns \\ []) do
+    session = Map.delete(assigns, :conn)
+
+    Phoenix.LiveView.live_render(
+      conn,
+      ArtemisWeb.EventInstanceFormLive,
+      session: session
+    )
+  end
+
   # Helpers
 
   def render_show_link(_conn, nil), do: nil

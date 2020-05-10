@@ -1,0 +1,117 @@
+<form accept-charset="UTF-8" action="<%= @action %>" class="ui form" id="event-instance-form" method="post" phx-hook="Select2">
+  <input name="_utf8" type="hidden" value="✓">
+  <input name="_method" type="hidden" value="put">
+  <input name="_csrf_token" type="hidden" value="<%= @csrf_token %>">
+
+  <input name="id" type="hidden" value="<%= @date %>">
+  <input name="date" type="hidden" value="<%= @date %>">
+  <input name="event_template_id" type="hidden" value="<%= @event_template.id %>">
+
+  <%= Enum.map @event_questions, fn event_question -> %>
+    <div class="event-question">
+      <h4>
+        <%= event_question.title %>
+        <span class="subheading">
+          <%= unless event_question.required, do: "Optional" %>
+        </span>
+      </h4>
+
+      <%= raw event_question.description_html %>
+
+      <%
+        event_answers_for_event_question =
+          @event_answers
+          |> Enum.filter(&(get_changeset_value(&1, :event_question_id) == event_question.id))
+          |> Enum.with_index()
+      %>
+
+      <%= if length(event_answers_for_event_question) > 0 do %>
+
+        <%= Enum.map event_answers_for_event_question, fn {event_answer, index} -> %>
+
+          <% deleted_class = if get_changeset_value(event_answer, :delete), do: "marked-for-deletion" %>
+
+          <div class="event-answer <%= deleted_class %>">
+
+            <%= if !event_answer.valid? && event_answer.action do %>
+              <%= render_notification :error, body: "Error: Invalid Event Answer", header?: false, icon?: false %>
+            <% end %>
+
+            <%= if get_changeset_value(event_answer, :id) do %>
+              <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][id]" value="<%= get_changeset_value(event_answer, :id) %>">
+            <% end %>
+
+            <%= if get_changeset_value(event_answer, :delete) do %>
+              <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][delete]" value="true">
+            <% end %>
+
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][changeset_id]" value="<%= get_changeset_value(event_answer, :changeset_id) %>">
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][date]" value="<%= @date %>">
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][event_question_id]" value="<%= event_question.id %>">
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][type]" value="<%= get_changeset_value(event_answer, :type) %>">
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][user_id]" value="<%= get_changeset_value(event_answer, :user_id) %>">
+
+            <div class="inline-fields">
+              <div class="field project-field" phx-update="ignore">
+                <select
+                  class="enhanced clearable"
+                  name="event_instance[<%= event_question.id %>][<%= index %>][project_id]"
+                  type="text"
+                  placeholder="Project"
+                >
+                  <option value=""></option>
+                  <%=
+                    current_project_id = get_changeset_value(event_answer, :project_id)
+                    project_id_values = Enum.map(@projects, &[key: &1.title, value: &1.id])
+
+                    deprecated_options_for_select(project_id_values, current_project_id)
+                  %>
+                </select>
+              </div>
+
+              <div class="field answer-field">
+                <textarea
+                  name="event_instance[<%= event_question.id %>][<%= index %>][value]"
+                  rows="1"
+                  placeholder="Answer"
+                ><%= get_changeset_value(event_answer, :value) %></textarea>
+              </div>
+
+              <%= if event_question.multiple do %>
+                <div class="field delete-field">
+                  <button
+                    type="button"
+                    class="ui icon button"
+                    phx-click="delete"
+                    phx-value-changeset_id="<%= get_changeset_value(event_answer, :changeset_id) %>"
+                  >
+                    <i class="trash icon"></i>
+                  </button>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+        <% end %>
+      <% end %>
+
+      <%= if event_question.multiple do %>
+        <button
+          class="ui button basic add-event-answer"
+          phx-click="create"
+          phx-value-date="<%= @date %>"
+          phx-value-event_question_id="<%= event_question.id %>"
+          phx-value-event_question_type="<%= event_question.type %>"
+          phx-value-user_id="<%= @user.id %>"
+          type="button"
+        >
+          + Add Answer
+        </button>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= submit "Save", class: "ui button primary" %>
+  </div>
+</form>

@@ -54,11 +54,12 @@ defmodule ArtemisWeb.EventInstanceController do
     authorize(conn, "event-answers:update", fn ->
       user = current_user(conn)
       event_template = get_event_template!(event_template_id, user)
-      event_answers = get_event_answers_for_update(event_template_id, date, user)
       event_questions = get_event_questions(event_template_id, user)
+      event_answers = get_event_answers_for_update(event_template_id, date, user)
       projects = get_projects(event_template.team_id, user)
 
       assigns = [
+        csrf_token: Phoenix.Controller.get_csrf_token(),
         date: date,
         event_answers: event_answers,
         event_questions: event_questions,
@@ -87,6 +88,7 @@ defmodule ArtemisWeb.EventInstanceController do
           projects = get_projects(event_template.team_id, user)
 
           assigns = [
+            csrf_token: Phoenix.Controller.get_csrf_token(),
             date: date,
             event_answers: event_answers,
             event_questions: event_questions,
@@ -247,14 +249,32 @@ defmodule ArtemisWeb.EventInstanceController do
     |> Enum.reduce([], fn params, acc ->
       event_question = get_event_question(params, event_questions)
 
+      required? = event_question.required
+
+      multiple? = event_question.multiple
+      single? = !multiple?
+
+      delete_present? = Map.get(params, "delete") == "true"
+      active? = !delete_present?
+
       value_present? =
         params
         |> Map.get("value")
         |> Artemis.Helpers.present?()
 
-      case event_question.required || value_present? do
-        true -> [params | acc]
-        false -> acc
+      id_present? =
+        params
+        |> Map.get("id")
+        |> Artemis.Helpers.present?()
+
+      cond do
+        single? && required? -> [params | acc]
+        single? && id_present? -> [params | acc]
+        single? && value_present? -> [params | acc]
+        multiple? && required? && active? -> [params | acc]
+        multiple? && id_present? -> [params | acc]
+        multiple? && value_present? -> [params | acc]
+        true -> acc
       end
     end)
     |> Enum.reverse()
@@ -270,10 +290,15 @@ defmodule ArtemisWeb.EventInstanceController do
   end
 
   defp record_event_answer(params, user) do
+    id = Map.get(params, "id")
+    id? = !is_nil(id)
+    to_be_deleted? = Map.get(params, "delete") == "true"
+
     action =
-      case Map.get(params, "id") do
-        nil -> fn params, user -> Artemis.CreateEventAnswer.call(params, user) end
-        id -> fn params, user -> Artemis.UpdateEventAnswer.call(id, params, user) end
+      cond do
+        id? && to_be_deleted? -> fn _params, user -> Artemis.DeleteEventAnswer.call(id, user) end
+        id? -> fn params, user -> Artemis.UpdateEventAnswer.call(id, params, user) end
+        true -> fn params, user -> Artemis.CreateEventAnswer.call(params, user) end
       end
 
     case action.(params, user) do
