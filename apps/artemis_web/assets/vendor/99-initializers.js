@@ -132,19 +132,20 @@ function initializeSelect2() {
     var item = $(this)
     var classes = item.attr('class').split(' ')
     var options = {}
+    var initialized = classes.includes('select2-hidden-accessible')
 
-    // Options
-    var hasClearable = classes.includes('clearable')
-    var hasCreate = classes.includes('creatable') || classes.includes('tags')
-    var hasSearch = classes.includes('search')
+    if (!initialized) {
+      var hasClearable = classes.includes('clearable')
+      var hasCreate = classes.includes('creatable') || classes.includes('tags')
+      var hasSearch = classes.includes('search')
 
-    options.allowClear = hasClearable
-    options.minimumResultsForSearch = hasSearch ? 0 : Infinity
-    options.tags = hasCreate
-    options.placeholder = item.attr('placeholder') || ''
+      options.allowClear = hasClearable
+      options.minimumResultsForSearch = hasSearch ? 0 : Infinity
+      options.tags = hasCreate
+      options.placeholder = item.attr('placeholder') || ''
 
-    // Initialize
-    item.select2(options)
+      item.select2(options)
+    }
   })
 }
 

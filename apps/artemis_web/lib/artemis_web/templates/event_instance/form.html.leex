@@ -1,4 +1,4 @@
-<form accept-charset="UTF-8" action="<%= @action %>" class="ui form" id="event-instance-form" method="post">
+<form accept-charset="UTF-8" action="<%= @action %>" class="ui form" id="event-instance-form" method="post" phx-hook="Select2">
   <input name="_utf8" type="hidden" value="✓">
   <input name="_method" type="hidden" value="put">
   <input name="_csrf_token" type="hidden" value="<%= @csrf_token %>">
@@ -52,7 +52,7 @@
             <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][user_id]" value="<%= get_changeset_value(event_answer, :user_id) %>">
 
             <div class="inline-fields">
-              <div class="field project-field">
+              <div class="field project-field" phx-update="ignore">
                 <select
                   class="enhanced clearable"
                   name="event_instance[<%= event_question.id %>][<%= index %>][project_id]"
@@ -61,10 +61,10 @@
                 >
                   <option value=""></option>
                   <%=
-                    current_value = get_changeset_value(event_answer, :project_id)
-                    values = Enum.map(@projects, &[key: &1.title, value: &1.id])
+                    current_project_id = get_changeset_value(event_answer, :project_id)
+                    project_id_values = Enum.map(@projects, &[key: &1.title, value: &1.id])
 
-                    deprecated_options_for_select(values, current_value)
+                    deprecated_options_for_select(project_id_values, current_project_id)
                   %>
                 </select>
               </div>
