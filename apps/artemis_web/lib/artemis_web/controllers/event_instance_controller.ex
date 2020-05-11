@@ -273,7 +273,7 @@ defmodule ArtemisWeb.EventInstanceController do
         single? && value_present? -> [params | acc]
         multiple? && required? && active? -> [params | acc]
         multiple? && id_present? -> [params | acc]
-        multiple? && value_present? -> [params | acc]
+        multiple? && value_present? && active? -> [params | acc]
         true -> acc
       end
     end)
