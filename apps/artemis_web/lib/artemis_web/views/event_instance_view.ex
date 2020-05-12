@@ -83,6 +83,6 @@ defmodule ArtemisWeb.EventInstanceView do
   end
 
   def render_event_instance_date(date) do
-    render_date(date, "{WDfull}, {Mfull} {D}, {YYYY}")
+    Timex.format!(date, "{WDfull}, {Mfull} {D}, {YYYY}")
   end
 end
