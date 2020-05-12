@@ -27,10 +27,13 @@ defmodule Artemis.Factories do
   end
 
   def event_answer_factory do
+    value = Faker.Lorem.paragraph()
+
     %Artemis.EventAnswer{
       date: Date.utc_today(),
       type: Enum.random(Artemis.EventAnswer.allowed_types()),
-      value: Faker.Lorem.paragraph(),
+      value: value,
+      value_html: value,
       event_question: build(:event_question),
       project: build(:project),
       user: build(:user)

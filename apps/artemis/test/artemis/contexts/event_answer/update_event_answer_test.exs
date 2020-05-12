@@ -77,6 +77,16 @@ defmodule Artemis.UpdateEventAnswerTest do
 
       assert updated.value == params.value
     end
+
+    test "supports markdown" do
+      event_answer = insert(:event_answer)
+      params = params_for(:event_answer, value: "**bold**")
+
+      {:ok, updated} = UpdateEventAnswer.call(event_answer.id, params, Mock.system_user())
+
+      assert updated.value == params.value
+      assert updated.value_html == "<p><strong>bold</strong></p>\n"
+    end
   end
 
   describe "broadcast" do

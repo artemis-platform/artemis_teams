@@ -3,6 +3,7 @@ defmodule Artemis.UpdateEventAnswer do
 
   alias Artemis.EventAnswer
   alias Artemis.GetEventAnswer
+  alias Artemis.Helpers.Markdown
   alias Artemis.Repo
 
   def call!(id, params, user) do
@@ -27,8 +28,26 @@ defmodule Artemis.UpdateEventAnswer do
   defp update_record(nil, _params), do: {:error, "Record not found"}
 
   defp update_record(record, params) do
+    params = update_params(record, params)
+
     record
     |> EventAnswer.changeset(params)
     |> Repo.update()
   end
+
+  defp update_params(_record, params) do
+    params
+    |> Artemis.Helpers.keys_to_strings()
+    |> maybe_update_value_html()
+  end
+
+  defp maybe_update_value_html(%{"value" => value} = params) when is_bitstring(value) do
+    value_html = Markdown.to_html!(value)
+
+    Map.put(params, "value_html", value_html)
+  rescue
+    _ -> params
+  end
+
+  defp maybe_update_value_html(params), do: params
 end

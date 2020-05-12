@@ -7,6 +7,7 @@ defmodule Artemis.EventAnswer do
     field :date, :date
     field :type, :string
     field :value, :string
+    field :value_html, :string
 
     field :changeset_id, :string, virtual: true
     field :delete, :boolean, default: false, virtual: true
@@ -31,7 +32,8 @@ defmodule Artemis.EventAnswer do
       :project_id,
       :type,
       :user_id,
-      :value
+      :value,
+      :value_html
     ]
 
   def required_fields,
