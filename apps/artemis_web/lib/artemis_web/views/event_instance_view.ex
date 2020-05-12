@@ -76,6 +76,15 @@ defmodule ArtemisWeb.EventInstanceView do
     link(record.title, to: Routes.event_instance_path(conn, :show, record.event_template, record))
   end
 
+  def render_value_html(record) do
+    value_html = Map.get(record, :value_html)
+
+    case Artemis.Helpers.present?(value_html) do
+      true -> raw(value_html)
+      false -> record.value
+    end
+  end
+
   def render_event_instance_date(date) when is_bitstring(date) do
     date
     |> Date.from_iso8601!()

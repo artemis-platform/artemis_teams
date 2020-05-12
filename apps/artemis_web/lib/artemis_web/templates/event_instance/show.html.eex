@@ -46,7 +46,7 @@
             <% end %>
 
             <div class="value">
-              <%= event_answer.value %>
+              <%= render_value_html(event_answer) %>
             </div>
           </li>
         <% end %>
