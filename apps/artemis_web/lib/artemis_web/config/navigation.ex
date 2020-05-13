@@ -81,6 +81,18 @@ defmodule ArtemisWeb.Config.Navigation do
           verify: &has?(&1, "permissions:create")
         ]
       ],
+      Projects: [
+        [
+          label: "List Projects",
+          path: &Routes.project_path(&1, :index),
+          verify: &has?(&1, "projects:list")
+        ],
+        [
+          label: "Create New Project",
+          path: &Routes.project_path(&1, :new),
+          verify: &has?(&1, "projects:create")
+        ]
+      ],
       Roles: [
         [
           label: "List Roles",

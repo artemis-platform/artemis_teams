@@ -1,0 +1,11 @@
+<div id="content-header">
+  <header>
+    <h1>Projects</h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "projects:create") do %>
+        <%= action "New", to: Routes.project_path(@conn, :new), color: "blue" %>
+      <% end %>
+    </div>
+  </header>
+</div>

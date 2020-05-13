@@ -5,6 +5,15 @@
   </div>
 
   <div class="field">
+    <%= label_with_errors f, :team_id, "Team" %>
+    <%=
+      team_options = [blank_option() | Artemis.Team.unique_select_values_for(:name)]
+
+      select f, :team_id, team_options, class: "enhanced clearable", placeholder: ""
+    %>
+  </div>
+
+  <div class="field">
     <%= label_with_errors f, :description %>
     <%= textarea f, :description %>
   </div>
@@ -15,8 +24,6 @@
       <%= checkbox f, :active, class: "ui checkbox" %>
     </div>
   </div>
-
-  <%= hidden_input f, :team_id, value: @team.id %>
 
   <div>
     <%= if @changeset.action do %>

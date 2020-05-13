@@ -7,10 +7,10 @@
 
     <div class="actions">
       <%= if has?(@conn, "projects:delete") do %>
-        <%= delete_confirmation "Delete", Routes.team_project_path(@conn, :delete, @project.team, @project) %>
+        <%= delete_confirmation "Delete", Routes.project_path(@conn, :delete, @project) %>
       <% end %>
       <%= if has?(@conn, "projects:update") do %>
-        <%= action "Edit", to: Routes.team_project_path(@conn, :edit, @project.team, @project), color: "green" %>
+        <%= action "Edit", to: Routes.project_path(@conn, :edit, @project), color: "green" %>
       <% end %>
     </div>
   </header>

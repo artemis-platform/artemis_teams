@@ -27,6 +27,13 @@
             </a>
           </li>
         <% end %>
+        <%= if render_primary_nav_section?(nav_items, ["Projects"]) do %>
+          <li>
+            <a href="<%= Routes.project_path(@conn, :index) %>">
+              Projects
+            </a>
+          </li>
+        <% end %>
         <%= if render_primary_nav_section?(nav_items, ["Documentation"]) do %>
           <li>
             <a href="<%= Routes.wiki_page_path(@conn, :index) %>">

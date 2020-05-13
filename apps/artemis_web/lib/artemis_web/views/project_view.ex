@@ -7,6 +7,7 @@ defmodule ArtemisWeb.ProjectView do
     [
       {"Actions", "actions"},
       {"Active", "active"},
+      {"Team", "team"},
       {"Title", "title"}
     ]
   end
@@ -22,6 +23,16 @@ defmodule ArtemisWeb.ProjectView do
         label: fn _conn -> "Active?" end,
         value: fn _conn, row -> row.active end
       ],
+      "team" => [
+        label: fn _conn -> "Team" end,
+        value: fn _conn, row -> row.team.name end,
+        value_html: fn conn, row ->
+          case has?(conn, "teams:show") do
+            true -> link(row.team.name, to: Routes.team_path(conn, :show, row.team))
+            false -> row.team.name
+          end
+        end
+      ],
       "title" => [
         label: fn _conn -> "Title" end,
         label_html: fn conn ->
@@ -30,7 +41,7 @@ defmodule ArtemisWeb.ProjectView do
         value: fn _conn, row -> row.title end,
         value_html: fn conn, row ->
           case has?(conn, "projects:show") do
-            true -> link(row.title, to: Routes.team_project_path(conn, :show, row.team, row))
+            true -> link(row.title, to: Routes.project_path(conn, :show, row))
             false -> row.title
           end
         end
@@ -42,11 +53,11 @@ defmodule ArtemisWeb.ProjectView do
     allowed_actions = [
       [
         verify: has?(conn, "projects:show"),
-        link: link("Show", to: Routes.team_project_path(conn, :show, row.team, row))
+        link: link("Show", to: Routes.project_path(conn, :show, row))
       ],
       [
         verify: has?(conn, "projects:update"),
-        link: link("Edit", to: Routes.team_project_path(conn, :edit, row.team, row))
+        link: link("Edit", to: Routes.project_path(conn, :edit, row))
       ]
     ]
 
@@ -65,6 +76,6 @@ defmodule ArtemisWeb.ProjectView do
   def render_show_link(_conn, nil), do: nil
 
   def render_show_link(conn, record) do
-    link(record.title, to: Routes.team_project_path(conn, :show, record.team, record))
+    link(record.title, to: Routes.project_path(conn, :show, record))
   end
 end

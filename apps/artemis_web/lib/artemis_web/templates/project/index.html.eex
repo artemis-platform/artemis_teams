@@ -7,7 +7,7 @@
 
 <div id="content">
   <%= render_flash_notifications @conn %>
-  <%= render_event_log_notifications @conn, "EventTemplate" %>
+  <%= render_event_log_notifications @conn, "Project" %>
 
   <section>
     <div class="table-header">
@@ -21,12 +21,12 @@
     <%=
       render_data_table(
         @conn,
-        @event_templates.entries,
+        @projects.entries,
         allowed_columns: data_table_allowed_columns(),
         default_columns: ["title", "team", "actions"]
       )
     %>
 
-    <%= render_pagination @conn, @event_templates %>
+    <%= render_pagination @conn, @projects %>
   </section>
 </div>

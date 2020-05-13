@@ -109,6 +109,10 @@ defmodule ArtemisWeb.Router do
         get "/event-logs/:id", PermissionController, :show_event_log_details, as: :event_log
       end
 
+      # Projects
+
+      resources "/projects", ProjectController
+
       # Roles
 
       post "/roles/bulk-actions", RoleController, :index_bulk_actions
@@ -156,7 +160,6 @@ defmodule ArtemisWeb.Router do
         get "/event-logs", TeamController, :show_event_log_list, as: :event_log
         get "/event-logs/:id", TeamController, :show_event_log_details, as: :event_log
         resources "/members", TeamMemberController, as: :member
-        resources "/projects", ProjectController, as: :project
       end
 
       # Users

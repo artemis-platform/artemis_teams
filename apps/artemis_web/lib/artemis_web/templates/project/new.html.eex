@@ -14,10 +14,7 @@
 
   <section>
     <%=
-      form_assigns =
-        assigns
-        |> Map.put(:action, Routes.team_project_path(@conn, :create, @team))
-        |> Map.put(:team, @team)
+      form_assigns = Map.put(assigns, :action, Routes.project_path(@conn, :create))
 
       render "form.html", form_assigns
     %>

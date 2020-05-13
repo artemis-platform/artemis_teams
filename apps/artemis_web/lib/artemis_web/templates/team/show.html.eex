@@ -49,7 +49,7 @@
     %>
 
     <%= if has?(@conn, "projects:create") do %>
-      <%= action "New Project", to: Routes.team_project_path(@conn, :new, @team), color: "blue" %>
+      <%= action "New Project", to: Routes.project_path(@conn, :new, team_id: @team.id), color: "blue" %>
     <% end %>
   </section>
 
