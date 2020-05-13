@@ -34,7 +34,9 @@
           <div class="event-answer <%= deleted_class %>">
 
             <%= if !event_answer.valid? && event_answer.action do %>
-              <%= render_notification :error, body: "Error: Invalid Event Answer", header?: false, icon?: false %>
+              <div class="error">
+                <%= render_notification :error, body: "Error: Invalid Event Answer", header?: false, icon?: false %>
+              </div>
             <% end %>
 
             <%= if get_changeset_value(event_answer, :id) do %>

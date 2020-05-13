@@ -153,14 +153,16 @@ select[multiple] {
 form {
 
   .field,
-  .fields {
+  .fields,
+  .error {
 
     .ui.message {
       background: #f9f0f2;
+      border: 1px solid #dbcbcf;
+      box-shadow: none !important;
       color: #9f3a38 !important;
       margin: 1rem 0 0.75rem 0;
       padding: 0.75rem;
-      box-shadow: none;
 
       i.red.icon {
         color: #9f3a38 !important;

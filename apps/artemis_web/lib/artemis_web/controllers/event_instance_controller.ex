@@ -296,9 +296,19 @@ defmodule ArtemisWeb.EventInstanceController do
 
     action =
       cond do
-        id? && to_be_deleted? -> fn _params, user -> Artemis.DeleteEventAnswer.call(id, user) end
-        id? -> fn params, user -> Artemis.UpdateEventAnswer.call(id, params, user) end
-        true -> fn params, user -> Artemis.CreateEventAnswer.call(params, user) end
+        id? && to_be_deleted? ->
+          fn _params, user -> Artemis.DeleteEventAnswer.call(id, user) end
+
+        id? ->
+          fn params, user -> Artemis.UpdateEventAnswer.call(id, params, user) end
+
+        true ->
+          fn params, user ->
+            case Artemis.CreateEventAnswer.call(params, user) do
+              {:ok, record} -> {:ok, Map.put(record, :id, nil)}
+              error -> error
+            end
+          end
       end
 
     case action.(params, user) do
