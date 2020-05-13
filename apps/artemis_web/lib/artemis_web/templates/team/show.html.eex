@@ -25,9 +25,10 @@
     <%=
       render_data_table(
         @conn,
-        @team.event_templates,
+        @event_templates,
         allowed_columns: ArtemisWeb.EventView.data_table_allowed_columns(),
-        default_columns: ["title", "actions"]
+        default_columns: ["event_instances", "team", "actions_current_event_instance"],
+        headers: false
       )
     %>
 
@@ -44,7 +45,8 @@
         @conn,
         @projects,
         allowed_columns: ArtemisWeb.ProjectView.data_table_allowed_columns(),
-        default_columns: ["title", "active", "actions"]
+        default_columns: ["title", "active", "actions"],
+        headers: false
       )
     %>
 
@@ -56,14 +58,15 @@
   <section class="related-resources">
     <%= h3 "Team Members" %>
 
-    Total Members: <%= @team.user_count %>
+    <p>Total Members: <%= @team.user_count %></p>
 
     <%=
       render_data_table(
         @conn,
         @user_teams,
         allowed_columns: ArtemisWeb.TeamMemberView.data_table_allowed_columns(),
-        default_columns: ["user", "type", "updated_at", "actions"]
+        default_columns: ["user", "type", "updated_at", "actions"],
+        headers: false
       )
     %>
 

@@ -22,6 +22,7 @@ defmodule ArtemisWeb.TeamController do
   alias Artemis.CreateTeam
   alias Artemis.DeleteTeam
   alias Artemis.GetTeam
+  alias Artemis.ListEventTemplates
   alias Artemis.ListProjects
   alias Artemis.ListTeams
   alias Artemis.ListUserTeams
@@ -76,11 +77,13 @@ defmodule ArtemisWeb.TeamController do
   def show(conn, %{"id" => id}) do
     authorize(conn, "teams:show", fn ->
       user = current_user(conn)
-      team = GetTeam.call!(id, current_user(conn), preload: [:event_templates])
+      team = GetTeam.call!(id, current_user(conn))
+      event_templates = get_event_templates(id, user)
       projects = get_projects(id, user)
       user_teams = get_user_teams(id, user)
 
       assigns = [
+        event_templates: event_templates,
         projects: projects,
         team: team,
         user_teams: user_teams
@@ -131,6 +134,17 @@ defmodule ArtemisWeb.TeamController do
   end
 
   # Helpers
+
+  defp get_event_templates(team_id, user) do
+    params = %{
+      filters: %{
+        team_id: team_id
+      },
+      preload: [:team]
+    }
+
+    ListEventTemplates.call(params, user)
+  end
 
   defp get_projects(team_id, user) do
     params = %{
