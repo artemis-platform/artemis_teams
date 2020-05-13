@@ -21,7 +21,7 @@
   <% end %>
 
   <%= Enum.map @event_answers_by_date, fn {date, event_answers_for_date} -> %>
-    <section class="event-answers">
+    <section class="event-instance">
 
       <% date_string = Date.to_iso8601(date) %>
 
@@ -31,48 +31,46 @@
         </a>
       </div>
 
-      <div class="event-instance">
-        <%
-          event_answers_by_event_question = Enum.group_by(event_answers_for_date, &(&1.event_question))
+      <%
+        event_answers_by_event_question = Enum.group_by(event_answers_for_date, &(&1.event_question))
 
-          ordered_event_questions =
-            event_answers_by_event_question
-            |> Map.keys()
-            |> Enum.sort_by(&(&1.order))
+        ordered_event_questions =
+          event_answers_by_event_question
+          |> Map.keys()
+          |> Enum.sort_by(&(&1.order))
+      %>
+
+      <%= Enum.map ordered_event_questions, fn event_question -> %>
+        <%
+          event_answers_for_event_question = Map.get(event_answers_by_event_question, event_question)
         %>
 
-        <%= Enum.map ordered_event_questions, fn event_question -> %>
-          <%
-            event_answers_for_event_question = Map.get(event_answers_by_event_question, event_question)
-          %>
+        <div class="event-question">
+          <%= h4 event_question.title %>
+          <%= raw event_question.description_html %>
+        </div>
 
-          <div class="event-question">
-            <%= h4 event_question.title %>
-            <%= raw event_question.description_html %>
-          </div>
+        <ul class="event-answers">
+          <%= Enum.map event_answers_for_event_question, fn event_answer -> %>
+            <li>
+              <div class="username">
+                <%= event_answer.user.name %>
+              </div>
 
-          <ul class="event-answers">
-            <%= Enum.map event_answers_for_event_question, fn event_answer -> %>
-              <li>
-                <div class="username">
-                  <%= event_answer.user.name %>
+              <%= if event_answer.project do %>
+                <div class="project">
+                  <i class="thumbtack icon"></i>
+                  <%= event_answer.project.title %>
                 </div>
+              <% end %>
 
-                <%= if event_answer.project do %>
-                  <div class="project">
-                    <i class="thumbtack icon"></i>
-                    <%= event_answer.project.title %>
-                  </div>
-                <% end %>
-
-                <div class="value">
-                  <%= render_value_html(event_answer) %>
-                </div>
-              </li>
-            <% end %>
-          </ul>
-        <% end %>
-      </div>
+              <div class="value">
+                <%= render_value_html(event_answer) %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
     </section>
   <% end %>
 
