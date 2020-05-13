@@ -44,7 +44,7 @@ defmodule ArtemisWeb.EventView do
         value_html: &data_table_actions_column_html/2
       ],
       "actions_current_event_instance" => [
-        label: fn _conn -> "View" end,
+        label: fn _conn -> nil end,
         value: fn _conn, _row -> nil end,
         value_html: &data_table_actions_current_event_instance_column_html/2
       ],

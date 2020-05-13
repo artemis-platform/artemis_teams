@@ -16,7 +16,7 @@
         ["Notification Type", @event_integration.notification_type],
         ["Name", render_event_integration_name(@event_integration)],
         ["Active", @event_integration.active],
-        ["Event Template", ArtemisWeb.EventView.render_show_link(@conn, @event_integration.event_template)],
+        ["Event", ArtemisWeb.EventView.render_show_link(@conn, @event_integration.event_template)],
       ])
     %>
   </section>
