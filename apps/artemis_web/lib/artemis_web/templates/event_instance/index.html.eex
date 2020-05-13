@@ -10,79 +10,71 @@
   <%= render_event_log_notifications @conn, "EventTemplate", @event_template.id %>
 
   <section>
-    <%= h2 "Event Answers" %>
-
-    <%= if length(@event_answers.entries) == 0 do %>
-      <p>No records found</p>
-    <% end %>
-
-    <ul class="event-instances">
-      <%= Enum.map @event_answers_by_date, fn {date, event_answers_for_date} -> %>
-        <% date_string = Date.to_iso8601(date) %>
-
-        <li>
-          <div class="date">
-            <a href="<%= Routes.event_instance_path(@conn, :show, @event_template, date_string) %>">
-              <%= h3 render_event_instance_date(date) %>
-            </a>
-          </div>
-
-          <div class="event-instance">
-            <%
-              event_answers_by_event_question = Enum.group_by(event_answers_for_date, &(&1.event_question))
-
-              ordered_event_questions =
-                event_answers_by_event_question
-                |> Map.keys()
-                |> Enum.sort_by(&(&1.order))
-            %>
-
-            <%= Enum.map ordered_event_questions, fn event_question -> %>
-              <%
-                event_answers_for_event_question = Map.get(event_answers_by_event_question, event_question)
-              %>
-
-              <div class="event-question">
-                <%= h4 event_question.title %>
-                <%= raw event_question.description_html %>
-              </div>
-
-              <ul class="event-answers">
-                <%= Enum.map event_answers_for_event_question, fn event_answer -> %>
-                  <li>
-                    <div class="username">
-                      <%= event_answer.user.name %>
-                    </div>
-
-                    <%= if event_answer.project do %>
-                      <div class="project">
-                        <i class="thumbtack icon"></i>
-                        <%= event_answer.project.title %>
-                      </div>
-                    <% end %>
-
-                    <div class="value">
-                      <%= render_value_html(event_answer) %>
-                    </div>
-                  </li>
-                <% end %>
-              </ul>
-            <% end %>
-          </div>
-        </li>
-      <% end %>
-    </ul>
-
-    <%=
-      pagination_options = [
-        path: fn(conn, function, options) ->
-          Routes.event_instance_path(conn, function, @event_template, options)
-        end
-      ]
-
-      render_pagination @conn, @event_answers, params: pagination_options
-    %>
+    <%= h2 @event_template.title %>
+    <%= raw @event_template.description_html %>
   </section>
+
+  <%= if length(@event_answers.entries) == 0 do %>
+    <section>
+      <p>No records found</p>
+    </section
+  <% end %>
+
+  <%= Enum.map @event_answers_by_date, fn {date, event_answers_for_date} -> %>
+    <section class="event-answers">
+
+      <% date_string = Date.to_iso8601(date) %>
+
+      <div class="date">
+        <a href="<%= Routes.event_instance_path(@conn, :show, @event_template, date_string) %>">
+          <%= h3 render_event_instance_date(date) %>
+        </a>
+      </div>
+
+      <div class="event-instance">
+        <%
+          event_answers_by_event_question = Enum.group_by(event_answers_for_date, &(&1.event_question))
+
+          ordered_event_questions =
+            event_answers_by_event_question
+            |> Map.keys()
+            |> Enum.sort_by(&(&1.order))
+        %>
+
+        <%= Enum.map ordered_event_questions, fn event_question -> %>
+          <%
+            event_answers_for_event_question = Map.get(event_answers_by_event_question, event_question)
+          %>
+
+          <div class="event-question">
+            <%= h4 event_question.title %>
+            <%= raw event_question.description_html %>
+          </div>
+
+          <ul class="event-answers">
+            <%= Enum.map event_answers_for_event_question, fn event_answer -> %>
+              <li>
+                <div class="username">
+                  <%= event_answer.user.name %>
+                </div>
+
+                <%= if event_answer.project do %>
+                  <div class="project">
+                    <i class="thumbtack icon"></i>
+                    <%= event_answer.project.title %>
+                  </div>
+                <% end %>
+
+                <div class="value">
+                  <%= render_value_html(event_answer) %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
 
   <section>
     <%= h3 "Filters" %>
@@ -129,4 +121,14 @@
       </div>
     </div>
   </section>
+
+  <%=
+    pagination_options = [
+      path: fn(conn, function, options) ->
+        Routes.event_instance_path(conn, function, @event_template, options)
+      end
+    ]
+
+    render_pagination @conn, @event_answers, params: pagination_options
+  %>
 </div>

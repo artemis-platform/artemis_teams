@@ -2,7 +2,7 @@
   <header>
     <h1>
       <%= @event_template.title %>
-      <span class="subheading"><%= @date %></span>
+      <span class="subheading"><%= render_event_instance_date(@date) %></span>
     </h1>
 
     <div class="actions">

@@ -4,7 +4,7 @@ defmodule ArtemisWeb.ViewHelper.Slack do
   """
   def convert_html_to_slack_markdown!(html) do
     html
-    |> Floki.parse_fragment!() 
+    |> Floki.parse_fragment!()
     |> strip_html_tags()
     |> Floki.text()
   end
@@ -22,7 +22,7 @@ defmodule ArtemisWeb.ViewHelper.Slack do
   defp update_anchor_tag(attributes, children) do
     href =
       attributes
-      |> Enum.find(&elem(&1, 0) == "href")
+      |> Enum.find(&(elem(&1, 0) == "href"))
       |> elem(1)
 
     {"span", [], ["<#{href}|#{Floki.text(strip_html_tags(children))}>"]}
