@@ -9,124 +9,130 @@
   <%= render_flash_notifications @conn %>
   <%= render_event_log_notifications @conn, "EventTemplate", @event_template.id %>
 
-  <section>
-    <%= h2 @event_template.title %>
-    <%= raw @event_template.description_html %>
-  </section>
+  <article id="home-page" class="page">
+    <content>
+      <section>
+        <%= h2 @event_template.title %>
+        <%= raw @event_template.description_html %>
+      </section>
 
-  <%= if length(@event_answers.entries) == 0 do %>
-    <section>
-      <p>No records found</p>
-    </section
-  <% end %>
-
-  <%= Enum.map @event_answers_by_date, fn {date, event_answers_for_date} -> %>
-    <section class="event-instance">
-
-      <% date_string = Date.to_iso8601(date) %>
-
-      <div class="date">
-        <a href="<%= Routes.event_instance_path(@conn, :show, @event_template, date_string) %>">
-          <%= h3 render_event_instance_date(date) %>
-        </a>
-      </div>
-
-      <%
-        event_answers_by_event_question = Enum.group_by(event_answers_for_date, &(&1.event_question))
-
-        ordered_event_questions =
-          event_answers_by_event_question
-          |> Map.keys()
-          |> Enum.sort_by(&(&1.order))
-      %>
-
-      <%= Enum.map ordered_event_questions, fn event_question -> %>
-        <%
-          event_answers_for_event_question = Map.get(event_answers_by_event_question, event_question)
-        %>
-
-        <div class="event-question">
-          <%= h4 event_question.title %>
-          <%= raw event_question.description_html %>
-        </div>
-
-        <ul class="event-answers">
-          <%= Enum.map event_answers_for_event_question, fn event_answer -> %>
-            <li>
-              <div class="username">
-                <%= event_answer.user.name %>
-              </div>
-
-              <%= if event_answer.project do %>
-                <div class="project">
-                  <i class="thumbtack icon"></i>
-                  <%= event_answer.project.title %>
-                </div>
-              <% end %>
-
-              <div class="value">
-                <%= render_value_html(event_answer) %>
-              </div>
-            </li>
-          <% end %>
-        </ul>
+      <%= if length(@event_answers.entries) == 0 do %>
+        <section>
+          <p>No records found</p>
+        </section
       <% end %>
-    </section>
-  <% end %>
 
-  <section>
-    <%= h3 "Filters" %>
+      <%= Enum.map @event_answers_by_date, fn {date, event_answers_for_date} -> %>
+        <section class="event-instance">
 
-    <div class="filters">
-      <div>
-        <i class="tag icon"></i>
-        <%=
-          # TODO: cannot use `unique_values_for` helper since it does not filter by `team`
-          options = Artemis.EventAnswer.unique_values_for(:project_id)
+          <% date_string = Date.to_iso8601(date) %>
 
-          filter_multi_select(@conn, "Project", :project_id, options)
-        %>
-      </div>
+          <div class="date">
+            <a href="<%= Routes.event_instance_path(@conn, :show, @event_template, date_string) %>">
+              <%= h3 render_event_instance_date(date) %>
+            </a>
+          </div>
 
-      <div>
-        <i class="calendar icon"></i>
-        <%=
-          options =
-            :date
-            |> Artemis.EventAnswer.unique_values_for()
-            |> Enum.map(&Date.to_iso8601(&1))
+          <%
+            event_answers_by_event_question = Enum.group_by(event_answers_for_date, &(&1.event_question))
 
-          filter_multi_select(@conn, "Date", :date, options)
-        %>
-      </div>
+            ordered_event_questions =
+              event_answers_by_event_question
+              |> Map.keys()
+              |> Enum.sort_by(&(&1.order))
+          %>
 
-      <div>
-        <i class="user icon"></i>
-        <%=
-          options = Artemis.EventAnswer.unique_values_for(:user_id)
+          <%= Enum.map ordered_event_questions, fn event_question -> %>
+            <%
+              event_answers_for_event_question = Map.get(event_answers_by_event_question, event_question)
+            %>
 
-          filter_multi_select(@conn, "User", :user_id, options)
-        %>
-      </div>
+            <div class="event-question">
+              <%= h4 event_question.title %>
+              <%= raw event_question.description_html %>
+            </div>
 
-      <div>
-        <i class="question icon"></i>
-        <%=
-          options = Artemis.EventAnswer.unique_values_for(:event_question_id)
+            <ul class="event-answers">
+              <%= Enum.map event_answers_for_event_question, fn event_answer -> %>
+                <li>
+                  <div class="username">
+                    <%= event_answer.user.name %>
+                  </div>
 
-          filter_multi_select(@conn, "Event Question", :event_question_id, options)
-        %>
-      </div>
-    </div>
-  </section>
+                  <%= if event_answer.project do %>
+                    <div class="project">
+                      <i class="thumbtack icon"></i>
+                      <%= event_answer.project.title %>
+                    </div>
+                  <% end %>
 
-  <%=
-    pagination_options = [
-      path: fn(conn, function, options) ->
-        Routes.event_instance_path(conn, function, @event_template, options)
-      end
-    ]
+                  <div class="value">
+                    <%= render_value_html(event_answer) %>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+        </section>
+      <% end %>
 
-    render_pagination @conn, @event_answers, params: pagination_options
-  %>
+      <%=
+        pagination_options = [
+          path: fn(conn, function, options) ->
+            Routes.event_instance_path(conn, function, @event_template, options)
+          end
+        ]
+
+        render_pagination @conn, @event_answers, params: pagination_options
+      %>
+    </content>
+
+    <aside class="right">
+      <section>
+        <%= h5 "Filters" %>
+
+        <div class="filters">
+          <div>
+            <i class="tag icon"></i>
+            <%=
+              # TODO: cannot use `unique_values_for` helper since it does not filter by `team`
+              options = Artemis.EventAnswer.unique_values_for(:project_id)
+
+              filter_multi_select(@conn, "Project", :project_id, options)
+            %>
+          </div>
+
+          <div>
+            <i class="calendar icon"></i>
+            <%=
+              options =
+                :date
+                |> Artemis.EventAnswer.unique_values_for()
+                |> Enum.map(&Date.to_iso8601(&1))
+
+              filter_multi_select(@conn, "Date", :date, options)
+            %>
+          </div>
+
+          <div>
+            <i class="user icon"></i>
+            <%=
+              options = Artemis.EventAnswer.unique_values_for(:user_id)
+
+              filter_multi_select(@conn, "User", :user_id, options)
+            %>
+          </div>
+
+          <div>
+            <i class="question icon"></i>
+            <%=
+              options = Artemis.EventAnswer.unique_values_for(:event_question_id)
+
+              filter_multi_select(@conn, "Event Question", :event_question_id, options)
+            %>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </article>
 </div>

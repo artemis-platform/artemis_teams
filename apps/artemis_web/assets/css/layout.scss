@@ -21,8 +21,9 @@ code {
 }
 
 #body h3 {
-  font-size: 1.5rem;
-  font-weight: 500;
+  border-bottom: 1px solid #e2e2e2;
+  font-size: 1.625rem;
+  font-weight: 300;
   margin-bottom: 1rem;
   padding: 0 0 0.5rem 0;
 }
@@ -630,48 +631,6 @@ body.error-page {
   background: $content_background;
   padding: 2rem $page_padding 1rem $page_padding;
 
-  .page-filters {
-    align-items: center;
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
-    margin: 0.25rem 0 1.5rem 0;
-
-    h5 {
-      margin: 0 1rem 0.5rem 0;
-    }
-
-    .table-filters {
-      align-items: center;
-    }
-
-    .ui.toggle.checkbox label::before {
-      background: rgba(0, 0, 0, 0.20);
-    }
-
-    .ui.buttons {
-      max-height: 38px;
-    }
-
-    .ui.button {
-      background: #fff !important;
-    }
-
-    &>div {
-      margin-bottom: 0.5rem;
-      margin-right: 1rem;
-
-      &>form {
-        min-width: 8rem;
-        max-width: 12rem;
-      }
-    }
-
-    &>div:last-child {
-      margin-right: 0;
-    }
-  }
-
   &>section,
   &>article>section,
   &>article>content>section,
@@ -722,14 +681,17 @@ body.error-page {
     flex-direction: row;
     justify-content: space-between;
 
-    &.status-page h2 {
-      border-color: #e2e2e2;
+    &>aside {
+
+      h5 {
+        margin: 0 0 1rem 0;
+      }
     }
 
     &>aside,
     &>content {
       &>section {
-        margin-top: 2rem;
+        margin-top: 1rem;
       }
 
       &>section:first-child {
@@ -742,12 +704,7 @@ body.error-page {
     }
 
     &>aside.right {
-      margin-left: 2rem;
-      min-width: 480px;
-
-      section h2 {
-        border-color: $blue_muted !important;
-      }
+      margin-left: 1rem;
     }
   }
 }
