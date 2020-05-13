@@ -12,7 +12,7 @@
 
       values =
         event_answers
-        |> Enum.map(&"_#{&1.user.name}_ - #{&1.value}")
+        |> Enum.map(&"_#{&1.user.name}_ - #{render_value_slack(&1)}")
         |> Enum.join("\\n")
 
       "#{label}#{values}"

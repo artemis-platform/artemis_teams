@@ -50,6 +50,7 @@ defmodule ArtemisWeb.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:guardian, "~> 1.2"},
       {:oauth2, "~> 0.9"},
+      {:floki, "~> 0.26.0"},
       {:nimble_csv, "~> 0.5"},
       {:scrivener_html, "~> 1.8"},
       {:number, "~> 1.0"},

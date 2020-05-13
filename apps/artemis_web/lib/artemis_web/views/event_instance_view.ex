@@ -85,6 +85,12 @@ defmodule ArtemisWeb.EventInstanceView do
     end
   end
 
+  def render_value_slack(record) do
+    convert_html_to_slack_markdown!(record.value_html)
+  rescue
+    _ -> record.value
+  end
+
   def render_event_instance_date(date) when is_bitstring(date) do
     date
     |> Date.from_iso8601!()
