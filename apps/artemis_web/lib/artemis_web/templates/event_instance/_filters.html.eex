@@ -27,7 +27,7 @@
           filter_multi_select(@conn, "Date", :date, options)
         %>
       </div>
-    <%= end %>
+    <% end %>
 
     <div>
       <i class="user icon"></i>

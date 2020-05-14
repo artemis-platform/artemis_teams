@@ -56,6 +56,7 @@ defmodule Artemis.EventQuestion do
 
   def allowed_types,
     do: [
+      "number",
       "text"
     ]
 

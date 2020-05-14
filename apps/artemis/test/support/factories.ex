@@ -31,7 +31,7 @@ defmodule Artemis.Factories do
 
     %Artemis.EventAnswer{
       date: Date.utc_today(),
-      type: Enum.random(Artemis.EventAnswer.allowed_types()),
+      type: "text",
       value: value,
       value_html: value,
       event_question: build(:event_question),
@@ -62,7 +62,7 @@ defmodule Artemis.Factories do
       multiple: true,
       required: true,
       title: sequence(:title, &"#{Faker.Name.name()}-#{&1}"),
-      type: Enum.random(Artemis.EventQuestion.allowed_types()),
+      type: "text",
       event_template: build(:event_template)
     }
   end

@@ -8,6 +8,8 @@ defmodule Artemis.EventAnswer do
     field :type, :string
     field :value, :string
     field :value_html, :string
+    field :value_number, :decimal
+    field :value_percent, :integer
 
     field :changeset_id, :string, virtual: true
     field :delete, :boolean, default: false, virtual: true
@@ -33,7 +35,9 @@ defmodule Artemis.EventAnswer do
       :type,
       :user_id,
       :value,
-      :value_html
+      :value_html,
+      :value_number,
+      :value_percent
     ]
 
   def required_fields,
@@ -64,6 +68,7 @@ defmodule Artemis.EventAnswer do
 
   def allowed_types,
     do: [
+      "number",
       "text"
     ]
 
@@ -83,10 +88,8 @@ defmodule Artemis.EventAnswer do
   # Helpers
 
   defp get_changeset_params(params) do
-    existing =
-      params
-      |> Artemis.Helpers.keys_to_strings()
-      |> Map.get("changeset_id")
+    params = Artemis.Helpers.keys_to_strings(params)
+    existing = Map.get(params, "changeset_id")
 
     case Artemis.Helpers.present?(existing) do
       false -> Map.put(params, "changeset_id", Artemis.Helpers.UUID.call())

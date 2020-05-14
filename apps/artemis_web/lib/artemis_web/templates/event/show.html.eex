@@ -28,7 +28,7 @@
         @conn,
         @event_questions,
         allowed_columns: ArtemisWeb.EventQuestionView.data_table_allowed_columns(),
-        default_columns: ["title", "actions"],
+        default_columns: ["title", "type", "required", "multiple", "actions"],
         headers: false
       )
     %>

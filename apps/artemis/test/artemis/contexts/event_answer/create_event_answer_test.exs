@@ -53,6 +53,46 @@ defmodule Artemis.CreateEventAnswerTest do
       assert event_answer.value == params.value
       assert event_answer.value_html == "<p><strong>bold</strong></p>\n"
     end
+
+    test "supports number values for numeric types" do
+      event_question = insert(:event_question)
+      user = insert(:user)
+
+      # Text Type
+
+      params = params_for(:event_answer, type: "text", value: "0.75", event_question: event_question, user: user)
+
+      {:ok, event_answer} = CreateEventAnswer.call(params, Mock.system_user())
+
+      assert event_answer.value == params.value
+      assert event_answer.value_number == nil
+
+      # Numeric Type - With Valid Float Value
+
+      params = params_for(:event_answer, type: "number", value: "0.7531", event_question: event_question, user: user)
+
+      {:ok, event_answer} = CreateEventAnswer.call(params, Mock.system_user())
+
+      assert event_answer.value == params.value
+      assert event_answer.value_number == Decimal.from_float(0.7531)
+
+      # Numeric Type - With Valid Integer Value
+
+      params = params_for(:event_answer, type: "number", value: "87", event_question: event_question, user: user)
+
+      {:ok, event_answer} = CreateEventAnswer.call(params, Mock.system_user())
+
+      assert event_answer.value == params.value
+      assert event_answer.value_number == Decimal.new(87)
+
+      # Numeric Type - With Invalid Value
+
+      params = params_for(:event_answer, type: "number", value: "INVALID", event_question: event_question, user: user)
+
+      {:error, changeset} = CreateEventAnswer.call(params, Mock.system_user())
+
+      assert errors_on(changeset).value_number == ["is invalid"]
+    end
   end
 
   describe "broadcasts" do

@@ -72,11 +72,21 @@
               </div>
 
               <div class="field answer-field">
-                <textarea
-                  name="event_instance[<%= event_question.id %>][<%= index %>][value]"
-                  rows="1"
-                  placeholder="Answer"
-                ><%= get_changeset_value(event_answer, :value) %></textarea>
+                <%= if get_changeset_value(event_answer, :type) == "text" do %>
+                  <textarea
+                    name="event_instance[<%= event_question.id %>][<%= index %>][value]"
+                    rows="1"
+                    placeholder="Answer"
+                  ><%= get_changeset_value(event_answer, :value) %></textarea>
+                <% end %>
+
+                <%= if get_changeset_value(event_answer, :type) == "number" do %>
+                  <input
+                    name="event_instance[<%= event_question.id %>][<%= index %>][value]"
+                    placeholder="Number"
+                    value="<%= get_changeset_value(event_answer, :value) %>"
+                  />
+                <% end %>
               </div>
 
               <%= if event_question.multiple do %>

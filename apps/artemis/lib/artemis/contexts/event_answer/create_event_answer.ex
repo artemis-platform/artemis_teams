@@ -32,6 +32,7 @@ defmodule Artemis.CreateEventAnswer do
     params
     |> Artemis.Helpers.keys_to_strings()
     |> maybe_update_value_html()
+    |> maybe_update_value_number()
   end
 
   defp maybe_update_value_html(%{"value" => value} = params) when is_bitstring(value) do
@@ -43,4 +44,15 @@ defmodule Artemis.CreateEventAnswer do
   end
 
   defp maybe_update_value_html(params), do: params
+
+  defp maybe_update_value_number(%{"type" => type, "value" => value} = params) do
+    numeric_types = ["number"]
+
+    case Enum.member?(numeric_types, type) do
+      true -> Map.put(params, "value_number", value)
+      false -> params
+    end
+  end
+
+  defp maybe_update_value_number(params), do: params
 end

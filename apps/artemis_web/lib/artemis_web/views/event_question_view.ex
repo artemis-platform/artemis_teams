@@ -6,7 +6,9 @@ defmodule ArtemisWeb.EventQuestionView do
   def data_table_available_columns() do
     [
       {"Actions", "actions"},
-      {"Title", "title"}
+      {"Required", "required"},
+      {"Title", "title"},
+      {"Type", "type"}
     ]
   end
 
@@ -16,6 +18,39 @@ defmodule ArtemisWeb.EventQuestionView do
         label: fn _conn -> nil end,
         value: fn _conn, _row -> nil end,
         value_html: &data_table_actions_column_html/2
+      ],
+      "multiple" => [
+        label: fn _conn -> "Multiple" end,
+        label_html: fn conn ->
+          sortable_table_header(conn, "multiple", "Multiple")
+        end,
+        value: fn _conn, row -> row.multiple end,
+        value_html: fn _conn, row ->
+          case row.multiple do
+            true -> "Multiple Answers"
+            false -> "Single Answer"
+          end
+        end
+      ],
+      "order" => [
+        label: fn _conn -> "Order" end,
+        label_html: fn conn ->
+          sortable_table_header(conn, "order", "Order")
+        end,
+        value: fn _conn, row -> row.order end
+      ],
+      "required" => [
+        label: fn _conn -> "Required" end,
+        label_html: fn conn ->
+          sortable_table_header(conn, "required", "Required")
+        end,
+        value: fn _conn, row -> row.required end,
+        value_html: fn _conn, row ->
+          case row.required do
+            true -> "Required"
+            false -> "Optional"
+          end
+        end
       ],
       "title" => [
         label: fn _conn -> "Title" end,
@@ -29,6 +64,14 @@ defmodule ArtemisWeb.EventQuestionView do
             false -> row.title
           end
         end
+      ],
+      "type" => [
+        label: fn _conn -> "Type" end,
+        label_html: fn conn ->
+          sortable_table_header(conn, "type", "Type")
+        end,
+        value: fn _conn, row -> row.type end,
+        value_html: fn _conn, row -> "#{String.capitalize(row.type)} Field" end
       ]
     }
   end

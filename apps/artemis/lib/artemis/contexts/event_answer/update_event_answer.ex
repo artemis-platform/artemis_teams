@@ -35,10 +35,11 @@ defmodule Artemis.UpdateEventAnswer do
     |> Repo.update()
   end
 
-  defp update_params(_record, params) do
+  defp update_params(record, params) do
     params
     |> Artemis.Helpers.keys_to_strings()
     |> maybe_update_value_html()
+    |> maybe_update_value_number(record)
   end
 
   defp maybe_update_value_html(%{"value" => value} = params) when is_bitstring(value) do
@@ -50,4 +51,16 @@ defmodule Artemis.UpdateEventAnswer do
   end
 
   defp maybe_update_value_html(params), do: params
+
+  defp maybe_update_value_number(%{"value" => value} = params, record) do
+    type = Map.get(params, "type", record.type)
+    numeric_types = ["number"]
+
+    case Enum.member?(numeric_types, type) do
+      true -> Map.put(params, "value_number", value)
+      false -> params
+    end
+  end
+
+  defp maybe_update_value_number(params, _record), do: params
 end
