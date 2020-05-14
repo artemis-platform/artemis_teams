@@ -33,11 +33,11 @@ defmodule ArtemisWeb.EventInstanceController do
     end)
   end
 
-  def show(conn, %{"event_id" => event_template_id, "id" => date}) do
+  def show(conn, %{"event_id" => event_template_id, "id" => date} = params) do
     authorize(conn, "event-answers:show", fn ->
       user = current_user(conn)
       event_template = get_event_template!(event_template_id, user)
-      event_answers = get_event_answers_for_show(event_template_id, date, user)
+      event_answers = get_event_answers_for_show(event_template_id, date, params, user)
       event_integrations = get_event_integrations(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
       filter_data = get_filter_data(event_template, user)
@@ -182,16 +182,25 @@ defmodule ArtemisWeb.EventInstanceController do
     }
   end
 
-  defp get_event_answers_for_show(event_template_id, date, user) do
-    params = %{
-      filters: %{
-        date: Date.from_iso8601!(date),
-        event_template_id: event_template_id
-      },
-      preload: [:project, :user]
-    }
+  defp get_event_answers_for_show(event_template_id, date, params, user) do
+    required_params =
+      %{
+        filters: %{
+          date: Date.from_iso8601!(date),
+          event_template_id: event_template_id
+        },
+        preload: [:project, :user]
+      }
+      |> Artemis.Helpers.keys_to_strings()
 
-    ListEventAnswers.call(params, user)
+    event_answer_params =
+      params
+      |> Map.delete("event_template_id")
+      |> Map.delete("id")
+      |> Map.delete("preload")
+      |> Artemis.Helpers.deep_merge(required_params)
+
+    ListEventAnswers.call(event_answer_params, user)
   end
 
   defp get_event_answers_for_update(event_template_id, date, user) do
