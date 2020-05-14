@@ -172,10 +172,12 @@ defmodule ArtemisWeb.TeamController do
   defp get_create_params(params, user) do
     params
     |> Artemis.Helpers.keys_to_strings()
-    |> Map.put("user_teams", [%{
-      type: "admin",
-      created_by_id: user.id,
-      user_id: user.id
-    }])
+    |> Map.put("user_teams", [
+      %{
+        type: "admin",
+        created_by_id: user.id,
+        user_id: user.id
+      }
+    ])
   end
 end
