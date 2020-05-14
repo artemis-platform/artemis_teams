@@ -15,7 +15,7 @@ defmodule Artemis.ListEventAnswers do
   alias Artemis.EventAnswer
   alias Artemis.Repo
 
-  @default_order "inserted_at"
+  @default_order "date,inserted_at"
   @default_page_size 25
   @default_preload [:event_question, :user]
 
