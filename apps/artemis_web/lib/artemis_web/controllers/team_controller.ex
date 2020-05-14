@@ -58,9 +58,10 @@ defmodule ArtemisWeb.TeamController do
 
   def create(conn, %{"team" => params}) do
     authorize(conn, "teams:create", fn ->
-      create_params = Map.delete(params, "user_teams")
+      user = current_user(conn)
+      create_params = get_create_params(params, user)
 
-      case CreateTeam.call(create_params, current_user(conn)) do
+      case CreateTeam.call(create_params, user) do
         {:ok, team} ->
           conn
           |> put_flash(:info, "Team created successfully.")
@@ -166,5 +167,15 @@ defmodule ArtemisWeb.TeamController do
     }
 
     ListUserTeams.call(params, user)
+  end
+
+  defp get_create_params(params, user) do
+    params
+    |> Artemis.Helpers.keys_to_strings()
+    |> Map.put("user_teams", [%{
+      type: "admin",
+      created_by_id: user.id,
+      user_id: user.id
+    }])
   end
 end
