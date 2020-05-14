@@ -40,13 +40,15 @@ defmodule ArtemisWeb.EventInstanceController do
       event_answers = get_event_answers_for_show(event_template_id, date, user)
       event_integrations = get_event_integrations(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
+      filter_data = get_filter_data(event_template, user)
 
       assigns = [
         date: date,
         event_answers: event_answers,
         event_questions: event_questions,
         event_integrations: event_integrations,
-        event_template: event_template
+        event_template: event_template,
+        filter_data: filter_data
       ]
 
       render(conn, "show.html", assigns)

@@ -8,76 +8,93 @@
 <div id="content">
   <%= render "show/_notifications.html", assigns %>
 
-  <section>
-    <%= h2 @event_template.title %>
-    <%= raw @event_template.description_html %>
-  </section>
+  <article id="home-page" class="page">
+    <content>
+      <section>
+        <%= h2 @event_template.title %>
+        <%= raw @event_template.description_html %>
+      </section>
 
-  <section>
-    <%= h2 "Questions" %>
+      <section>
+        <%= h2 "Questions" %>
 
-    <%= Enum.map @event_questions, fn event_question -> %>
-      <div class="event-question">
-        <h4>
-          <%= event_question.title %>
-        </h4>
-        <%= raw event_question.description_html %>
-      </div>
+        <%= Enum.map @event_questions, fn event_question -> %>
+          <div class="event-question">
+            <h4>
+              <%= event_question.title %>
+            </h4>
+            <%= raw event_question.description_html %>
+          </div>
 
-      <%
-        matching_event_answers =
-          @event_answers
-          |> Enum.filter(&(&1.event_question_id == event_question.id))
-          |> Enum.sort_by(&(&1.user_id))
+          <%
+            matching_event_answers =
+              @event_answers
+              |> Enum.filter(&(&1.event_question_id == event_question.id))
+              |> Enum.sort_by(&(&1.user_id))
+          %>
+
+          <ul class="event-answers">
+            <%= Enum.map matching_event_answers, fn event_answer -> %>
+              <li>
+                <div class="username">
+                  <%= event_answer.user.name %>
+                </div>
+
+                <%= if event_answer.project do %>
+                  <div class="project">
+                    <i class="thumbtack icon"></i>
+                    <%= event_answer.project.title %>
+                  </div>
+                <% end %>
+
+                <div class="value">
+                  <%= render_value_html(event_answer) %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </section>
+    </content>
+
+    <aside class="right">
+      <%=
+        reset_link = Routes.event_instance_path(@conn, :show, @event_template.id, @date)
+
+        filter_assigns =
+          assigns
+          |> Map.put(:filter_fields, [:project, :user, :question])
+          |> Map.put(:reset_link, reset_link)
+
+        render "_filters.html", filter_assigns
       %>
 
-      <ul class="event-answers">
-        <%= Enum.map matching_event_answers, fn event_answer -> %>
-          <li>
-            <div class="username">
-              <%= event_answer.user.name %>
-            </div>
-
-            <%= if event_answer.project do %>
-              <div class="project">
-                <i class="thumbtack icon"></i>
-                <%= event_answer.project.title %>
-              </div>
-            <% end %>
-
-            <div class="value">
-              <%= render_value_html(event_answer) %>
-            </div>
-          </li>
-        <% end %>
-      </ul>
-    <% end %>
-  </section>
-
-  <%= if has?(@conn, "event-integrations:create") do %>
-    <section>
-      <%= h2 "Event Integrations" %>
-
       <%= if has?(@conn, "event-integrations:create") do %>
-        <div class="ui compact menu event-instance-notifications">
-          <div class="ui simple dropdown item">
-            Send Notification
-            <i class="dropdown icon"></i>
-            <div class="menu">
-              <%= Enum.map @event_integrations, fn event_integration -> %>
-                <div class="item">
-                  <%=
-                    label = ArtemisWeb.EventIntegrationView.render_event_integration_name(event_integration)
-                    to = Routes.event_instance_notification_path(@conn, :create, @event_template, @date, id: event_integration.id)
+        <section>
+          <%= h5 "Integrations" %>
 
-                    action(label, to: to, method: :post)
-                  %>
+          <%= if has?(@conn, "event-integrations:create") do %>
+            <div class="ui compact menu event-instance-notifications">
+              <div class="ui simple dropdown item">
+                Send Notification
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                  <%= Enum.map @event_integrations, fn event_integration -> %>
+                    <div class="item">
+                      <%=
+                        label = ArtemisWeb.EventIntegrationView.render_event_integration_name(event_integration)
+                        to = Routes.event_instance_notification_path(@conn, :create, @event_template, @date, id: event_integration.id)
+
+                        action(label, to: to, method: :post)
+                      %>
+                    </div>
+                  <% end %>
                 </div>
-              <% end %>
+              </div>
             </div>
-          </div>
-        </div>
+          <% end %>
+        </section>
       <% end %>
-    </section>
-  <% end %>
+    </aside>
+  </article>
 </div>

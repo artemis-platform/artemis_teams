@@ -88,50 +88,16 @@
     </content>
 
     <aside class="right">
-      <section>
-        <%= h5 "Presets" %>
+      <%=
+        reset_link = Routes.event_instance_path(@conn, :index, @event_template.id)
 
-        <div class="preset-filters">
-          <%= link "All", to: Routes.event_instance_path(@conn, :index, @event_template.id) %>
-          <%= filter_link(@conn, "My Event Answers", user_id: [current_user(@conn).id]) %>
-        </div>
+        filter_assigns =
+          assigns
+          |> Map.put(:filter_fields, [:project, :date, :user, :question])
+          |> Map.put(:reset_link, reset_link)
 
-        <%= h5 "Filters" %>
-
-        <div class="filters">
-          <div>
-            <i class="tag icon"></i>
-            <%= filter_multi_select(@conn, "Project", :project_id, @filter_data.project_options) %>
-          </div>
-
-          <div>
-            <i class="calendar icon"></i>
-            <%=
-              # TODO: generate this value correctly
-              options =
-                :date
-                |> Artemis.EventAnswer.unique_values_for()
-                |> Enum.map(&Date.to_iso8601(&1))
-
-              filter_multi_select(@conn, "Date", :date, options)
-            %>
-          </div>
-
-          <div>
-            <i class="user icon"></i>
-            <%= filter_multi_select(@conn, "User", :user_id, @filter_data.user_options) %>
-          </div>
-
-          <div>
-            <i class="question icon"></i>
-            <%=
-              options = Enum.map(@event_questions, &[key: &1.title, value: &1.id])
-
-              filter_multi_select(@conn, "Event Question", :event_question_id, options)
-            %>
-          </div>
-        </div>
-      </section>
+        render "_filters.html", filter_assigns
+      %>
     </aside>
   </article>
 </div>
