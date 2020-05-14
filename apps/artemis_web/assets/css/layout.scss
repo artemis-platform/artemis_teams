@@ -642,6 +642,10 @@ body.error-page {
     margin: 0 0 1rem 0;
     padding: 1.5rem;
 
+    &>*:first-child {
+      margin-top: 0 !important;
+    }
+
     &>*:last-child {
       margin-bottom: 0;
     }
@@ -686,8 +690,12 @@ body.error-page {
 
     &>aside {
 
-      h5 {
-        margin: 0 0 1rem 0;
+      .heading-container {
+        margin: 1rem 0 1rem 0;
+
+        h5 {
+          margin: 0;
+        }
       }
     }
 

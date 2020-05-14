@@ -7,6 +7,7 @@ defmodule ArtemisWeb.EventInstanceController do
   alias Artemis.ListEventIntegrations
   alias Artemis.ListEventQuestions
   alias Artemis.ListProjects
+  alias Artemis.ListUserTeams
 
   # TODO: filter by username and question
   def index(conn, %{"event_id" => event_template_id} = params) do
@@ -17,12 +18,14 @@ defmodule ArtemisWeb.EventInstanceController do
       event_questions = get_event_questions(event_template_id, user)
       event_answers = get_event_answers_for_index(event_template_id, params, user)
       event_answers_by_date = get_event_answers_by_date(event_answers)
+      filter_data = get_filter_data(event_template, user)
 
       assigns = [
         event_answers: event_answers,
         event_answers_by_date: event_answers_by_date,
         event_questions: event_questions,
         event_template: event_template,
+        filter_data: filter_data,
         today: today
       ]
 
@@ -122,22 +125,6 @@ defmodule ArtemisWeb.EventInstanceController do
     GetEventTemplate.call!(event_template_id, user, options)
   end
 
-  defp get_event_answers_by_date(event_answers) do
-    grouped =
-      event_answers
-      |> Map.get(:entries)
-      |> Enum.group_by(& &1.date)
-
-    grouped
-    |> Map.keys()
-    |> Artemis.Helpers.DateTime.sort_by_date()
-    |> Enum.reduce([], fn date, acc ->
-      records = Map.get(grouped, date)
-
-      [{date, records} | acc]
-    end)
-  end
-
   defp get_event_answers_for_index(event_template_id, params, user) do
     required_params =
       %{
@@ -156,6 +143,41 @@ defmodule ArtemisWeb.EventInstanceController do
       |> Artemis.Helpers.deep_merge(required_params)
 
     ListEventAnswers.call(event_answer_params, user)
+  end
+
+  defp get_event_answers_by_date(event_answers) do
+    grouped =
+      event_answers
+      |> Map.get(:entries)
+      |> Enum.group_by(& &1.date)
+
+    grouped
+    |> Map.keys()
+    |> Artemis.Helpers.DateTime.sort_by_date()
+    |> Enum.reduce([], fn date, acc ->
+      records = Map.get(grouped, date)
+
+      [{date, records} | acc]
+    end)
+  end
+
+  defp get_filter_data(event_template, user) do
+    team_id = event_template.team_id
+
+    project_options =
+      team_id
+      |> get_projects(user)
+      |> Enum.map(&[key: &1.title, value: &1.id])
+
+    user_options =
+      team_id
+      |> get_team_members(user)
+      |> Enum.map(&[key: &1.user.name, value: &1.user.id])
+
+    %{
+      project_options: project_options,
+      user_options: user_options
+    }
   end
 
   defp get_event_answers_for_show(event_template_id, date, user) do
@@ -185,17 +207,6 @@ defmodule ArtemisWeb.EventInstanceController do
     |> Enum.map(&EventAnswer.changeset(&1))
   end
 
-  defp get_projects(team_id, user) do
-    params = %{
-      filters: %{
-        team_id: team_id
-      },
-      preload: [:team]
-    }
-
-    ListProjects.call(params, user)
-  end
-
   defp get_event_integrations(event_template_id, user) do
     params = %{
       filters: %{
@@ -217,6 +228,28 @@ defmodule ArtemisWeb.EventInstanceController do
     }
 
     ListEventQuestions.call(params, user)
+  end
+
+  defp get_projects(team_id, user) do
+    params = %{
+      filters: %{
+        team_id: team_id
+      },
+      preload: [:team]
+    }
+
+    ListProjects.call(params, user)
+  end
+
+  defp get_team_members(team_id, user) do
+    params = %{
+      filters: %{
+        team_id: team_id
+      },
+      preload: [:user]
+    }
+
+    ListUserTeams.call(params, user)
   end
 
   # Helpers - Update Event Instance

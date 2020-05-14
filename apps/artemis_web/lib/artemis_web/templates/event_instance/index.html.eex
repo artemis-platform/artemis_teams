@@ -19,7 +19,7 @@
       <%= if length(@event_answers.entries) == 0 do %>
         <section>
           <p>No records found</p>
-        </section
+        </section>
       <% end %>
 
       <%= Enum.map @event_answers_by_date, fn {date, event_answers_for_date} -> %>
@@ -89,22 +89,25 @@
 
     <aside class="right">
       <section>
+        <%= h5 "Presets" %>
+
+        <div class="preset-filters">
+          <%= link "All", to: Routes.event_instance_path(@conn, :index, @event_template.id) %>
+          <%= filter_link(@conn, "My Event Answers", user_id: [current_user(@conn).id]) %>
+        </div>
+
         <%= h5 "Filters" %>
 
         <div class="filters">
           <div>
             <i class="tag icon"></i>
-            <%=
-              # TODO: cannot use `unique_values_for` helper since it does not filter by `team`
-              options = Artemis.EventAnswer.unique_values_for(:project_id)
-
-              filter_multi_select(@conn, "Project", :project_id, options)
-            %>
+            <%= filter_multi_select(@conn, "Project", :project_id, @filter_data.project_options) %>
           </div>
 
           <div>
             <i class="calendar icon"></i>
             <%=
+              # TODO: generate this value correctly
               options =
                 :date
                 |> Artemis.EventAnswer.unique_values_for()
@@ -116,17 +119,13 @@
 
           <div>
             <i class="user icon"></i>
-            <%=
-              options = Artemis.EventAnswer.unique_values_for(:user_id)
-
-              filter_multi_select(@conn, "User", :user_id, options)
-            %>
+            <%= filter_multi_select(@conn, "User", :user_id, @filter_data.user_options) %>
           </div>
 
           <div>
             <i class="question icon"></i>
             <%=
-              options = Artemis.EventAnswer.unique_values_for(:event_question_id)
+              options = Enum.map(@event_questions, &[key: &1.title, value: &1.id])
 
               filter_multi_select(@conn, "Event Question", :event_question_id, options)
             %>
