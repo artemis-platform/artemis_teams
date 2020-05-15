@@ -493,6 +493,31 @@ defmodule Artemis.Helpers do
   def deep_get(_data, _, default), do: default
 
   @doc """
+  A version of `Kernel.put_in/3` with added support for creating keys that
+  don't exist.
+
+  Example:
+
+    map = %{
+      simple: "simple"
+    }
+
+    deep_put(map, [:nested, :example], "value")
+
+  Returns:
+
+    map = %{
+      simple: "simple",
+      nested: %{example: "value"}
+    }
+
+  See: https://elixirforum.com/t/put-update-deep-inside-nested-maps-and-auto-create-intermediate-keys/7993/8
+  """
+  def deep_put(map, keys, value) do
+    put_in(map, Enum.map(keys, &Access.key(&1, %{})), value)  
+  end
+
+  @doc """
   Recursive version of `Map.size/2`. Returns the total number of keys in
   Maps and Keyword Lists.
 

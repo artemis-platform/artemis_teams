@@ -1068,6 +1068,13 @@ ul.event-answers {
 
     .value {
       flex-grow: 1;
+
+      .percent {
+        color: #666;
+        display: inline-block;
+        font-weight: 300;
+        margin-left: 1rem;
+      }
     }
   }
 }

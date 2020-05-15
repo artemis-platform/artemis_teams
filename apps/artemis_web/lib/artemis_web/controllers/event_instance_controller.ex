@@ -9,7 +9,6 @@ defmodule ArtemisWeb.EventInstanceController do
   alias Artemis.ListProjects
   alias Artemis.ListUserTeams
 
-  # TODO: filter by username and question
   def index(conn, %{"event_id" => event_template_id} = params) do
     authorize(conn, "event-answers:show", fn ->
       user = current_user(conn)
@@ -106,7 +105,7 @@ defmodule ArtemisWeb.EventInstanceController do
     end)
   end
 
-  # TODO: how to delete an answer?
+  # TODO: how to delete an event instance?
   #   def delete(conn, %{"event_id" => event_template_id, "id" => id} = params) do
   #     authorize(conn, "event-answers:delete", fn ->
   #       {:ok, _event_instance} = DeleteEventInstance.call(id, params, current_user(conn))
@@ -276,6 +275,7 @@ defmodule ArtemisWeb.EventInstanceController do
       results =
         event_answer_params
         |> filter_event_answer_params(event_questions)
+        |> process_event_answer_params()
         |> Enum.map(&record_event_answer(&1, user))
 
       error? = Enum.any?(results, &(elem(&1, 0) == :error))
@@ -322,6 +322,52 @@ defmodule ArtemisWeb.EventInstanceController do
       end
     end)
     |> Enum.reverse()
+  end
+
+  defp process_event_answer_params(event_answer_params) do
+    denominators = get_event_answer_percent_denominators(event_answer_params)
+
+    Enum.map(event_answer_params, fn params ->
+      value_percent = get_event_answer_percent_denominator_value(denominators, params)
+
+      Map.put(params, "value_percent", value_percent)
+    end)
+  end
+
+  defp get_event_answer_percent_denominators(event_answer_params) do
+    Enum.reduce(event_answer_params, %{}, fn params, acc ->
+      key = get_event_answer_percent_denominator_key(params)
+      current = get_in(acc, key) || Decimal.new(0)
+      new = get_event_answer_value_decimal(params)
+      result = Decimal.add(current, new)
+
+      Artemis.Helpers.deep_put(acc, key, result)
+    end)
+  end
+
+  defp get_event_answer_percent_denominator_key(params) do
+    [
+      params["event_question_id"],
+      params["user_id"]
+    ]
+  end
+
+  defp get_event_answer_value_decimal(%{"value" => value}) do
+    Decimal.new(value)
+  rescue
+    _e in Decimal.Error -> Decimal.new(0)
+    _e in FunctionClauseErrorr -> Decimal.new(0)
+  end
+
+  defp get_event_answer_percent_denominator_value(denominators, params) do
+    key = get_event_answer_percent_denominator_key(params)
+    denominator = get_in(denominators, key) || Decimal.new(0)
+    current = get_event_answer_value_decimal(params)
+
+    case Decimal.equal?(denominator, 0) do
+      false -> Decimal.div(current, denominator)
+      true -> nil
+    end
   end
 
   defp get_event_question(event_answer_params, event_questions) do

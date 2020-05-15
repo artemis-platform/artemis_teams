@@ -76,6 +76,13 @@ defmodule ArtemisWeb.EventInstanceView do
     link(record.title, to: Routes.event_instance_path(conn, :show, record.event_template, record))
   end
 
+  def render_value_html(%{type: "number"} = record) do
+    case record.value_percent do
+      nil -> "#{record.value_number || record.value}"
+      _ -> ["#{record.value_number}", render_value_percent(record)]
+    end
+  end
+
   def render_value_html(record) do
     value_html = Map.get(record, :value_html)
 
@@ -84,6 +91,18 @@ defmodule ArtemisWeb.EventInstanceView do
       false -> record.value
     end
   end
+
+  def render_value_percent(%{value_percent: percent}) when not is_nil(percent) do
+    value =
+      percent
+      |> Decimal.to_float()
+      |> Kernel.*(100)
+      |> Float.round(1)
+
+    content_tag(:span, "(#{value}%)", class: "percent")
+  end
+
+  def render_value_percent(_), do: nil
 
   def render_value_slack(record) do
     convert_html_to_slack_markdown!(record.value_html)

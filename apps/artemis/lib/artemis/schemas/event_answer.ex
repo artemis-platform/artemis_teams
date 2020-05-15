@@ -9,7 +9,7 @@ defmodule Artemis.EventAnswer do
     field :value, :string
     field :value_html, :string
     field :value_number, :decimal
-    field :value_percent, :integer
+    field :value_percent, :decimal
 
     field :changeset_id, :string, virtual: true
     field :delete, :boolean, default: false, virtual: true
