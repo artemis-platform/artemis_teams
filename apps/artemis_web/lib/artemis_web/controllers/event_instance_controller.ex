@@ -1,6 +1,7 @@
 defmodule ArtemisWeb.EventInstanceController do
   use ArtemisWeb, :controller
 
+  alias Artemis.DeleteEventAnswer
   alias Artemis.EventAnswer
   alias Artemis.GetEventTemplate
   alias Artemis.ListEventAnswers
@@ -8,6 +9,7 @@ defmodule ArtemisWeb.EventInstanceController do
   alias Artemis.ListEventQuestions
   alias Artemis.ListProjects
   alias Artemis.ListUserTeams
+  alias Artemis.UpdateEventInstance
 
   def index(conn, %{"event_id" => event_template_id} = params) do
     authorize(conn, "event-answers:show", fn ->
@@ -82,7 +84,7 @@ defmodule ArtemisWeb.EventInstanceController do
       event_questions = get_event_questions(event_template_id, user)
       event_answer_params = get_event_answer_params(params)
 
-      case record_event_answers(event_answer_params, event_questions, user) do
+      case UpdateEventInstance.call(event_answer_params, event_questions, user) do
         {:ok, _changesets} ->
           conn
           |> put_flash(:info, "Event Instance updated successfully.")
@@ -105,16 +107,28 @@ defmodule ArtemisWeb.EventInstanceController do
     end)
   end
 
-  # TODO: how to delete an event instance?
-  #   def delete(conn, %{"event_id" => event_template_id, "id" => id} = params) do
-  #     authorize(conn, "event-answers:delete", fn ->
-  #       {:ok, _event_instance} = DeleteEventInstance.call(id, params, current_user(conn))
+  def delete(conn, %{"event_id" => event_template_id, "id" => date}) do
+    authorize(conn, "event-answers:delete", fn ->
+      user = current_user(conn)
+      event_answers = get_event_answers_for_delete(event_template_id, date, user)
+      event_answer_ids = Enum.map(event_answers, & &1.id)
 
-  #       conn
-  #       |> put_flash(:info, "Event Question deleted successfully.")
-  #       |> redirect(to: Routes.event_path(conn, :show, event_template_id))
-  #     end)
-  #   end
+      result = DeleteEventAnswer.call_many(event_answer_ids, [user])
+      success? = length(result.errors) == 0
+
+      case success? do
+        true ->
+          conn
+          |> put_flash(:info, "Event instance answers deleted successfully.")
+          |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
+
+        false ->
+          conn
+          |> put_flash(:error, "Error deleting event instance answers.")
+          |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
+      end
+    end)
+  end
 
   # Helpers
 
@@ -217,6 +231,18 @@ defmodule ArtemisWeb.EventInstanceController do
     |> Enum.map(&EventAnswer.changeset(&1))
   end
 
+  defp get_event_answers_for_delete(event_template_id, date, user) do
+    params = %{
+      filters: %{
+        date: Date.from_iso8601!(date),
+        event_template_id: event_template_id,
+        user_id: user.id
+      }
+    }
+
+    ListEventAnswers.call(params, user)
+  end
+
   defp get_event_integrations(event_template_id, user) do
     params = %{
       filters: %{
@@ -262,159 +288,9 @@ defmodule ArtemisWeb.EventInstanceController do
     ListUserTeams.call(params, user)
   end
 
-  # Helpers - Update Event Instance
-
   defp get_event_answer_params(params) do
     params
     |> Map.values()
     |> Enum.flat_map(&Map.values(&1))
-  end
-
-  defp record_event_answers(event_answer_params, event_questions, user) do
-    Artemis.Repo.Helpers.with_transaction(fn ->
-      results =
-        event_answer_params
-        |> filter_event_answer_params(event_questions)
-        |> process_event_answer_params()
-        |> Enum.map(&record_event_answer(&1, user))
-
-      error? = Enum.any?(results, &(elem(&1, 0) == :error))
-      changesets = Enum.map(results, &elem(&1, 1))
-
-      case error? do
-        true -> {:error, changesets}
-        false -> {:ok, changesets}
-      end
-    end)
-  end
-
-  defp filter_event_answer_params(event_answer_params, event_questions) do
-    event_answer_params
-    |> Enum.reduce([], fn params, acc ->
-      event_question = get_event_question(params, event_questions)
-
-      required? = event_question.required
-
-      multiple? = event_question.multiple
-      single? = !multiple?
-
-      delete_present? = Map.get(params, "delete") == "true"
-      active? = !delete_present?
-
-      value_present? =
-        params
-        |> Map.get("value")
-        |> Artemis.Helpers.present?()
-
-      id_present? =
-        params
-        |> Map.get("id")
-        |> Artemis.Helpers.present?()
-
-      cond do
-        single? && required? -> [params | acc]
-        single? && id_present? -> [params | acc]
-        single? && value_present? -> [params | acc]
-        multiple? && required? && active? -> [params | acc]
-        multiple? && id_present? -> [params | acc]
-        multiple? && value_present? && active? -> [params | acc]
-        true -> acc
-      end
-    end)
-    |> Enum.reverse()
-  end
-
-  defp process_event_answer_params(event_answer_params) do
-    denominators = get_event_answer_percent_denominators(event_answer_params)
-
-    Enum.map(event_answer_params, fn params ->
-      value_percent = get_event_answer_percent_denominator_value(denominators, params)
-
-      Map.put(params, "value_percent", value_percent)
-    end)
-  end
-
-  defp get_event_answer_percent_denominators(event_answer_params) do
-    Enum.reduce(event_answer_params, %{}, fn params, acc ->
-      key = get_event_answer_percent_denominator_key(params)
-      current = get_in(acc, key) || Decimal.new(0)
-      new = get_event_answer_value_decimal(params)
-      result = Decimal.add(current, new)
-
-      Artemis.Helpers.deep_put(acc, key, result)
-    end)
-  end
-
-  defp get_event_answer_percent_denominator_key(params) do
-    [
-      params["event_question_id"],
-      params["user_id"]
-    ]
-  end
-
-  defp get_event_answer_value_decimal(%{"value" => value}) do
-    Decimal.new(value)
-  rescue
-    _e in Decimal.Error -> Decimal.new(0)
-    _e in FunctionClauseErrorr -> Decimal.new(0)
-  end
-
-  defp get_event_answer_percent_denominator_value(denominators, params) do
-    key = get_event_answer_percent_denominator_key(params)
-    denominator = get_in(denominators, key) || Decimal.new(0)
-    current = get_event_answer_value_decimal(params)
-
-    case Decimal.equal?(denominator, 0) do
-      false -> Decimal.div(current, denominator)
-      true -> nil
-    end
-  end
-
-  defp get_event_question(event_answer_params, event_questions) do
-    event_question_id =
-      event_answer_params
-      |> Map.fetch!("event_question_id")
-      |> Artemis.Helpers.to_integer()
-
-    Enum.find(event_questions, &(&1.id == event_question_id))
-  end
-
-  defp record_event_answer(params, user) do
-    id = Map.get(params, "id")
-    id? = !is_nil(id)
-    to_be_deleted? = Map.get(params, "delete") == "true"
-
-    action =
-      cond do
-        id? && to_be_deleted? ->
-          fn _params, user -> Artemis.DeleteEventAnswer.call(id, user) end
-
-        id? ->
-          fn params, user -> Artemis.UpdateEventAnswer.call(id, params, user) end
-
-        true ->
-          fn params, user ->
-            case Artemis.CreateEventAnswer.call(params, user) do
-              {:ok, record} -> {:ok, Map.put(record, :id, nil)}
-              error -> error
-            end
-          end
-      end
-
-    case action.(params, user) do
-      {:ok, record} -> {:ok, EventAnswer.changeset(record, params)}
-      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
-      {:error, _} -> {:error, EventAnswer.changeset(%EventAnswer{}, params)}
-    end
-  rescue
-    _ in DBConnection.ConnectionError ->
-      id = Map.get(params, "id")
-      struct = %EventAnswer{id: id}
-      changeset = EventAnswer.changeset(struct, params)
-
-      {:error, changeset}
-
-    error ->
-      reraise error, __STACKTRACE__
   end
 end

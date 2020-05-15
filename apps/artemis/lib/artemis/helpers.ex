@@ -514,7 +514,7 @@ defmodule Artemis.Helpers do
   See: https://elixirforum.com/t/put-update-deep-inside-nested-maps-and-auto-create-intermediate-keys/7993/8
   """
   def deep_put(map, keys, value) do
-    put_in(map, Enum.map(keys, &Access.key(&1, %{})), value)  
+    put_in(map, Enum.map(keys, &Access.key(&1, %{})), value)
   end
 
   @doc """

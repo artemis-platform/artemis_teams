@@ -7,7 +7,9 @@
   <div class="content">
     <% form_id = "delete-confirmation-form-#{Artemis.Helpers.UUID.call()}" %>
     <%= form_tag @to, method: :delete, class: "ui form", id: form_id do %>
-      <%= reason_field nil %>
+      <%= if assigns[:reason_field] do %>
+        <%= reason_field nil %>
+      <% end %>
     <% end %>
   </div>
   <div class="actions">
