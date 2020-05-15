@@ -16,7 +16,9 @@ defmodule Artemis.DeleteUserTeamTest do
     end
 
     test "deletes a record when passed valid params" do
-      record = insert(:user_team)
+      team = insert(:team)
+      records = insert_list(3, :user_team, team: team, type: "admin")
+      record = hd(records)
 
       %UserTeam{} = DeleteUserTeam.call!(record, Mock.system_user())
 
@@ -24,7 +26,9 @@ defmodule Artemis.DeleteUserTeamTest do
     end
 
     test "deletes a record when passed an id and valid params" do
-      record = insert(:user_team)
+      team = insert(:team)
+      records = insert_list(3, :user_team, team: team, type: "admin")
+      record = hd(records)
 
       %UserTeam{} = DeleteUserTeam.call!(record.id, Mock.system_user())
 
@@ -40,7 +44,9 @@ defmodule Artemis.DeleteUserTeamTest do
     end
 
     test "deletes a record when passed valid params" do
-      record = insert(:user_team)
+      team = insert(:team)
+      records = insert_list(3, :user_team, team: team, type: "admin")
+      record = hd(records)
 
       {:ok, _} = DeleteUserTeam.call(record, Mock.system_user())
 
@@ -48,11 +54,22 @@ defmodule Artemis.DeleteUserTeamTest do
     end
 
     test "deletes a record when passed an id and valid params" do
-      record = insert(:user_team)
+      team = insert(:team)
+      records = insert_list(3, :user_team, team: team, type: "admin")
+      record = hd(records)
 
       {:ok, _} = DeleteUserTeam.call(record.id, Mock.system_user())
 
       assert Repo.get(UserTeam, record.id) == nil
+    end
+
+    test "returns an error if user is last admin on team" do
+      team = insert(:team)
+      record = insert(:user_team, team: team, type: "admin")
+
+      {:error, message} = DeleteUserTeam.call(record.id, Mock.system_user())
+
+      assert message == "A team must have at least one admin"
     end
   end
 
@@ -60,7 +77,11 @@ defmodule Artemis.DeleteUserTeamTest do
     test "publishes event and record" do
       ArtemisPubSub.subscribe(Artemis.Event.get_broadcast_topic())
 
-      {:ok, user_team} = DeleteUserTeam.call(insert(:user_team), Mock.system_user())
+      team = insert(:team)
+      records = insert_list(3, :user_team, team: team, type: "admin")
+      record = hd(records)
+
+      {:ok, user_team} = DeleteUserTeam.call(record, Mock.system_user())
 
       assert_received %Phoenix.Socket.Broadcast{
         event: "user-team:deleted",

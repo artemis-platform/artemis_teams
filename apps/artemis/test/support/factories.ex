@@ -160,7 +160,7 @@ defmodule Artemis.Factories do
     %Artemis.UserTeam{
       created_by: build(:user),
       team: build(:team),
-      type: Enum.random(Artemis.UserTeam.allowed_types()),
+      type: "admin",
       user: build(:user)
     }
   end
