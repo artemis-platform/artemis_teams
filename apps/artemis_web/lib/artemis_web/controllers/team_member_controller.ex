@@ -56,6 +56,11 @@ defmodule ArtemisWeb.TeamMemberController do
           ]
 
           render(conn, "new.html", assigns)
+
+        {:error, message} ->
+          conn
+          |> put_flash(:error, "Error updating existing team member. #{message}.")
+          |> redirect(to: Routes.team_path(conn, :show, team_id))
       end
     end)
   end
@@ -111,6 +116,11 @@ defmodule ArtemisWeb.TeamMemberController do
           ]
 
           render(conn, "edit.html", assigns)
+
+        {:error, message} ->
+          conn
+          |> put_flash(:error, "Error updating team member. #{message}.")
+          |> redirect(to: Routes.team_path(conn, :show, team_id))
       end
     end)
   end

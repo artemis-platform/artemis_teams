@@ -107,6 +107,15 @@ defmodule Artemis.UpdateUserTeamTest do
       assert updated.user.id == updated_user.id
       assert updated.created_by.id == updated_created_by.id
     end
+
+    test "returns an error if update removes last admin user on the team" do
+      user_team = insert(:user_team, type: "admin")
+      params = params_for(:user_team, type: "member")
+
+      {:error, message} = UpdateUserTeam.call(user_team.id, params, Mock.system_user())
+
+      assert message == "A team must have at least one admin"
+    end
   end
 
   describe "broadcast" do
