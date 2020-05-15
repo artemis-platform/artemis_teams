@@ -37,7 +37,8 @@ defmodule ArtemisWeb.UserView do
       %BulkAction{
         action: fn ids, [request_params, user] ->
           team_id = Map.get(request_params, "add_team_id")
-          params = [team_id, request_params, user]
+          type = Map.get(request_params, "add_type")
+          params = [team_id, type, request_params, user]
 
           Artemis.GetOrCreateUserTeam.call_many(ids, params)
         end,
@@ -139,7 +140,7 @@ defmodule ArtemisWeb.UserView do
     label_tag = content_tag(:label, "User Team Type")
 
     select_tag =
-      content_tag(:select, class: "enhanced", name: "type", placeholder: "User Team Type") do
+      content_tag(:select, class: "enhanced", name: "add_type", placeholder: "User Team Type") do
         Enum.map(types, fn value ->
           content_tag(:option, value: value) do
             value
