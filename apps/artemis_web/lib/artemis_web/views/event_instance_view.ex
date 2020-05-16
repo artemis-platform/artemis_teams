@@ -30,7 +30,7 @@ defmodule ArtemisWeb.EventInstanceView do
       "event_answer" => [
         label: fn _conn -> "Event Answer" end,
         value: fn _conn, row -> row.value end,
-        value_html: fn _conn, row -> row.value_html || row.value end,
+        value_html: fn _conn, row -> raw(row.value_html || row.value) end
       ],
       "event_answer_percent" => [
         label: fn _conn -> "Event Answer Percent" end,
@@ -38,19 +38,19 @@ defmodule ArtemisWeb.EventInstanceView do
       ],
       "event_question" => [
         label: fn _conn -> "Event Question" end,
-        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:event_question, :title]) end,
+        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:event_question, :title]) end
       ],
       "project" => [
         label: fn _conn -> "Project" end,
-        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:project, :title]) end,
+        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:project, :title]) end
       ],
       "user_email" => [
         label: fn _conn -> "User Email" end,
-        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:user, :email]) end,
+        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:user, :email]) end
       ],
       "user_name" => [
         label: fn _conn -> "User Name" end,
-        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:user, :name]) end,
+        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:user, :name]) end
       ]
     }
   end

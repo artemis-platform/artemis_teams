@@ -6,6 +6,28 @@
     <%= filter_link(@conn, "My Event Answers", user_id: [current_user(@conn).id]) %>
   </div>
 
+  <%= h5 "Layout" %>
+
+  <div class="ui buttons query-param-buttons">
+    <%=
+      label = [
+        content_tag(:i, nil, class: "ui icon calendar alternate outline"),
+        content_tag(:span, "Date")
+      ]
+
+      query_param_button(@conn, label, layout: nil)
+    %>
+
+    <%=
+      label = [
+        content_tag(:i, nil, class: "ui icon list"),
+        content_tag(:span, "List")
+      ]
+
+      query_param_button(@conn, label, layout: "list")
+    %>
+  </div>
+
   <%= h5 "Filters" %>
 
   <div class="filters">

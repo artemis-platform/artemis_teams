@@ -57,7 +57,7 @@ defmodule ArtemisWeb.ViewHelper.QueryParams do
     class =
       case active? do
         true -> "ui basic button blue"
-        false -> "ui basic button"
+        false -> "ui basic button grey"
       end
 
     options = [

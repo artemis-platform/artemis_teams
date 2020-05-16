@@ -20,8 +20,10 @@ defmodule ArtemisWeb.EventInstanceController do
       event_answers = get_event_answers_for_index(event_template_id, params, user)
       event_answers_by_date = get_event_answers_by_date(event_answers)
       filter_data = get_filter_data(event_template, user)
+      event_answer_layout = Map.get(conn.query_params, "layout", "date")
 
       assigns = [
+        event_answer_layout: event_answer_layout,
         event_answers: event_answers,
         event_answers_by_date: event_answers_by_date,
         event_questions: event_questions,
