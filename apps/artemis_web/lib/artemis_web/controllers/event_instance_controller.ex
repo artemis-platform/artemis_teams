@@ -30,7 +30,7 @@ defmodule ArtemisWeb.EventInstanceController do
         today: today
       ]
 
-      render(conn, "index.html", assigns)
+      render_format(conn, "index", assigns)
     end)
   end
 

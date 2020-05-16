@@ -98,6 +98,12 @@
 
         render "_filters.html", filter_assigns
       %>
+
+      <section>
+        <h5>Actions</h5>
+        <%= render_export_actions(@conn, available_columns: data_table_available_columns(), custom_columns_link: false) %>
+      </section>
     </aside>
+
   </article>
 </div>

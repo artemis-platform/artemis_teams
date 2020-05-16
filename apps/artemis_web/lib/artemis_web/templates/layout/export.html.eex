@@ -5,9 +5,11 @@
     <div class="header">
       Export Options
     </div>
-    <div class="item">
-      <%= render_export_current_columns_action(@conn, @options) %>
-    </div>
+    <%= unless Keyword.get(@options, :custom_columns_link) == false do %>
+      <div class="item">
+        <%= render_export_current_columns_action(@conn, @options) %>
+      </div>
+    <% end %>
     <div class="item">
       <%= render_export_all_columns_action(@conn, @options) %>
     </div>

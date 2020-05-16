@@ -6,7 +6,13 @@ defmodule ArtemisWeb.EventInstanceView do
   def data_table_available_columns() do
     [
       {"Actions", "actions"},
-      {"Title", "title"}
+      {"Date", "date"},
+      {"Event Answer", "event_answer"},
+      {"Event Answer Percent", "event_answer_percent"},
+      {"Event Question", "event_question"},
+      {"Project", "project"},
+      {"User Email", "user_email"},
+      {"User Name", "user_name"}
     ]
   end
 
@@ -17,18 +23,34 @@ defmodule ArtemisWeb.EventInstanceView do
         value: fn _conn, _row -> nil end,
         value_html: &data_table_actions_column_html/2
       ],
-      "title" => [
-        label: fn _conn -> "Title" end,
-        label_html: fn conn ->
-          sortable_table_header(conn, "title", "Title")
-        end,
-        value: fn _conn, row -> row.title end,
-        value_html: fn conn, row ->
-          case has?(conn, "event-answers:show") do
-            true -> link(row.title, to: Routes.event_instance_path(conn, :show, row.event_template, row))
-            false -> row.title
-          end
-        end
+      "date" => [
+        label: fn _conn -> "Date" end,
+        value: fn _conn, row -> row.date end
+      ],
+      "event_answer" => [
+        label: fn _conn -> "Event Answer" end,
+        value: fn _conn, row -> row.value end,
+        value_html: fn _conn, row -> row.value_html || row.value end,
+      ],
+      "event_answer_percent" => [
+        label: fn _conn -> "Event Answer Percent" end,
+        value: fn _conn, row -> row.value_percent end
+      ],
+      "event_question" => [
+        label: fn _conn -> "Event Question" end,
+        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:event_question, :title]) end,
+      ],
+      "project" => [
+        label: fn _conn -> "Project" end,
+        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:project, :title]) end,
+      ],
+      "user_email" => [
+        label: fn _conn -> "User Email" end,
+        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:user, :email]) end,
+      ],
+      "user_name" => [
+        label: fn _conn -> "User Name" end,
+        value: fn _conn, row -> Artemis.Helpers.deep_get(row, [:user, :name]) end,
       ]
     }
   end
