@@ -32,7 +32,7 @@
 
   <div class="filters">
     <div>
-      <i class="tag icon"></i>
+      <i class="thumbtack icon"></i>
       <%= filter_multi_select(@conn, "Project", :project_id, @filter_data.project_options) %>
     </div>
 
