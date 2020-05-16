@@ -2,13 +2,14 @@
 
 <div class="ui modal tiny" id="<%= @modal_id %>">
   <div class="header">
-    Confirm Delete
+    <%= @title %>
   </div>
   <div class="content">
+    <%= @body %>
     <% form_id = "delete-confirmation-form-#{Artemis.Helpers.UUID.call()}" %>
-    <%= form_tag @to, method: :delete, class: "ui form", id: form_id do %>
+    <%= form_tag @to, method: @method, class: "ui form", id: form_id do %>
       <%= if assigns[:reason_field] do %>
-        <%= reason_field nil %>
+        <%= reason_field nil, @reason_options %>
       <% end %>
     <% end %>
   </div>

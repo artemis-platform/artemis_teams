@@ -4,6 +4,12 @@
       Edit Event Instance
       <span class="subheading"><%= @event_template.title %> for <%= render_event_instance_date(@date) %></span>
     </h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "event-answers:delete") do %>
+        <%= delete_confirmation "Delete All Answers", Routes.event_instance_path(@conn, :delete, @event_template, @date), color: "red" %>
+      <% end %>
+    </div>
   </header>
 </div>
 
