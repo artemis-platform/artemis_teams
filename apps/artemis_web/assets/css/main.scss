@@ -864,14 +864,23 @@ a.summary-count:hover {
   flex-flow: row wrap;
 
   &>div {
-    display: flex;
     align-items: center;
+    display: flex;
     margin-bottom: 0.5rem;
-    margin-right: 2rem;
+    width: 100%;
 
-    &>.icon {
+    .icon {
       margin-right: 1rem;
     }
+
+    form,
+    form * {
+      width: 100%;
+    }
+  }
+
+  &.horizontal>div {
+    margin-right: 2rem;
 
     &>form {
       min-width: 8rem;

@@ -19,13 +19,13 @@ defmodule ArtemisWeb.EventInstanceController do
       event_questions = get_event_questions(event_template_id, user)
       event_answers = get_event_answers_for_index(event_template_id, params, user)
       event_answers_by_date = get_event_answers_by_date(event_answers)
+      event_instance_layout = Map.get(conn.query_params, "layout", "date")
       filter_data = get_filter_data(event_template, user)
-      event_answer_layout = Map.get(conn.query_params, "layout", "date")
 
       assigns = [
-        event_answer_layout: event_answer_layout,
         event_answers: event_answers,
         event_answers_by_date: event_answers_by_date,
+        event_instance_layout: event_instance_layout,
         event_questions: event_questions,
         event_template: event_template,
         filter_data: filter_data,
@@ -43,11 +43,13 @@ defmodule ArtemisWeb.EventInstanceController do
       event_answers = get_event_answers_for_show(event_template_id, date, params, user)
       event_integrations = get_event_integrations(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
+      event_instance_layout = Map.get(conn.query_params, "layout", "date")
       filter_data = get_filter_data(event_template, user)
 
       assigns = [
         date: date,
         event_answers: event_answers,
+        event_instance_layout: event_instance_layout,
         event_questions: event_questions,
         event_integrations: event_integrations,
         event_template: event_template,

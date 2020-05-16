@@ -15,46 +15,62 @@
         <%= raw @event_template.description_html %>
       </section>
 
-      <section>
-        <%= h2 "Questions" %>
+      <%= if @event_instance_layout == "date" do %>
+        <section>
+          <%= h2 "Questions" %>
 
-        <%= Enum.map @event_questions, fn event_question -> %>
-          <div class="event-question">
-            <h4>
-              <%= event_question.title %>
-            </h4>
-            <%= raw event_question.description_html %>
-          </div>
+          <%= Enum.map @event_questions, fn event_question -> %>
+            <div class="event-question">
+              <h4>
+                <%= event_question.title %>
+              </h4>
+              <%= raw event_question.description_html %>
+            </div>
 
-          <%
-            matching_event_answers =
-              @event_answers
-              |> Enum.filter(&(&1.event_question_id == event_question.id))
-              |> Enum.sort_by(&(&1.user_id))
-          %>
+            <%
+              matching_event_answers =
+                @event_answers
+                |> Enum.filter(&(&1.event_question_id == event_question.id))
+                |> Enum.sort_by(&(&1.user_id))
+            %>
 
-          <ul class="event-answers">
-            <%= Enum.map matching_event_answers, fn event_answer -> %>
-              <li>
-                <div class="username">
-                  <%= event_answer.user.name %>
-                </div>
-
-                <%= if event_answer.project do %>
-                  <div class="project">
-                    <i class="thumbtack icon"></i>
-                    <%= event_answer.project.title %>
+            <ul class="event-answers">
+              <%= Enum.map matching_event_answers, fn event_answer -> %>
+                <li>
+                  <div class="username">
+                    <%= event_answer.user.name %>
                   </div>
-                <% end %>
 
-                <div class="value">
-                  <%= render_value_html(event_answer) %>
-                </div>
-              </li>
-            <% end %>
-          </ul>
-        <% end %>
-      </section>
+                  <%= if event_answer.project do %>
+                    <div class="project">
+                      <i class="thumbtack icon"></i>
+                      <%= event_answer.project.title %>
+                    </div>
+                  <% end %>
+
+                  <div class="value">
+                    <%= render_value_html(event_answer) %>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+        </section>
+      <% end %>
+
+      <%= if @event_instance_layout == "list" do %>
+        <section>
+          <%= h3 "Event Answers" %>
+          <%=
+            render_data_table(
+              @conn,
+              @event_answers,
+              allowed_columns: data_table_allowed_columns(),
+              default_columns: ["date", "event_question", "project", "user_email", "user_name", "event_answer"]
+            )
+          %>
+        </section>
+      <% end %>
     </content>
 
     <aside class="right">

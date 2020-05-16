@@ -23,6 +23,13 @@ h5 {
   }
 }
 
+.ui.basic.grey.buttons .button,
+.ui.basic.grey.button {
+  -webkit-box-shadow: 0px 0px 0px 1px #ddd inset !important;
+  box-shadow: 0px 0px 0px 1px #ddd inset !important;
+  color: #767676 !important;
+}
+
 /* Select 2 */
 
 select {

@@ -8,7 +8,7 @@
 
   <%= h5 "Layout" %>
 
-  <div class="ui buttons query-param-buttons">
+  <div class="ui buttons query-param-buttons small">
     <%=
       label = [
         content_tag(:i, nil, class: "ui icon calendar alternate outline"),

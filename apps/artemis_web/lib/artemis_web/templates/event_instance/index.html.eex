@@ -16,7 +16,7 @@
         <%= raw @event_template.description_html %>
       </section>
 
-      <%= if @event_answer_layout == "date" do %>
+      <%= if @event_instance_layout == "date" do %>
         <%= if length(@event_answers.entries) == 0 do %>
           <section>
             <p>No records found</p>
@@ -78,7 +78,7 @@
         <% end %>
       <% end %>
 
-      <%= if @event_answer_layout == "list" do %>
+      <%= if @event_instance_layout == "list" do %>
         <section>
           <%= h3 "Event Answers" %>
           <%=
