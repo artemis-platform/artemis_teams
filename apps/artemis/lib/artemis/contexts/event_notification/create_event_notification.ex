@@ -3,7 +3,7 @@ defmodule Artemis.CreateEventNotification do
 
   require Logger
 
-	alias Artemis.Drivers.Slack
+  alias Artemis.Drivers.Slack
 
   @moduledoc """
   Creates a vCD Management API request
@@ -25,11 +25,11 @@ defmodule Artemis.CreateEventNotification do
   # Helpers
 
   defp send_request(params, _user) do
-		params = Artemis.Helpers.keys_to_strings(params)
-		url = Map.get(params, "url")
-		payload = Map.get(params, "payload")
+    params = Artemis.Helpers.keys_to_strings(params)
+    url = Map.get(params, "url")
+    payload = Map.get(params, "payload")
 
-		Slack.Request.post(url, payload)
+    Slack.Request.post(url, payload)
   end
 
   defp parse_response({_, %HTTPoison.Response{} = response}) do
