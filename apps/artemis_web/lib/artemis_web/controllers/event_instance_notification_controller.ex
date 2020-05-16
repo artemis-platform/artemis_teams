@@ -1,6 +1,7 @@
 defmodule ArtemisWeb.EventInstanceNotificationController do
   use ArtemisWeb, :controller
 
+  alias Artemis.CreateEventNotification
   alias Artemis.GetEventIntegration
   alias Artemis.GetEventTemplate
   alias Artemis.ListEventAnswers
@@ -9,12 +10,12 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
   def create(conn, %{"event_id" => event_template_id, "event_instance_id" => date, "id" => id}) do
     authorize(conn, "event-integrations:create", fn ->
       case create_event_instance_notification(conn, event_template_id, date, id) do
-        {:ok, _event_question} ->
+        {:ok, _response} ->
           conn
           |> put_flash(:info, "Event Notification created successfully.")
           |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
 
-        {:error, _changeset} ->
+        {:error, _error} ->
           conn
           |> put_flash(:error, "Error creating Event Notification.")
           |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
@@ -28,14 +29,37 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
     user = current_user(conn)
     event_template = GetEventTemplate.call!(event_template_id, user)
     event_integration = GetEventIntegration.call!([id: id, event_template_id: event_template_id], user)
+    url = Artemis.Helpers.deep_get(event_integration, [:settings, "webhook_url"])
 
+    case event_integration.notification_type do
+      "Reminder" -> create_reminder_notification(conn, event_template, date, url, user)
+      "Summary - By Project" -> create_summary_by_project_notification(conn, event_template, date, url, user)
+    end
+  end
+
+  defp create_reminder_notification(conn, event_template, date, url, user) do
+    module = ArtemisWeb.EventInstanceView
+    template = "show/_reminder.slack"
+
+    assigns = [
+      conn: conn,
+      date: date,
+      event_template: event_template,
+      user: user
+    ]
+
+    payload = Phoenix.View.render_to_string(module, template, assigns)
+
+    CreateEventNotification.call(%{payload: payload, url: url}, user)
+  end
+
+  defp create_summary_by_project_notification(conn, event_template, date, url, user) do
     event_answers =
       event_template
       |> Map.get(:id)
       |> get_event_answers(date, user)
 
     respondents = get_respondents(event_template.team_id, event_answers, user)
-    url = Artemis.Helpers.deep_get(event_integration, [:settings, "webhook_url"])
 
     # Summary Overview Section
 
@@ -53,7 +77,7 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
     payload = Phoenix.View.render_to_string(module, template, assigns)
 
-    {:ok, _} = Artemis.Drivers.Slack.Request.post(url, payload)
+    {:ok, _} = CreateEventNotification.call(%{payload: payload, url: url}, user)
 
     # Summary By Project Sections
 
@@ -70,7 +94,7 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
       payload = Phoenix.View.render_to_string(module, template, assigns)
 
-      {:ok, _} = Artemis.Drivers.Slack.Request.post(url, payload)
+      {:ok, _} = CreateEventNotification.call(%{payload: payload, url: url}, user)
     end)
 
     {:ok, true}

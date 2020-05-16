@@ -1055,19 +1055,18 @@ ul.event-answers {
 
     .username {
       font-size: 0.875rem;
-      flex-grow: 0;
       font-weight: 600;
       margin-right: 1rem;
+      min-width: 110px;
     }
 
     .project {
       font-size: 0.875rem;
-      flex-grow: 0;
       margin-right: 1rem;
+      min-width: 130px;
     }
 
     .value {
-      flex-grow: 1;
 
       .percent {
         color: #666;
