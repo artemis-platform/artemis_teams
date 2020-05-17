@@ -139,6 +139,7 @@ defmodule ArtemisWeb.TeamController do
   defp get_event_templates(team_id, user) do
     params = %{
       filters: %{
+        active: true,
         team_id: team_id
       },
       preload: [:team]
@@ -150,6 +151,7 @@ defmodule ArtemisWeb.TeamController do
   defp get_projects(team_id, user) do
     params = %{
       filters: %{
+        active: true,
         team_id: team_id
       },
       preload: [:team]

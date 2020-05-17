@@ -20,7 +20,7 @@
   </section>
 
   <section class="related-resources">
-    <%= h3 "Events" %>
+    <%= h3 "Active Events" %>
 
     <%=
       render_data_table(
@@ -35,10 +35,14 @@
     <%= if has?(@conn, "event-templates:create") do %>
       <%= action "New Event", to: Routes.event_path(@conn, :new, team_id: @team.id), color: "blue" %>
     <% end %>
+
+    <%= if has?(@conn, "event-templates:create") do %>
+      <%= action "View All Team Events", to: Routes.event_path(@conn, :index, filters: %{team_id: @team.id}) %>
+    <% end %>
   </section>
 
   <section class="related-resources">
-    <%= h3 "Projects" %>
+    <%= h3 "Active Projects" %>
 
     <%=
       render_data_table(
@@ -52,6 +56,10 @@
 
     <%= if has?(@conn, "projects:create") do %>
       <%= action "New Project", to: Routes.project_path(@conn, :new, team_id: @team.id), color: "blue" %>
+    <% end %>
+
+    <%= if has?(@conn, "projects:create") do %>
+      <%= action "View All Team Projects", to: Routes.project_path(@conn, :index, filters: %{team_id: @team.id}) %>
     <% end %>
   </section>
 

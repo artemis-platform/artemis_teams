@@ -47,6 +47,7 @@ defmodule Artemis.ListEventTemplates do
 
   defp filter_query(query, _params, _user), do: query
 
+  defp filter(query, "active", value), do: where(query, [i], i.active in ^split(value))
   defp filter(query, "team_id", value), do: where(query, [i], i.team_id in ^split(value))
   defp filter(query, "title", value), do: where(query, [i], i.title in ^split(value))
 
