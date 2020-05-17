@@ -28,6 +28,10 @@
     %>
   </div>
 
+  <%= h5 "Search" %>
+
+  <%= render_search @conn %>
+
   <%= h5 "Filters" %>
 
   <div class="filters">
