@@ -1,7 +1,7 @@
 <div id="content-header">
   <header>
     <h1>
-      Project
+      Team Project
       <span class="subheading"><%= @project.title %></span>
     </h1>
 
