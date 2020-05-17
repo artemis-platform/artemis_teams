@@ -1,0 +1,34 @@
+<div id="content-header">
+  <header>
+    <h1>
+      <%= @event_template.title %>
+      <span class="subheading">Reports</span>
+    </h1>
+  </header>
+
+  <%= render ArtemisWeb.EventView, "show/_secondary_navigation.html", assigns %>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <article id="home-page" class="page">
+    <content>
+      <section>
+        <%= h3 "Event Reports" %>
+        <p>Hello World</p>
+      </section>
+    </content>
+
+    <aside class="right">
+      <section>
+        <h5>Filters</h5>
+      </section>
+    </aside>
+  </article>
+</div>

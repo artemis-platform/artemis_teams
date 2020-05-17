@@ -10,20 +10,26 @@
       label: "Instances",
       path: &Routes.event_instance_path(&1, :index, @event_template),
       path_match_type: :starts_with,
-      verify: &has?(&1, "event-answers:show")
+      verify: &has?(&1, "event-answers:list")
     ],
     [
       label: "Questions",
       path: &Routes.event_question_path(&1, :index, @event_template),
       path_match_type: :starts_with,
-      verify: &has?(&1, "event-questions:show")
+      verify: &has?(&1, "event-questions:list")
     ],
     [
       label: "Integrations",
       path: &Routes.event_integration_path(&1, :index, @event_template),
       path_match_type: :starts_with,
-      verify: &has?(&1, "event-integrations:show")
+      verify: &has?(&1, "event-integrations:list")
     ],
+    [
+      label: "Reports",
+      path: &Routes.event_report_path(&1, :index, @event_template),
+      path_match_type: :starts_with,
+      verify: &has?(&1, "event-reports:list")
+    ]
   ]
 
   render_secondary_navigation(

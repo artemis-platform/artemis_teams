@@ -81,6 +81,7 @@ defmodule ArtemisWeb.Router do
 
         resources "/integrations", EventIntegrationController, as: :integration
         resources "/questions", EventQuestionController, as: :question
+        resources "/reports", EventReportController, as: :report, only: [:index]
       end
 
       # Features
