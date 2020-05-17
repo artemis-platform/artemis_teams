@@ -22,6 +22,9 @@ defmodule ArtemisWeb.SearchView do
     "event_answers" => [
       label: "Event Answers"
     ],
+    "event_integrations" => [
+      label: "Event Integrations"
+    ],
     "features" => [
       label: "Features",
       path: &Routes.feature_path/3
@@ -89,9 +92,19 @@ defmodule ArtemisWeb.SearchView do
 
   defp search_entry(%Artemis.EventAnswer{} = data) do
     %{
-      title: data.event_question.title,
+      title: "#{data.date} - #{data.event_question.title} - #{data.user.name}",
       permission: "event-answers:show",
-      link: fn conn -> Routes.event_path(conn, :show, data.event_question.event_template_id) end
+      link: fn conn ->
+        Routes.event_instance_path(conn, :show, data.event_question.event_template_id, Date.to_iso8601(data.date))
+      end
+    }
+  end
+
+  defp search_entry(%Artemis.EventIntegration{} = data) do
+    %{
+      title: ArtemisWeb.EventIntegrationView.render_event_integration_name(data),
+      permission: "event-integrations:show",
+      link: fn conn -> Routes.event_integration_path(conn, :show, data.event_template_id, data) end
     }
   end
 
@@ -124,6 +137,14 @@ defmodule ArtemisWeb.SearchView do
       title: data.slug,
       permission: "permissions:show",
       link: fn conn -> Routes.permission_path(conn, :show, data) end
+    }
+  end
+
+  defp search_entry(%Artemis.Project{} = data) do
+    %{
+      title: data.title,
+      permission: "projects:show",
+      link: fn conn -> Routes.project_path(conn, :show, data) end
     }
   end
 

@@ -51,6 +51,11 @@ defmodule Artemis.Search do
         function: &Artemis.ListEventTemplates.call/2,
         permissions: "event-templates:list"
       ],
+      "event_integrations" => [
+        enabled: true,
+        function: &Artemis.ListEventIntegrations.call/2,
+        permissions: "event-integrations:list"
+      ],
       "projects" => [
         enabled: true,
         function: &Artemis.ListProjects.call/2,

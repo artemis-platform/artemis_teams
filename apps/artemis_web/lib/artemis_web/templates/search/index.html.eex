@@ -39,55 +39,55 @@
 
         <h2>Search Results</h2>
 
-        <%= for {key, data} <- @results do %>
-          <%= if search_results?(data) do %>
+        <div class="search-results">
+          <%= for {key, data} <- @results do %>
+            <%= if search_results?(data) do %>
 
-            <h3 id="<%= search_anchor(key) %>">
-              <%= search_label(key) %> - <%= search_matches_text(data) %>
-            </h3>
+              <h3 id="<%= search_anchor(key) %>">
+                <%= search_label(key) %> - <%= search_matches_text(data) %>
+              </h3>
 
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Resource</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <%= for entry <- search_entries(data) do %>
+              <table class="data-table">
+                <thead>
                   <tr>
-                    <td>
-                      <%= if has?(@conn, entry.permission) do %>
-                        <%= link entry.title, to: entry.link.(@conn) %>
-                      <% else %>
-                        <%= entry.title %>
-                      <% end %>
-                    </td>
-                    <td>
-                      <%= if has?(@conn, entry.permission) do %>
-                        <%= link "View", to: entry.link.(@conn) %>
-                      <% end %>
-                    </td>
+                    <th>Resource</th>
+                    <th></th>
                   </tr>
-                <% end %>
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  <%= for entry <- search_entries(data) do %>
+                    <tr>
+                      <td>
+                        <%= if has?(@conn, entry.permission) do %>
+                          <%= link entry.title, to: entry.link.(@conn) %>
+                        <% else %>
+                          <%= entry.title %>
+                        <% end %>
+                      </td>
+                      <td>
+                        <%= if has?(@conn, entry.permission) do %>
+                          <%= link "View", to: entry.link.(@conn) %>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
 
-            <p>
-              <%= search_link(@conn, data, key) %>
-              Previewing <%= search_entries_total(data) %> of <%= search_total(data) %>
-            </p>
+              <p class="links">
+                <%= search_link(@conn, data, key) %>
+                Previewing <%= search_entries_total(data) %> of <%= search_total(data) %>
+              </p>
 
+            <% end %>
           <% end %>
+
+        <% else %>
+
+          <p>No matching results found</p>
+
         <% end %>
-
-      <% else %>
-
-        <h2>Search Summary</h2>
-
-        <p>No matching results found</p>
-
-      <% end %>
+      </div>
 
     <% end %>
   </section>

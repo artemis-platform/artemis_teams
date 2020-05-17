@@ -124,7 +124,11 @@ defmodule ArtemisWeb.EventView do
       [
         verify: has?(conn, "event-answers:update"),
         link:
-          action("Update My Answers", to: Routes.event_instance_path(conn, :edit, row, today), color: "green", size: "mini")
+          action("Update My Answers",
+            to: Routes.event_instance_path(conn, :edit, row, today),
+            color: "green",
+            size: "mini"
+          )
       ],
       [
         verify: has?(conn, "event-answers:show"),
