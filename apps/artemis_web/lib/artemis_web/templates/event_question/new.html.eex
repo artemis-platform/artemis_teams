@@ -1,6 +1,9 @@
 <div id="content-header">
   <header>
-    <h1>New Event Question</h1>
+    <h1>
+      <%= @event_template.title %>
+      <span class="subheading">New Event Question</span>
+    </h1>
   </header>
 </div>
 

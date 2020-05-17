@@ -57,11 +57,18 @@ defmodule ArtemisWeb.EventQuestionController do
     end)
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"event_id" => event_template_id, "id" => id}) do
     authorize(conn, "event-questions:show", fn ->
-      event_question = GetEventQuestion.call!(id, current_user(conn), preload: @preload)
+      user = current_user(conn)
+      event_template = GetEventTemplate.call!(event_template_id, user)
+      event_question = GetEventQuestion.call!(id, user, preload: @preload)
 
-      render(conn, "show.html", event_question: event_question)
+      assigns = [
+        event_question: event_question,
+        event_template: event_template
+      ]
+
+      render(conn, "show.html", assigns)
     end)
   end
 

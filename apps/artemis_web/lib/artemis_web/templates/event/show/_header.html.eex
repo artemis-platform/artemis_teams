@@ -1,8 +1,7 @@
 <div id="content-header">
   <header>
     <h1>
-      Event
-      <span class="subheading"><%= @event_template.title %></span>
+      <%= @event_template.title %>
     </h1>
 
     <div class="actions">

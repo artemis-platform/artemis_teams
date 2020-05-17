@@ -1,7 +1,12 @@
 <div id="content-header">
   <header>
-    <h1>Edit Event Integration</h1>
+    <h1>
+      <%= @event_template.title %>
+      <span class="subheading"><%= render_event_integration_name(@event_integration) %></span>
+    </h1>
   </header>
+
+  <%= render ArtemisWeb.EventView, "show/_secondary_navigation.html", assigns %>
 </div>
 
 <div id="content-navigation">

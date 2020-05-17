@@ -1,7 +1,10 @@
 <div id="content-header">
   <header>
-    <h1>Edit Event</h1>
+    <%= @event_template.title %>
+    <span class="subheading">Edit Details</span>
   </header>
+
+  <%= render "show/_secondary_navigation.html", assigns %>
 </div>
 
 <div id="content-navigation">

@@ -1,8 +1,8 @@
 <div id="content-header">
   <header>
     <h1>
-      Edit Event Instance
-      <span class="subheading"><%= @event_template.title %> for <%= render_event_instance_date(@date) %></span>
+      <%= @event_template.title %>
+      <span class="subheading"><%= render_event_instance_date(@date) %></span>
     </h1>
 
     <div class="actions">
@@ -11,6 +11,8 @@
       <% end %>
     </div>
   </header>
+
+  <%= render ArtemisWeb.EventView, "show/_secondary_navigation.html", assigns %>
 </div>
 
 <div id="content-navigation">

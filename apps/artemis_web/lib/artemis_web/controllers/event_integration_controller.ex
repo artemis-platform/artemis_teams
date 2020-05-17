@@ -56,11 +56,18 @@ defmodule ArtemisWeb.EventIntegrationController do
     end)
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"event_id" => event_template_id, "id" => id}) do
     authorize(conn, "event-integrations:show", fn ->
-      event_integration = GetEventIntegration.call!(id, current_user(conn), preload: @preload)
+      user = current_user(conn)
+      event_template = GetEventTemplate.call!(event_template_id, user)
+      event_integration = GetEventIntegration.call!(id, user, preload: @preload)
 
-      render(conn, "show.html", event_integration: event_integration)
+      assigns = [
+        event_integration: event_integration,
+        event_template: event_template
+      ]
+
+      render(conn, "show.html", assigns)
     end)
   end
 
