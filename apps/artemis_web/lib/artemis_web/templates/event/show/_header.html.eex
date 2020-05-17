@@ -17,4 +17,6 @@
       <% end %>
     </div>
   </header>
+
+  <%= render "show/_secondary_navigation.html", assigns %>
 </div>

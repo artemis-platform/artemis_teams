@@ -463,12 +463,13 @@ body.error-page {
   }
 
   nav {
-    $height: 3.75rem;
+    $height: 4rem;
 
     background: #fff;
+    font-size: 15.5px;
     height: $height;
-    margin: 0rem -2rem -1.5rem -2rem;
-    width: 100vw;
+    margin: 0.25rem 0 -1.5rem 0;
+    width: 100%;
 
     ul {
       display: flex;
@@ -476,7 +477,8 @@ body.error-page {
       justify-content: flex-start;
       list-style: none;
       margin: 0;
-      padding: 0 2rem;
+      padding: 0;
+      width: 100%;
 
       li {
         align-self: center;
@@ -517,7 +519,7 @@ body.error-page {
           }
 
           &:hover {
-            color: $blue;
+            text-decoration: underline;
 
             .label.grey {
               background: $blue !important;
@@ -526,7 +528,7 @@ body.error-page {
           }
 
           &.selected {
-            color: #333;
+            font-weight: 700;
 
             .label.grey {
               background: #ddd !important;

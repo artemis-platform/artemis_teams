@@ -14,4 +14,6 @@
       <% end %>
     </div>
   </header>
+
+  <%= render ArtemisWeb.EventView, "show/_secondary_navigation.html", assigns %>
 </div>

@@ -1,7 +1,13 @@
 <%=
   secondary_navigation_items = [
     [
-      label: "Overview",
+      label: "Instances",
+      path: &Routes.event_instance_path(&1, :index, @event_template),
+      path_match_type: :starts_with,
+      verify: &has?(&1, "event-answers:show")
+    ],
+    [
+      label: "Settings",
       path: &Routes.event_path(&1, :show, @event_template),
       path_match_type: :exact,
       verify: &has?(&1, "event-templates:show")
