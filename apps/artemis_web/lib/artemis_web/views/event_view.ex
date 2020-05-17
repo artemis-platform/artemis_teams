@@ -29,6 +29,7 @@ defmodule ArtemisWeb.EventView do
   def data_table_available_columns() do
     [
       {"Actions", "actions"},
+      {"Active", "active"},
       {"Instances", "instances"},
       {"Current Instance", "actions_current_instance"},
       {"Team", "team"},
@@ -47,6 +48,13 @@ defmodule ArtemisWeb.EventView do
         label: fn _conn -> nil end,
         value: fn _conn, _row -> nil end,
         value_html: &data_table_actions_current_event_instance_column_html/2
+      ],
+      "active" => [
+        label: fn _conn -> "Active" end,
+        label_html: fn conn ->
+          sortable_table_header(conn, "active", "Active")
+        end,
+        value: fn _conn, row -> row.active end
       ],
       "event_instances" => [
         label: fn _conn -> "Instances" end,

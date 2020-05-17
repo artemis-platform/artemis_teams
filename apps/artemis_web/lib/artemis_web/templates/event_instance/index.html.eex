@@ -14,6 +14,9 @@
       <section>
         <%= h2 @event_template.title %>
         <%= raw @event_template.description_html %>
+        <%= if has?(@conn, "event-answers:update") do %>
+          <%= action "Update Answers", to: Routes.event_instance_path(@conn, :edit, @event_template, @today), color: "green" %>
+        <% end %>
       </section>
 
       <%= if @event_instance_layout == "date" do %>

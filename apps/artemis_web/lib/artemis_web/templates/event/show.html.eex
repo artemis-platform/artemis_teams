@@ -21,7 +21,7 @@
   </section>
 
   <section class="related-resources">
-    <%= h3 "Event Questions" %>
+    <%= h3 "Active Event Questions" %>
 
     <%=
       render_data_table(
@@ -36,10 +36,13 @@
     <%= if has?(@conn, "event-questions:create") do %>
       <%= action "New Question", to: Routes.event_question_path(@conn, :new, @event_template), color: "blue" %>
     <% end %>
+    <%= if has?(@conn, "event-questions:show") do %>
+      <%= action "View All Event Questions", to: Routes.event_question_path(@conn, :index, @event_template) %>
+    <% end %>
   </section>
 
   <section class="related-resources">
-    <%= h3 "Event Integrations" %>
+    <%= h3 "Active Event Integrations" %>
 
     <%=
       render_data_table(
@@ -53,6 +56,9 @@
 
     <%= if has?(@conn, "event-integrations:create") do %>
       <%= action "New Integration", to: Routes.event_integration_path(@conn, :new, @event_template), color: "blue" %>
+    <% end %>
+    <%= if has?(@conn, "event-integrations:show") do %>
+      <%= action "View All Event Integrations", to: Routes.event_integration_path(@conn, :index, @event_template) %>
     <% end %>
   </section>
 </div>

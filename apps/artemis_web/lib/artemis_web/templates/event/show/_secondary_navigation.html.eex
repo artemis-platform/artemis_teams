@@ -1,17 +1,29 @@
 <%=
   secondary_navigation_items = [
     [
+      label: "Overview",
+      path: &Routes.event_path(&1, :show, @event_template),
+      path_match_type: :exact,
+      verify: &has?(&1, "event-templates:show")
+    ],
+    [
       label: "Instances",
       path: &Routes.event_instance_path(&1, :index, @event_template),
       path_match_type: :starts_with,
       verify: &has?(&1, "event-answers:show")
     ],
     [
-      label: "Settings",
-      path: &Routes.event_path(&1, :show, @event_template),
-      path_match_type: :exact,
-      verify: &has?(&1, "event-templates:show")
-    ]
+      label: "Questions",
+      path: &Routes.event_question_path(&1, :index, @event_template),
+      path_match_type: :starts_with,
+      verify: &has?(&1, "event-questions:show")
+    ],
+    [
+      label: "Integrations",
+      path: &Routes.event_integration_path(&1, :index, @event_template),
+      path_match_type: :starts_with,
+      verify: &has?(&1, "event-integrations:show")
+    ],
   ]
 
   render_secondary_navigation(

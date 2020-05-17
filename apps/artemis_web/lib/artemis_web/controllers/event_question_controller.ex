@@ -2,16 +2,34 @@ defmodule ArtemisWeb.EventQuestionController do
   use ArtemisWeb, :controller
 
   alias Artemis.CreateEventQuestion
-  alias Artemis.EventQuestion
   alias Artemis.DeleteEventQuestion
+  alias Artemis.EventQuestion
   alias Artemis.GetEventQuestion
   alias Artemis.GetEventTemplate
+  alias Artemis.ListEventQuestions
   alias Artemis.UpdateEventQuestion
 
   @preload [:event_template]
 
-  def index(conn, %{"event_id" => event_template_id}) do
-    redirect(conn, to: Routes.event_path(conn, :show, event_template_id))
+  def index(conn, %{"event_id" => event_template_id} = params) do
+    authorize(conn, "event-questions:list", fn ->
+      user = current_user(conn)
+      event_template = GetEventTemplate.call!(event_template_id, user)
+
+      params =
+        params
+        |> Map.put(:paginate, true)
+        |> Map.put(:preload, @preload)
+
+      event_questions = ListEventQuestions.call(params, user)
+
+      assigns = [
+        event_questions: event_questions,
+        event_template: event_template
+      ]
+
+      render_format(conn, "index", assigns)
+    end)
   end
 
   def new(conn, %{"event_id" => event_template_id}) do

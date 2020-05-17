@@ -1,0 +1,16 @@
+<div id="content-header">
+  <header>
+    <h1>
+      <%= @event_template.title %>
+      <span class="subheading">Questions</span>
+    </h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "event-questions:create") do %>
+        <%= action "New Question", to: Routes.event_question_path(@conn, :new, @event_template), color: "blue" %>
+      <% end %>
+    </div>
+  </header>
+
+  <%= render ArtemisWeb.EventView, "show/_secondary_navigation.html", assigns %>
+</div>

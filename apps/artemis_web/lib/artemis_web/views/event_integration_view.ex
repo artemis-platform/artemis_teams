@@ -6,8 +6,9 @@ defmodule ArtemisWeb.EventIntegrationView do
   def data_table_available_columns() do
     [
       {"Actions", "actions"},
+      {"Active", "active"},
       {"Integration", "integration_type"},
-      {"Name", "Name"},
+      {"Name", "name"},
       {"Notification Type", "notification_type"}
     ]
   end
@@ -18,6 +19,13 @@ defmodule ArtemisWeb.EventIntegrationView do
         label: fn _conn -> nil end,
         value: fn _conn, _row -> nil end,
         value_html: &data_table_actions_column_html/2
+      ],
+      "active" => [
+        label: fn _conn -> "Active" end,
+        label_html: fn conn ->
+          sortable_table_header(conn, "active", "Active")
+        end,
+        value: fn _conn, row -> row.active end
       ],
       "integration_type" => [
         label: fn _conn -> "Integration" end,

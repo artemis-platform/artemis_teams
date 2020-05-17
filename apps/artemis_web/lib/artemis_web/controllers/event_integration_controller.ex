@@ -6,12 +6,30 @@ defmodule ArtemisWeb.EventIntegrationController do
   alias Artemis.DeleteEventIntegration
   alias Artemis.GetEventIntegration
   alias Artemis.GetEventTemplate
+  alias Artemis.ListEventIntegrations
   alias Artemis.UpdateEventIntegration
 
   @preload [:event_template]
 
-  def index(conn, %{"event_id" => event_template_id}) do
-    redirect(conn, to: Routes.event_path(conn, :show, event_template_id))
+  def index(conn, %{"event_id" => event_template_id} = params) do
+    authorize(conn, "event-integrations:list", fn ->
+      user = current_user(conn)
+      event_template = GetEventTemplate.call!(event_template_id, user)
+
+      params =
+        params
+        |> Map.put(:paginate, true)
+        |> Map.put(:preload, @preload)
+
+      event_integrations = ListEventIntegrations.call(params, user)
+
+      assigns = [
+        event_integrations: event_integrations,
+        event_template: event_template
+      ]
+
+      render_format(conn, "index", assigns)
+    end)
   end
 
   def new(conn, %{"event_id" => event_template_id}) do

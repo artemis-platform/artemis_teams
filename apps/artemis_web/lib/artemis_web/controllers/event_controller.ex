@@ -61,10 +61,10 @@ defmodule ArtemisWeb.EventController do
       user = current_user(conn)
       event_template = GetEventTemplate.call!(id, user)
 
-      event_questions_params = %{filters: %{event_template_id: event_template.id}}
+      event_questions_params = %{filters: %{active: true, event_template_id: event_template.id}}
       event_questions = ListEventQuestions.call(event_questions_params, user)
 
-      event_integrations_params = %{filters: %{event_template_id: event_template.id}}
+      event_integrations_params = %{filters: %{active: true, event_template_id: event_template.id}}
       event_integrations = ListEventIntegrations.call(event_integrations_params, user)
 
       assigns = [
