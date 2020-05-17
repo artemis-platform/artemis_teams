@@ -7,10 +7,10 @@
 
     <div class="actions">
       <%= if has?(@conn, "event-integrations:delete") do %>
-        <%= delete_confirmation "Delete", Routes.event_integration_path(@conn, :delete, @event_integration.event_template, @event_integration) %>
+        <%= delete_confirmation "Delete Integration", Routes.event_integration_path(@conn, :delete, @event_integration.event_template, @event_integration) %>
       <% end %>
       <%= if has?(@conn, "event-integrations:update") do %>
-        <%= action "Edit", to: Routes.event_integration_path(@conn, :edit, @event_integration.event_template, @event_integration), color: "green" %>
+        <%= action "Edit Integration", to: Routes.event_integration_path(@conn, :edit, @event_integration.event_template, @event_integration), color: "green" %>
       <% end %>
     </div>
   </header>
