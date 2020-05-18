@@ -85,11 +85,13 @@ defmodule ArtemisWeb.ProjectController do
     authorize(conn, "projects:update", fn ->
       user = current_user(conn)
       project = GetProject.call(id, user, preload: @preload)
+      team = GetTeam.call!(project.team_id, user)
       changeset = Project.changeset(project)
 
       assigns = [
         changeset: changeset,
-        project: project
+        project: project,
+        team: team
       ]
 
       render(conn, "edit.html", assigns)
@@ -108,10 +110,12 @@ defmodule ArtemisWeb.ProjectController do
 
         {:error, %Ecto.Changeset{} = changeset} ->
           project = GetProject.call(id, user, preload: @preload)
+          team = GetTeam.call!(project.team_id, user)
 
           assigns = [
             changeset: changeset,
-            project: project
+            project: project,
+            team: team
           ]
 
           render(conn, "edit.html", assigns)
