@@ -17,18 +17,27 @@
 <div id="content">
   <%= render_flash_notifications @conn %>
 
-  <article id="home-page" class="page">
+  <article id="event-report-page" class="page">
     <content>
       <section>
-        <%= h3 "Event Reports" %>
-        <p>Hello World</p>
+        <%= h2 @event_template.title %>
+        <%= raw @event_template.description_html %>
+      </section>
+
+      <section>
+        <%= h3 "Engagement Rate" %>
+        <div class="chart-description">Number of team members responding to event instances.</div>
+        <%= render "event_instance/engagement_report.html", assigns %>
       </section>
     </content>
 
     <aside class="right">
-      <section>
-        <h5>Filters</h5>
-      </section>
+      <%=
+        reset_link = Routes.event_report_path(@conn, :index, @event_template.id)
+        filter_assigns = Map.put(assigns, :reset_link, reset_link)
+
+        render "_filters.html", filter_assigns
+      %>
     </aside>
   </article>
 </div>

@@ -70,34 +70,16 @@ defmodule Artemis.ListEventReports do
 
   @impl true
   def get_report(:event_instance_engagement_by_date, params, user) do
-    results =
-      params
-      |> get_base_query(user)
-      |> order_by([ea], ea.date)
-      |> group_by([ea], [
-        ea.date,
-        ea.user_id
-      ])
-      |> select([ea], [
-        ea.date,
-        1
-      ])
-      |> Repo.all()
-      # |> Enum.group_by(&Enum.at(&1, 0))
-
-    results =
-      params
-      |> get_base_query(user)
-      |> order_by([ea], ea.date)
-      |> group_by([ea], [
-        ea.date,
-        ea.user_id
-      ])
-      |> select([ea], [
-        ea.date,
-        count(ea.id)
-      ])
-      |> Repo.all()
-      # |> Enum.group_by(&Enum.at(&1, 0))
+    params
+    |> get_base_query(user)
+    |> order_by([ea], ea.date)
+    |> group_by([ea], [
+      ea.date
+    ])
+    |> select([ea], [
+      ea.date,
+      count(ea.user_id, :distinct)
+    ])
+    |> Repo.all()
   end
 end

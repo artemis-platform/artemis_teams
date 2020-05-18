@@ -9,7 +9,7 @@
   <%= render "show/_notifications.html", assigns %>
 
   <section>
-    <%= h2 "Details" %>
+    <%= h2 "Event Details" %>
     <%=
       render_key_value_list([
         ["Title", @event_template.title],

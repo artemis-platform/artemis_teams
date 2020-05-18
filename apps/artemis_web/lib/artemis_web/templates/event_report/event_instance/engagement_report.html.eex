@@ -1,0 +1,50 @@
+<%
+  chart_id = "amchart-#{Artemis.Helpers.UUID.call()}"
+
+  chart_data =
+    @event_reports
+    |> Map.get(:event_instance_engagement_by_date)
+    |> Enum.map(fn [key, value] ->
+      %{}
+      |> Map.put(:date, Date.to_iso8601(key))
+      |> Map.put(:value, value)
+    end)
+%>
+
+<script>
+  am4core.ready(function() {
+	  // Themes begin
+	  am4core.useTheme(am4themes_animated);
+	  // Themes end
+
+	  var chart = am4core.create("<%= chart_id %>", am4charts.XYChart);
+
+	  chart.data = <%= raw Jason.encode!(chart_data) %>;
+
+	  // Create axes
+	  var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+	  dateAxis.renderer.minGridDistance = 60;
+
+	  var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+
+	  // Create series
+	  var series = chart.series.push(new am4charts.LineSeries());
+	  series.dataFields.valueY = "value";
+	  series.dataFields.dateX = "date";
+	  series.tooltipText = "{value}"
+
+	  series.tooltip.pointerOrientation = "vertical";
+
+	  chart.cursor = new am4charts.XYCursor();
+	  chart.cursor.snapToSeries = series;
+	  chart.cursor.xAxis = dateAxis;
+
+	  //chart.scrollbarY = new am4core.Scrollbar();
+	  //chart.scrollbarX = new am4core.Scrollbar();
+
+    // Register instance
+    window.AmChartHelpers.register_instance("<%= chart_id %>", {chart: chart, data: data})
+  });
+</script>
+
+<div class="event-reports chart" id="<%= chart_id %>"></div>

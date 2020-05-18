@@ -1,0 +1,22 @@
+<section>
+  <%= h5 "Presets" %>
+
+  <div class="preset-filters">
+    <%= link "All", to: @reset_link %>
+    <%= filter_link(@conn, "My Event Answers", user_id: [current_user(@conn).id]) %>
+  </div>
+
+  <%= h5 "Filters" %>
+
+  <div class="filters">
+    <div>
+      <i class="thumbtack icon"></i>
+      <%= filter_multi_select(@conn, "Project", :project_id, @filter_data.project_options) %>
+    </div>
+
+    <div>
+      <i class="user icon"></i>
+      <%= filter_multi_select(@conn, "User", :user_id, @filter_data.user_options) %>
+    </div>
+  </div>
+</section>

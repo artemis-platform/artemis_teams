@@ -881,7 +881,8 @@ a.summary-count:hover {
     }
 
     form,
-    form * {
+    form input,
+    form select {
       width: 100%;
     }
   }
@@ -1172,6 +1173,19 @@ ul.event-answers {
     &:hover {
       background: #f2f2f2 !important;
     }
+  }
+}
+
+#event-report-page {
+
+  .chart {
+    min-height: 280px;
+    width: 100%;
+  }
+
+  .chart-description {
+    color: #999;
+    margin: -0.75rem 0 1rem 0;
   }
 }
 
