@@ -14,7 +14,7 @@
       project_id = Enum.at(row, 2)
       project = Enum.find(@projects, &(&1.id == project_id)) || %{}
 
-      Map.get(project, :title) || "Other"
+      Map.get(project, :title) || Artemis.EventAnswer.default_project_name()
     end)
     |> Enum.uniq()
 
@@ -25,7 +25,7 @@
       values =
         Enum.reduce(entries, %{}, fn [_event_question_id, _date, project_id, value], acc ->
           project = Enum.find(@projects, &(&1.id == project_id)) || %{}
-          project_title = Map.get(project, :title) || "Other"
+          project_title = Map.get(project, :title) || Artemis.EventAnswer.default_project_name()
 
           value_number =
             case value do

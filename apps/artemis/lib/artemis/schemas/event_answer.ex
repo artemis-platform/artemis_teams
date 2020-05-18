@@ -72,6 +72,8 @@ defmodule Artemis.EventAnswer do
       "text"
     ]
 
+  def default_project_name, do: "Other"
+
   # Changesets
 
   def changeset(struct, params \\ %{}) do

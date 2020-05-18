@@ -19,7 +19,7 @@
     end)
     |> Enum.join("\\n")
 
-  project_title = if is_map(@project), do: @project.title, else: "Other"
+  project_title = if is_map(@project), do: @project.title, else: Artemis.EventAnswer.default_project_name()
 
   text = ":books: *#{project_title}*\\n\\n#{entries}"
 %>
