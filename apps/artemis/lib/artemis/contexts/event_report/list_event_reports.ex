@@ -105,11 +105,11 @@ defmodule Artemis.ListEventReports do
       |> Repo.all()
 
     data
-    |> Enum.group_by(& Enum.at(&1, 0))
+    |> Enum.group_by(&Enum.at(&1, 0))
     |> Enum.map(fn {event_question_id, rows} ->
       value =
         rows
-        |> Enum.group_by(& Enum.at(&1, 1))
+        |> Enum.group_by(&Enum.at(&1, 1))
         |> Enum.map(fn {date, rows} ->
           value =
             rows

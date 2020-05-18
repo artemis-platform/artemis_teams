@@ -33,12 +33,32 @@
       <%= Enum.map @event_questions, fn event_question -> %>
         <%= if event_question.type == "number" do %>
           <section>
-            <%= h3 "#{event_question.title} by Project" %>
-            <div class="chart-description">Total number by project.</div>
+            <%= h3 "#{event_question.title} by Project - Over Time" %>
+            <div class="chart-description">Total by project over time.</div>
             <%=
               chart_assigns = Map.put(assigns, :event_question, event_question)
 
               render "event_question/by_project_report.html", chart_assigns
+            %>
+          </section>
+
+          <section>
+            <%= h3 "#{event_question.title} by Project - Percent Over Time" %>
+            <div class="chart-description">Relative percent by project.</div>
+            <%=
+              chart_assigns = Map.put(assigns, :event_question, event_question)
+
+              render "event_question/by_project_percent_report.html", chart_assigns
+            %>
+          </section>
+
+          <section>
+            <%= h3 "#{event_question.title} by Project - Cumulative Total" %>
+            <div class="chart-description">All-time total by project.</div>
+            <%=
+              chart_assigns = Map.put(assigns, :event_question, event_question)
+
+              render "event_question/by_project_total_report.html", chart_assigns
             %>
           </section>
         <% end %>

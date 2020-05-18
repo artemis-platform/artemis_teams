@@ -1,0 +1,72 @@
+<%
+  chart_id = "amchart-#{Artemis.Helpers.UUID.call()}"
+
+  default_entry = %{
+    project: nil,
+    total: 0
+  }
+
+  chart_data =
+    @event_reports
+    |> Map.get(:event_questions_percent_by_date)
+    |> Map.get(@event_question.id)
+    |> Map.values()
+    |> Enum.reduce(%{}, fn values, acc ->
+      acc =
+        Enum.reduce(values, acc, fn {key, value}, acc ->
+          entry = Map.get(acc, key, default_entry)
+
+          updated =
+            entry
+            |> Map.put(:project, key)
+            |> Map.put(:total, entry.total + value)
+
+          Map.put(acc, key, updated)
+        end)
+
+      acc
+    end)
+    |> Map.values()
+
+  project_titles =
+    @projects
+    |> Enum.map(& &1.title)
+    |> Enum.sort()
+    |> List.insert_at(-1, Artemis.EventAnswer.default_project_name())
+%>
+
+<script>
+  am4core.ready(function() {
+    am4core.useTheme(am4themes_animated);
+
+    var data = <%= raw Jason.encode!(chart_data) %>;
+    var chart = am4core.create("<%= chart_id %>", am4charts.PieChart);
+
+    chart.data = data;
+
+    // Set inner radius
+    chart.innerRadius = am4core.percent(50);
+
+    // Add and configure Series
+    var pieSeries = chart.series.push(new am4charts.PieSeries());
+    pieSeries.dataFields.value = "total";
+    pieSeries.dataFields.category = "project";
+    pieSeries.slices.template.stroke = am4core.color("#fff");
+    pieSeries.slices.template.strokeWidth = 2;
+    pieSeries.slices.template.strokeOpacity = 1;
+
+    // This creates initial animation
+    pieSeries.hiddenState.properties.opacity = 1;
+    pieSeries.hiddenState.properties.endAngle = -90;
+    pieSeries.hiddenState.properties.startAngle = -90;
+
+    // Add a legend
+    chart.legend = new am4charts.Legend();
+    chart.legend.position = "right";
+
+    // Register instance
+    window.AmChartHelpers.register_instance("<%= chart_id %>", {chart: chart, data: data})
+  });
+</script>
+
+<div class="event-reports chart" id="<%= chart_id %>"></div>
