@@ -58,7 +58,7 @@ defmodule ArtemisWeb.EventReportController do
       }
     }
 
-    event_question_params = Map.merge(params, required_params)
+    event_question_params = Artemis.Helpers.deep_merge(params, required_params)
 
     event_question_reports = ListEventReports.call(requested_reports, event_question_params, user)
 

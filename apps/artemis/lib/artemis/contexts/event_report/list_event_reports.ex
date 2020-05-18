@@ -34,8 +34,12 @@ defmodule Artemis.ListEventReports do
   defp filter(query, _key, ""), do: query
 
   defp filter(query, "date", value), do: where(query, [i], i.date in ^split(value))
+  defp filter(query, "date_gt", value), do: where(query, [i], i.date > ^value)
+  defp filter(query, "date_gte", value), do: where(query, [i], i.date >= ^value)
+  defp filter(query, "date_lt", value), do: where(query, [i], i.date < ^value)
+  defp filter(query, "date_lte", value), do: where(query, [i], i.date <= ^value)
+
   defp filter(query, "event_question_id", value), do: where(query, [i], i.event_question_id in ^split(value))
-  defp filter(query, "project_id", value), do: where(query, [i], i.project_id in ^split(value))
 
   defp filter(query, "event_template_id", value) do
     query
@@ -43,6 +47,7 @@ defmodule Artemis.ListEventReports do
     |> where([..., event_question], event_question.event_template_id in ^split(value))
   end
 
+  defp filter(query, "project_id", value), do: where(query, [i], i.project_id in ^split(value))
   defp filter(query, "user_id", value), do: where(query, [i], i.user_id in ^split(value))
 
   defp filter(query, _key, _value), do: query

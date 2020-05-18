@@ -27,12 +27,6 @@
       acc
     end)
     |> Map.values()
-
-  project_titles =
-    @projects
-    |> Enum.map(& &1.title)
-    |> Enum.sort()
-    |> List.insert_at(-1, Artemis.EventAnswer.default_project_name())
 %>
 
 <script>
