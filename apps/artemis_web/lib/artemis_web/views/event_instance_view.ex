@@ -101,7 +101,7 @@ defmodule ArtemisWeb.EventInstanceView do
   def render_value_html(%{type: "number"} = record) do
     case record.value_percent do
       nil -> "#{record.value_number || record.value}"
-      _ -> ["#{record.value_number}", render_value_percent(record)]
+      _ -> ["#{record.value_number}", render_value_percent_html(record)]
     end
   end
 
@@ -114,17 +114,27 @@ defmodule ArtemisWeb.EventInstanceView do
     end
   end
 
-  def render_value_percent(%{value_percent: percent}) when not is_nil(percent) do
-    value =
-      percent
-      |> Decimal.to_float()
-      |> Kernel.*(100)
-      |> Float.round(1)
+  def render_value_percent(percent) when not is_nil(percent) do
+    percent
+    |> Decimal.to_float()
+    |> Kernel.*(100)
+    |> Float.round(1)
+  end
+
+  def render_value_percent_html(%{value_percent: percent}) when not is_nil(percent) do
+    value = render_value_percent(percent)
 
     content_tag(:span, "(#{value}%)", class: "percent")
   end
 
-  def render_value_percent(_), do: nil
+  def render_value_percent_html(_), do: nil
+
+  def render_value_slack(%{type: "number"} = record) do
+    case record.value_percent do
+      nil -> "#{record.value_number || record.value}"
+      _ -> "#{record.value_number} _(#{render_value_percent(record.value_percent)}%)_"
+    end
+  end
 
   def render_value_slack(record) do
     convert_html_to_slack_markdown!(record.value_html)

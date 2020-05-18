@@ -250,6 +250,7 @@ defmodule ArtemisWeb.EventInstanceController do
   defp get_event_integrations(event_template_id, user) do
     params = %{
       filters: %{
+        active: true,
         event_template_id: event_template_id
       },
       preload: [:event_template]

@@ -30,7 +30,9 @@ config :artemis_web, ArtemisWeb.Endpoint,
     ]
   ],
   url: [
-    host: System.get_env("ARTEMIS_WEB_HOSTNAME")
+    host: System.get_env("ARTEMIS_WEB_HOSTNAME"),
+    scheme: "https",
+    port: 443
   ],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
