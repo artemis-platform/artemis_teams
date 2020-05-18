@@ -3,24 +3,40 @@
 <%
   chart_id = "amchart-#{Artemis.Helpers.UUID.call()}"
 
-  chart_data =
+  event_question_data =
     @event_reports
     |> Map.get(:event_questions_percent_by_date)
     |> Enum.filter(& Enum.at(&1, 0) == @event_question.id)
-    |> Enum.map(fn [_event_question_id, date, project_id, value] ->
+
+  project_titles =
+    event_question_data 
+    |> Enum.map(fn row ->
+      project_id = Enum.at(row, 2)
       project = Enum.find(@projects, &(&1.id == project_id)) || %{}
-      project_title = Map.get(project, :title) || "Other"
 
-      value_number =
-        case value do
-          nil -> 0.0
-          decimal -> Decimal.to_integer(decimal)
-        end
+      Map.get(project, :title) || "Other"
+    end)
+    |> Enum.uniq()
 
-      %{}
-      |> Map.put(:date, Date.to_iso8601(date))
-      |> Map.put(:project_title, project_title)
-      |> Map.put(project_title, value_number)
+  chart_data =
+    event_question_data
+    |> Enum.group_by(& Enum.at(&1, 1))
+    |> Enum.map(fn {date, entries} ->
+      values =
+        Enum.reduce(entries, %{}, fn [_event_question_id, _date, project_id, value], acc ->
+          project = Enum.find(@projects, &(&1.id == project_id)) || %{}
+          project_title = Map.get(project, :title) || "Other"
+
+          value_number =
+            case value do
+              nil -> 0.0
+              decimal -> Decimal.to_integer(decimal)
+            end
+
+          Map.put(acc, project_title, value_number)
+        end)
+
+      Map.put(values, :date, Date.to_iso8601(date))
     end)
 %>
 
@@ -44,15 +60,7 @@
     valueAxis.tooltip.disabled = true;
 
     // Create series
-    <%
-      project_titles =
-        chart_data
-        |> Enum.map(& &1.project_title)
-        |> Enum.uniq()
-        |> Enum.with_index()
-    %>
-
-    <%= Enum.map project_titles, fn {project_title, index} -> %>
+    <%= Enum.map project_titles, fn project_title -> %>
       var series = chart.series.push(new am4charts.LineSeries());
       series.name = "<%= project_title %>";
       series.dataFields.dateX = "date";
