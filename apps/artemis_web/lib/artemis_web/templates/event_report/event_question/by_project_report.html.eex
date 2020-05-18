@@ -1,0 +1,85 @@
+<%= @event_question.title %>
+
+<%
+  chart_id = "amchart-#{Artemis.Helpers.UUID.call()}"
+
+  chart_data =
+    @event_reports
+    |> Map.get(:event_questions_percent_by_date)
+    |> Enum.filter(& Enum.at(&1, 0) == @event_question.id)
+    |> Enum.map(fn [_event_question_id, date, project_id, value] ->
+      project = Enum.find(@projects, &(&1.id == project_id)) || %{}
+      project_title = Map.get(project, :title) || "Other"
+
+      value_number =
+        case value do
+          nil -> 0.0
+          decimal -> Decimal.to_integer(decimal)
+        end
+
+      %{}
+      |> Map.put(:date, Date.to_iso8601(date))
+      |> Map.put(:project_title, project_title)
+      |> Map.put(project_title, value_number)
+    end)
+%>
+
+<script>
+  am4core.ready(function() {
+
+    // Themes begin
+    am4core.useTheme(am4themes_animated);
+    // Themes end
+
+    var data = <%= raw Jason.encode!(chart_data) %>;
+    var chart = am4core.create("<%= chart_id %>", am4charts.XYChart);
+
+    chart.data = data;
+
+    // Create axes
+    var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+    dateAxis.renderer.minGridDistance = 60;
+
+    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.tooltip.disabled = true;
+
+    // Create series
+    <%
+      project_titles =
+        chart_data
+        |> Enum.map(& &1.project_title)
+        |> Enum.uniq()
+        |> Enum.with_index()
+    %>
+
+    <%= Enum.map project_titles, fn {project_title, index} -> %>
+      var series = chart.series.push(new am4charts.LineSeries());
+      series.name = "<%= project_title %>";
+      series.dataFields.dateX = "date";
+      series.dataFields.valueY = "<%= project_title %>";
+      series.tooltipHTML = "<span style='font-size:14px; color:#000000;'><b><%= project_title %></b> - {valueY.value}</span>";
+      series.tooltipText = "<%= project_title %> - [#000]{valueY.value}[/]";
+      series.tooltip.background.fill = am4core.color("#FFF");
+      series.tooltip.getStrokeFromObject = true;
+      series.tooltip.background.strokeWidth = 3;
+      series.tooltip.getFillFromObject = false;
+      series.fillOpacity = 0.6;
+      series.strokeWidth = 2;
+      series.stacked = true;
+
+    <% end %>
+
+    chart.cursor = new am4charts.XYCursor();
+    chart.cursor.xAxis = dateAxis;
+    // chart.scrollbarX = new am4core.Scrollbar();
+
+    // Add a legend
+    // chart.legend = new am4charts.Legend();
+    // chart.legend.position = "top";
+
+    // Register instance
+    window.AmChartHelpers.register_instance("<%= chart_id %>", {chart: chart, data: data})
+  });
+</script>
+
+<div class="event-reports chart" id="<%= chart_id %>"></div>

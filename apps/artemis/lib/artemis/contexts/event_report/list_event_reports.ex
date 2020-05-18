@@ -2,7 +2,7 @@ defmodule Artemis.ListEventReports do
   use Artemis.Context
   use Artemis.ContextReport
 
-  import Artemis.Ecto.DateMacros
+  # import Artemis.Ecto.DateMacros
   import Artemis.Helpers.Filter
   import Artemis.Helpers.Search
   import Ecto.Query
@@ -21,8 +21,6 @@ defmodule Artemis.ListEventReports do
     |> filter_query(params, user)
     |> search_filter(params)
   end
-
-  defp default_params(params), do: Artemis.Helpers.keys_to_strings(params)
 
   defp filter_query(query, %{"filters" => filters}, _user) when is_map(filters) do
     Enum.reduce(filters, query, fn {key, value}, acc ->
@@ -51,18 +49,19 @@ defmodule Artemis.ListEventReports do
 
   # Helpers - Data Processing
 
-  defp uniq_at_index(data, index) do
-    data
-    |> Enum.map(&Enum.at(&1, index))
-    |> Enum.uniq()
-  end
+  # defp uniq_at_index(data, index) do
+  #   data
+  #   |> Enum.map(&Enum.at(&1, index))
+  #   |> Enum.uniq()
+  # end
 
   # Callbacks
 
   @impl true
   def get_allowed_reports(_user) do
     [
-      :event_instance_engagement_by_date
+      :event_instance_engagement_by_date,
+      :event_questions_percent_by_date
     ]
   end
 
@@ -79,6 +78,24 @@ defmodule Artemis.ListEventReports do
     |> select([ea], [
       ea.date,
       count(ea.user_id, :distinct)
+    ])
+    |> Repo.all()
+  end
+
+  def get_report(:event_questions_percent_by_date, params, user) do
+    params
+    |> get_base_query(user)
+    |> order_by([ea], ea.date)
+    |> group_by([ea], [
+      ea.event_question_id,
+      ea.date,
+      ea.project_id
+    ])
+    |> select([ea], [
+      ea.event_question_id,
+      ea.date,
+      ea.project_id,
+      sum(ea.value_number)
     ])
     |> Repo.all()
   end

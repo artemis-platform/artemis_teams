@@ -29,6 +29,21 @@
         <div class="chart-description">Number of team members responding to event instances.</div>
         <%= render "event_instance/engagement_report.html", assigns %>
       </section>
+
+      <%= Enum.map @event_questions, fn event_question -> %>
+        <%= if event_question.type == "number" do %>
+          <section>
+            <%= h3 "#{event_question.title} by Project" %>
+            <div class="chart-description">Total number by project.</div>
+            <%=
+              chart_assigns = Map.put(assigns, :event_question, event_question)
+
+              render "event_question/by_project_report.html", chart_assigns
+            %>
+          </section>
+        <% end %>
+      <% end %>
+
     </content>
 
     <aside class="right">

@@ -18,5 +18,10 @@
       <i class="user icon"></i>
       <%= filter_multi_select(@conn, "User", :user_id, @filter_data.user_options) %>
     </div>
+
+    <div>
+      <i class="question icon"></i>
+      <%= filter_multi_select(@conn, "Event Question", :event_question_id, @filter_data.event_question_options) %>
+    </div>
   </div>
 </section>

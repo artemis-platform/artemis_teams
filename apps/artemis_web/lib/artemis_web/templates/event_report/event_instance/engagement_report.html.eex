@@ -17,9 +17,10 @@
 	  am4core.useTheme(am4themes_animated);
 	  // Themes end
 
+	  var data = <%= raw Jason.encode!(chart_data) %>;
 	  var chart = am4core.create("<%= chart_id %>", am4charts.XYChart);
 
-	  chart.data = <%= raw Jason.encode!(chart_data) %>;
+	  chart.data = data;
 
 	  // Create axes
 	  var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
