@@ -3,49 +3,24 @@
 <%
   chart_id = "amchart-#{Artemis.Helpers.UUID.call()}"
 
-  event_question_data =
+  chart_data =
     @event_reports
     |> Map.get(:event_questions_percent_by_date)
-    |> Enum.filter(& Enum.at(&1, 0) == @event_question.id)
+    |> Map.get(@event_question.id)
+    |> Enum.map(fn {date, entries} ->
+      Map.put(entries, :date, Date.to_iso8601(date))
+    end)
 
   project_titles =
-    event_question_data 
-    |> Enum.map(fn row ->
-      project_id = Enum.at(row, 2)
-      project = Enum.find(@projects, &(&1.id == project_id)) || %{}
-
-      Map.get(project, :title) || Artemis.EventAnswer.default_project_name()
-    end)
-    |> Enum.uniq()
-
-  chart_data =
-    event_question_data
-    |> Enum.group_by(& Enum.at(&1, 1))
-    |> Enum.map(fn {date, entries} ->
-      values =
-        Enum.reduce(entries, %{}, fn [_event_question_id, _date, project_id, value], acc ->
-          project = Enum.find(@projects, &(&1.id == project_id)) || %{}
-          project_title = Map.get(project, :title) || Artemis.EventAnswer.default_project_name()
-
-          value_number =
-            case value do
-              nil -> 0.0
-              decimal -> Decimal.to_integer(decimal)
-            end
-
-          Map.put(acc, project_title, value_number)
-        end)
-
-      Map.put(values, :date, Date.to_iso8601(date))
-    end)
+    @projects
+    |> Enum.map(& &1.title)
+    |> Enum.sort()
+    |> List.insert_at(-1, Artemis.EventAnswer.default_project_name())
 %>
 
 <script>
   am4core.ready(function() {
-
-    // Themes begin
     am4core.useTheme(am4themes_animated);
-    // Themes end
 
     var data = <%= raw Jason.encode!(chart_data) %>;
     var chart = am4core.create("<%= chart_id %>", am4charts.XYChart);

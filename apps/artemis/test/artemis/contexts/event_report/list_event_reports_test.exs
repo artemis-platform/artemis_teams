@@ -42,10 +42,10 @@ defmodule Artemis.ListEventReportsTest do
   end
 
   describe "call - report - event_questions_percent_by_date" do
-    test "returns an empty list when no data is present" do
+    test "returns an empty map when no data is present" do
       result = get_report(:event_questions_percent_by_date)
 
-      assert result == []
+      assert result == %{}
     end
 
     test "returns an list when data is present" do
@@ -117,11 +117,20 @@ defmodule Artemis.ListEventReportsTest do
 
       result = get_report(:event_questions_percent_by_date)
 
-      assert length(result) == 4
-      assert Enum.at(result, 0) == [event_question.id, date_past, project1.id, Decimal.new(15)]
-      assert Enum.at(result, 1) == [event_question.id, date_past, project2.id, Decimal.new(30)]
-      assert Enum.at(result, 2) == [event_question.id, date_current, project1.id, Decimal.new(10)]
-      assert Enum.at(result, 3) == [event_question.id, date_current, project2.id, Decimal.new(20)]
+      expected = %{
+        event_question.id => %{
+          date_past => %{
+            project2.title => 30.0,
+            project1.title => 15.0
+          },
+          date_current => %{
+            project2.title => 20.0,
+            project1.title => 10.0
+          }
+        }
+      }
+
+      assert result == expected
     end
   end
 

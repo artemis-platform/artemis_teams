@@ -83,20 +83,50 @@ defmodule Artemis.ListEventReports do
   end
 
   def get_report(:event_questions_percent_by_date, params, user) do
-    params
-    |> get_base_query(user)
-    |> order_by([ea], ea.date)
-    |> group_by([ea], [
-      ea.event_question_id,
-      ea.date,
-      ea.project_id
-    ])
-    |> select([ea], [
-      ea.event_question_id,
-      ea.date,
-      ea.project_id,
-      sum(ea.value_number)
-    ])
-    |> Repo.all()
+    data =
+      params
+      |> get_base_query(user)
+      |> join(:left, [ea], project in assoc(ea, :project))
+      |> order_by([ea, p], [
+        ea.date,
+        p.title
+      ])
+      |> group_by([ea, p], [
+        ea.event_question_id,
+        ea.date,
+        p.title
+      ])
+      |> select([ea, p], [
+        ea.event_question_id,
+        ea.date,
+        p.title,
+        sum(ea.value_number)
+      ])
+      |> Repo.all()
+
+    data
+    |> Enum.group_by(& Enum.at(&1, 0))
+    |> Enum.map(fn {event_question_id, rows} ->
+      value =
+        rows
+        |> Enum.group_by(& Enum.at(&1, 1))
+        |> Enum.map(fn {date, rows} ->
+          value =
+            rows
+            |> Enum.map(fn [_, _, project_title, total] ->
+              total = if total, do: Decimal.to_float(total), else: 0.0
+              project_title = project_title || Artemis.EventAnswer.default_project_name()
+
+              {project_title, total}
+            end)
+            |> Enum.into(%{})
+
+          {date, value}
+        end)
+        |> Enum.into(%{})
+
+      {event_question_id, value}
+    end)
+    |> Enum.into(%{})
   end
 end
