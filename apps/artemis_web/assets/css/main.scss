@@ -1072,6 +1072,7 @@ ul.event-answers {
     }
 
     .username {
+      flex-shrink: 0;
       font-size: 0.875rem;
       font-weight: 600;
       margin-right: 1rem;
@@ -1079,9 +1080,10 @@ ul.event-answers {
     }
 
     .project {
+      flex-shrink: 0;
       font-size: 0.875rem;
       margin-right: 1rem;
-      min-width: 130px;
+      min-width: 180px;
     }
 
     .value {
