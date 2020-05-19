@@ -23,5 +23,15 @@
       <i class="question icon"></i>
       <%= filter_multi_select(@conn, "Event Question", :event_question_id, @filter_data.event_question_options) %>
     </div>
+
+    <div>
+      <i class="calendar icon"></i>
+      <%= filter_input_field(@conn, "After Date", :date_gte) %>
+    </div>
+
+    <div>
+      <i class="calendar icon" style="visibility: hidden;"></i>
+      <%= filter_input_field(@conn, "Before Date", :date_lte) %>
+    </div>
   </div>
 </section>

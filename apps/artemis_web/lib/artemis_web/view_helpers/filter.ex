@@ -126,6 +126,19 @@ defmodule ArtemisWeb.ViewHelper.Filter do
   end
 
   @doc """
+  Render a input filter form element
+  """
+  def filter_input_field(conn, label, value) do
+    filter_assigns = %{
+      conn: conn,
+      label: label,
+      value: Artemis.Helpers.to_string(value)
+    }
+
+    Phoenix.View.render(ArtemisWeb.LayoutView, "filter_input_field.html", filter_assigns)
+  end
+
+  @doc """
   Render a multi select filter form element
   """
   def filter_multi_select(conn, label, value, options) do

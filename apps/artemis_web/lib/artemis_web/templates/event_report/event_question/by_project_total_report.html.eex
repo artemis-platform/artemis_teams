@@ -10,6 +10,7 @@
     @event_reports
     |> Map.get(:event_questions_percent_by_date)
     |> Map.get(@event_question.id)
+    |> Kernel.||(%{})
     |> Map.values()
     |> Enum.reduce(%{}, fn values, acc ->
       acc =

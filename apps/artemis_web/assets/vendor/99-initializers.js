@@ -37,6 +37,22 @@ function initializeDropdowns() {
 }
 
 function initializeFilterFields() {
+  $('.filter-form').on('submit', function(event) {
+    event.preventDefault()
+  })
+
+  $('.filter-form .filter-input-field').on('change', function(event) {
+    var nextParams = getQueryParams()
+    var field = ($(this).attr('name') || '').replace('[]', '')
+    var value = $(this).val() || undefined
+    var encodingOptions = { arrayFormat: 'brackets', encodeValuesOnly: true }
+
+    nextParams.filters = nextParams.filters || {}
+    nextParams.filters[field] = value
+
+    updateQueryParams(nextParams)
+  })
+
   $('.filter-form .filter-multi-select').on('change', function(event) {
     var nextParams = getQueryParams()
     var field = ($(this).attr('name') || '').replace('[]', '')
