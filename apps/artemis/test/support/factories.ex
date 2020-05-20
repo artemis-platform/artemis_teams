@@ -106,6 +106,15 @@ defmodule Artemis.Factories do
     }
   end
 
+  def recognition_factory do
+    description = Faker.Lorem.paragraph()
+
+    %Artemis.Recognition{
+      description: description,
+      description_html: description
+    }
+  end
+
   def role_factory do
     %Artemis.Role{
       name: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
@@ -145,6 +154,14 @@ defmodule Artemis.Factories do
       last_name: Faker.Name.last_name(),
       name: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
       username: sequence(:username, &"#{Faker.Address.country_code()}-#{&1}")
+    }
+  end
+
+  def user_recognition_factory do
+    %Artemis.UserRecognition{
+      viewed: true,
+      recognition: build(:recognition),
+      user: build(:user)
     }
   end
 
@@ -226,6 +243,18 @@ defmodule Artemis.Factories do
 
   def with_user_roles(%Artemis.User{} = user, number) do
     insert_list(number, :user_role, user: user)
+    user
+  end
+
+  def with_user_recognitions(_record, number \\ 3)
+
+  def with_user_recognitions(%Artemis.Recognition{} = recognition, number) do
+    insert_list(number, :user_recognition, recognition: recognition)
+    recognition
+  end
+
+  def with_user_recognitions(%Artemis.User{} = user, number) do
+    insert_list(number, :user_recognition, user: user)
     user
   end
 
