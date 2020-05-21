@@ -61,6 +61,11 @@ defmodule Artemis.Search do
         function: &Artemis.ListProjects.call/2,
         permissions: "projects:list"
       ],
+      "recognitions" => [
+        enabled: true,
+        function: &Artemis.ListRecognitions.call/2,
+        permissions: "recognitions:list"
+      ],
       "features" => [
         enabled: true,
         function: &Artemis.ListFeatures.call/2,

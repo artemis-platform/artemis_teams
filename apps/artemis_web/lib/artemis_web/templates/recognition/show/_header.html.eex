@@ -1,0 +1,16 @@
+<div id="content-header">
+  <header>
+    <h1>
+      Recognition Details
+    </h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "recognitions:delete") do %>
+        <%= delete_confirmation "Delete", Routes.recognition_path(@conn, :delete, @recognition) %>
+      <% end %>
+      <%= if has?(@conn, "recognitions:update") do %>
+        <%= action "Edit", to: Routes.recognition_path(@conn, :edit, @recognition), color: "green" %>
+      <% end %>
+    </div>
+  </header>
+</div>

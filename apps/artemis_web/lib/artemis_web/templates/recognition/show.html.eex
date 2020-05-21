@@ -1,0 +1,33 @@
+<%= render "show/_header.html", assigns %>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+  <%= render_event_log_notifications @conn, "Recognition", @recognition.id %>
+
+  <section>
+    <%= h2 "Details" %>
+    <%=
+      render_key_value_list([
+        ["Description", raw(@recognition.description_html)]
+      ])
+    %>
+  </section>
+
+  <section>
+    <%= h3 "Users" %>
+
+    <%=
+      render_data_table(
+        @conn,
+        @recognition.users,
+        allowed_columns: ArtemisWeb.UserView.data_table_allowed_columns(),
+        default_columns: ["name", "email"]
+      )
+    %>
+  </section>
+</div>

@@ -114,6 +114,10 @@ defmodule ArtemisWeb.Router do
 
       resources "/projects", ProjectController
 
+      # Recognitions
+
+      resources "/recognitions", RecognitionController
+
       # Roles
 
       post "/roles/bulk-actions", RoleController, :index_bulk_actions

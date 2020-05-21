@@ -4,6 +4,7 @@ defmodule Artemis.UpdateRecognitionTest do
   import Artemis.Factories
 
   alias Artemis.UpdateRecognition
+  alias Artemis.UserRecognition
 
   describe "call!" do
     test "raises an exception when id not found" do
@@ -77,6 +78,16 @@ defmodule Artemis.UpdateRecognitionTest do
 
       assert updated.description == params.description
     end
+
+    test "supports markdown" do
+      recognition = insert(:recognition)
+      params = params_for(:recognition, description: "# Test")
+
+      {:ok, updated} = UpdateRecognition.call(recognition.id, params, Mock.system_user())
+
+      assert updated.description == params.description
+      assert updated.description_html == "<h1>Test</h1>\n"
+    end
   end
 
   describe "call - associations" do
@@ -118,7 +129,7 @@ defmodule Artemis.UpdateRecognitionTest do
 
       params = %{
         id: recognition.id,
-        name: "New Name"
+        description: "New Description"
       }
 
       {:ok, updated} = UpdateRecognition.call(recognition.id, params, Mock.system_user())
@@ -135,6 +146,66 @@ defmodule Artemis.UpdateRecognitionTest do
       {:ok, updated} = UpdateRecognition.call(recognition.id, params, Mock.system_user())
 
       assert length(updated.user_recognitions) == 0
+    end
+
+    test "updates associations and updates record" do
+      recognition =
+        :recognition
+        |> insert
+        |> with_user_recognitions
+
+      recognition = Repo.preload(recognition, [:user_recognitions])
+      original_user_recognition_ids = Enum.map(recognition.user_recognitions, & &1.id)
+
+      assert length(original_user_recognition_ids) == 3
+
+      Enum.map(original_user_recognition_ids, fn id ->
+        assert Repo.get(UserRecognition, id) != nil
+      end)
+
+      # Existing associations are preserved, not regenerated, when passed an id
+
+      params = %{
+        id: recognition.id,
+        user_recognitions: recognition.user_recognitions
+      }
+
+      {:ok, updated} = UpdateRecognition.call(recognition.id, params, Mock.system_user())
+      updated_user_recognition_ids = Enum.map(updated.user_recognitions, & &1.id)
+
+      assert length(updated_user_recognition_ids) == 3
+
+      Enum.map(updated_user_recognition_ids, fn id ->
+        assert Repo.get(UserRecognition, id) != nil
+      end)
+
+      assert updated_user_recognition_ids == original_user_recognition_ids
+
+      # Existing associations are preserved, not regenerated, even when not passed an id
+
+      without_ids =
+        Enum.map(recognition.user_recognitions, fn record ->
+          record
+          |> Map.from_struct()
+          |> Map.delete(:id)
+        end)
+
+      params = %{
+        id: recognition.id,
+        user_recognitions: without_ids
+      }
+
+      {:ok, updated} = UpdateRecognition.call(recognition.id, params, Mock.system_user())
+
+      updated_user_recognition_ids = Enum.map(updated.user_recognitions, & &1.id)
+
+      assert length(updated_user_recognition_ids) == 3
+
+      Enum.map(updated_user_recognition_ids, fn id ->
+        assert Repo.get(UserRecognition, id) != nil
+      end)
+
+      assert updated_user_recognition_ids == original_user_recognition_ids
     end
   end
 

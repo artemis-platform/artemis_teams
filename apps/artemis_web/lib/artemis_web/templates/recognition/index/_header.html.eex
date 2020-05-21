@@ -1,0 +1,11 @@
+<div id="content-header">
+  <header>
+    <h1>Recognitions</h1>
+
+    <div class="actions">
+      <%= if has?(@conn, "recognitions:create") do %>
+        <%= action "New", to: Routes.recognition_path(@conn, :new), color: "blue" %>
+      <% end %>
+    </div>
+  </header>
+</div>

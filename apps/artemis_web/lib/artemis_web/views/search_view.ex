@@ -33,6 +33,13 @@ defmodule ArtemisWeb.SearchView do
       label: "Permissions",
       path: &Routes.permission_path/3
     ],
+    "projects" => [
+      label: "Projects"
+    ],
+    "recognitions" => [
+      label: "Recognitions",
+      path: &Routes.recognition_path/3
+    ],
     "roles" => [
       label: "Roles",
       path: &Routes.role_path/3
@@ -145,6 +152,14 @@ defmodule ArtemisWeb.SearchView do
       title: data.title,
       permission: "projects:show",
       link: fn conn -> Routes.project_path(conn, :show, data) end
+    }
+  end
+
+  defp search_entry(%Artemis.Recognition{} = data) do
+    %{
+      title: raw(data.description_html),
+      permission: "recognitions:show",
+      link: fn conn -> Routes.recognition_path(conn, :show, data) end
     }
   end
 

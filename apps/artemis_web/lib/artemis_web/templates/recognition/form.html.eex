@@ -1,0 +1,25 @@
+<%= form_for @changeset, @action, [class: "ui form", id: "recognition-form"], fn f -> %>
+  <div class="field">
+    <%= label_with_errors f, :user %>
+    <%=
+      user_options = Enum.map(@users, &{&1.name, &1.id})
+      current_users = Ecto.Changeset.get_field(@changeset, :users)
+      selected_users = if is_list(current_users), do: Enum.map(current_users, &(&1.id)), else: []
+
+      multiple_select f, :users, user_options, selected: selected_users, class: "enhanced search", placeholder: "Users"
+    %>
+  </div>
+
+  <div class="field">
+    <%= label_with_errors f, :description %>
+    <%= textarea f, :description, rows: 2 %>
+  </div>
+
+  <div>
+    <%= if @changeset.action do %>
+      <%= render_notification :error, body: "Error Submitting Form" %>
+    <% end %>
+
+    <%= submit "Save", class: "ui button primary" %>
+  </div>
+<% end %>

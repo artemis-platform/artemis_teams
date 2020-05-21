@@ -19,6 +19,15 @@ defmodule Artemis.CreateRecognitionTest do
 
       assert recognition.description == params.description
     end
+
+    test "supports markdown" do
+      params = params_for(:recognition, description: "# Test")
+
+      {:ok, recognition} = CreateRecognition.call(params, Mock.system_user())
+
+      assert recognition.description == params.description
+      assert recognition.description_html == "<h1>Test</h1>\n"
+    end
   end
 
   describe "call" do
