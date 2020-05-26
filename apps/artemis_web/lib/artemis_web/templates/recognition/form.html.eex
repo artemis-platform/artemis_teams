@@ -1,13 +1,21 @@
 <%= form_for @changeset, @action, [class: "ui form", id: "recognition-form"], fn f -> %>
   <div class="field">
-    <%= label_with_errors f, :user %>
-    <%=
-      user_options = Enum.map(@users, &{&1.name, &1.id})
-      current_users = Ecto.Changeset.get_field(@changeset, :users)
-      selected_users = if is_list(current_users), do: Enum.map(current_users, &(&1.id)), else: []
+    <%= label_with_errors f, :user_recognitions, "Users" %>
+    <select
+      class="enhanced clearable"
+      name="recognition[user_recognitions][]"
+      placeholder="Users"
+      multiple
+    >
+      <option value=""></option>
+      <%=
+        user_options = Enum.map(@users, &{&1.name, &1.id})
+        current_users = Map.get(f.params, "user_recognitions") || Ecto.Changeset.get_field(@changeset, :user_recognitions)
+        selected_users = if is_list(current_users), do: Enum.map(current_users, &(&1.user_id)), else: []
 
-      multiple_select f, :users, user_options, selected: selected_users, class: "enhanced search", placeholder: "Users"
-    %>
+        deprecated_options_for_select(user_options, selected_users)
+      %>
+    </select>
   </div>
 
   <div class="field">

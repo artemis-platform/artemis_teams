@@ -359,6 +359,34 @@ defmodule Artemis.Helpers do
   end
 
   @doc """
+  Get a map or struct value by either atom or string key
+
+  Example:
+
+    my_struct = %MyStruct{ hello: "world" }
+
+    indifferent_get(my_struct, "hello")
+
+  Returns:
+
+    "world"
+
+  """
+  def indifferent_get(%_{} = struct, key) do
+    struct
+    |> Map.from_struct()
+    |> indifferent_get(key)
+  end
+
+  def indifferent_get(map, key) when is_atom(key), do: indifferent_get(map, Atom.to_string(key))
+
+  def indifferent_get(map, key) when is_bitstring(key) do
+    map
+    |> keys_to_strings()
+    |> Map.get(key)
+  end
+
+  @doc """
   Recursive version of `Map.delete/2`. Deletes all instances of the given key.
 
   Adds support for nested values:

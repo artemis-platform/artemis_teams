@@ -74,8 +74,8 @@ defmodule Artemis.Recognition do
       Enum.any?(user_recognitions, fn user_recognition ->
         user_id =
           user_recognition
-          |> Artemis.Helpers.keys_to_strings()
-          |> Map.get("user_id")
+          |> Artemis.Helpers.indifferent_get("user_id")
+          |> Artemis.Helpers.to_integer()
 
         user_id == created_by_id
       end)
