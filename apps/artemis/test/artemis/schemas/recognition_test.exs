@@ -12,6 +12,70 @@ defmodule Artemis.RecognitionTest do
 
   @preload [:created_by, :user_recognitions, :users]
 
+  describe "attributes - constraints" do
+    test "requires created by association" do
+      params = params_for(:recognition, created_by: nil)
+
+      {:error, changeset} =
+        %Recognition{}
+        |> Recognition.changeset(params)
+        |> Repo.insert()
+
+      assert errors_on(changeset).created_by_id == ["can't be blank"]
+    end
+
+    test "requires at least one user recognition association" do
+      params = params_for(:recognition, user_recognitions: [])
+
+      {:error, changeset} =
+        %Recognition{}
+        |> Recognition.changeset(params)
+        |> Repo.insert()
+
+      assert errors_on(changeset).user_recognitions == ["can't be blank"]
+    end
+
+    test "requires creator to not be in user recognition association" do
+      created_by = insert(:user)
+      other_user = insert(:user)
+
+      # Including creator in recognition associations raises an error
+
+      user_recognitions = [
+        %{user_id: created_by.id},
+        %{user_id: other_user.id}
+      ]
+
+      params =
+        :recognition
+        |> params_for(created_by_id: created_by.id)
+        |> Map.put(:user_recognitions, user_recognitions)
+
+      {:error, changeset} =
+        %Recognition{}
+        |> Recognition.changeset(params)
+        |> Repo.insert()
+
+      assert errors_on(changeset).user_recognitions == ["can't include creator"]
+
+      # Succeeds when not included
+
+      user_recognitions = [
+        %{user_id: other_user.id}
+      ]
+
+      params =
+        :recognition
+        |> params_for(created_by_id: created_by.id)
+        |> Map.put(:user_recognitions, user_recognitions)
+
+      {:ok, _} =
+        %Recognition{}
+        |> Recognition.changeset(params)
+        |> Repo.insert()
+    end
+  end
+
   describe "associations - created by" do
     setup do
       recognition = insert(:recognition)

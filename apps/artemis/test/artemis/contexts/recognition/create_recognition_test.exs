@@ -13,7 +13,7 @@ defmodule Artemis.CreateRecognitionTest do
     end
 
     test "creates a recognition when passed valid params" do
-      params = params_for(:recognition)
+      params = get_params()
 
       recognition = CreateRecognition.call!(params, Mock.system_user())
 
@@ -21,7 +21,7 @@ defmodule Artemis.CreateRecognitionTest do
     end
 
     test "supports markdown" do
-      params = params_for(:recognition, description: "# Test")
+      params = get_params(description: "# Test")
 
       {:ok, recognition} = CreateRecognition.call(params, Mock.system_user())
 
@@ -38,7 +38,7 @@ defmodule Artemis.CreateRecognitionTest do
     end
 
     test "creates a recognition when passed valid params" do
-      params = params_for(:recognition)
+      params = get_params()
 
       {:ok, recognition} = CreateRecognition.call(params, Mock.system_user())
 
@@ -50,9 +50,7 @@ defmodule Artemis.CreateRecognitionTest do
       user2 = insert(:user)
 
       params =
-        :recognition
-        |> params_for
-        |> Map.put(:user_recognitions, [
+        Map.put(get_params(), :user_recognitions, [
           params_for(:user_recognition, user: user1),
           params_for(:user_recognition, user: user2)
         ])
@@ -68,7 +66,7 @@ defmodule Artemis.CreateRecognitionTest do
     test "publishes event and record" do
       ArtemisPubSub.subscribe(Artemis.Event.get_broadcast_topic())
 
-      {:ok, recognition} = CreateRecognition.call(params_for(:recognition), Mock.system_user())
+      {:ok, recognition} = CreateRecognition.call(get_params(), Mock.system_user())
 
       assert_received %Phoenix.Socket.Broadcast{
         event: "recognition:created",
@@ -77,5 +75,18 @@ defmodule Artemis.CreateRecognitionTest do
         }
       }
     end
+  end
+
+  # Helpers
+
+  defp get_params(options \\ []) do
+    default_user_recognitions = [
+      %{user_id: insert(:user).id}
+    ]
+
+    :recognition
+    |> params_for(options)
+    |> Map.put(:created_by_id, Mock.system_user().id)
+    |> Map.put(:user_recognitions, default_user_recognitions)
   end
 end

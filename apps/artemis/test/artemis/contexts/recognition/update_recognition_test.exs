@@ -17,7 +17,11 @@ defmodule Artemis.UpdateRecognitionTest do
     end
 
     test "returns successfully when params are empty" do
-      recognition = insert(:recognition)
+      recognition =
+        :recognition
+        |> insert()
+        |> with_user_recognitions()
+
       params = %{}
 
       updated = UpdateRecognition.call!(recognition, params, Mock.system_user())
@@ -26,7 +30,11 @@ defmodule Artemis.UpdateRecognitionTest do
     end
 
     test "updates a record when passed valid params" do
-      recognition = insert(:recognition)
+      recognition =
+        :recognition
+        |> insert()
+        |> with_user_recognitions()
+
       params = params_for(:recognition)
 
       updated = UpdateRecognition.call!(recognition, params, Mock.system_user())
@@ -35,7 +43,11 @@ defmodule Artemis.UpdateRecognitionTest do
     end
 
     test "updates a record when passed an id and valid params" do
-      recognition = insert(:recognition)
+      recognition =
+        :recognition
+        |> insert()
+        |> with_user_recognitions()
+
       params = params_for(:recognition)
 
       updated = UpdateRecognition.call!(recognition.id, params, Mock.system_user())
@@ -53,7 +65,11 @@ defmodule Artemis.UpdateRecognitionTest do
     end
 
     test "returns successfully when params are empty" do
-      recognition = insert(:recognition)
+      recognition =
+        :recognition
+        |> insert()
+        |> with_user_recognitions()
+
       params = %{}
 
       {:ok, updated} = UpdateRecognition.call(recognition, params, Mock.system_user())
@@ -62,7 +78,11 @@ defmodule Artemis.UpdateRecognitionTest do
     end
 
     test "updates a record when passed valid params" do
-      recognition = insert(:recognition)
+      recognition =
+        :recognition
+        |> insert()
+        |> with_user_recognitions()
+
       params = params_for(:recognition)
 
       {:ok, updated} = UpdateRecognition.call(recognition, params, Mock.system_user())
@@ -71,7 +91,11 @@ defmodule Artemis.UpdateRecognitionTest do
     end
 
     test "updates a record when passed an id and valid params" do
-      recognition = insert(:recognition)
+      recognition =
+        :recognition
+        |> insert()
+        |> with_user_recognitions()
+
       params = params_for(:recognition)
 
       {:ok, updated} = UpdateRecognition.call(recognition.id, params, Mock.system_user())
@@ -80,7 +104,11 @@ defmodule Artemis.UpdateRecognitionTest do
     end
 
     test "supports markdown" do
-      recognition = insert(:recognition)
+      recognition =
+        :recognition
+        |> insert()
+        |> with_user_recognitions()
+
       params = params_for(:recognition, description: "# Test")
 
       {:ok, updated} = UpdateRecognition.call(recognition.id, params, Mock.system_user())
@@ -93,11 +121,15 @@ defmodule Artemis.UpdateRecognitionTest do
   describe "call - associations" do
     test "adds associations and updates record" do
       user_recognition = insert(:user_recognition)
-      recognition = insert(:recognition)
+
+      recognition =
+        :recognition
+        |> insert()
+        |> with_user_recognitions()
 
       recognition = Repo.preload(recognition, [:user_recognitions])
 
-      assert recognition.user_recognitions == []
+      assert length(recognition.user_recognitions) == 3
 
       # Add Association
 
@@ -140,12 +172,14 @@ defmodule Artemis.UpdateRecognitionTest do
 
       params = %{
         id: recognition.id,
-        user_recognitions: []
+        user_recognitions: [
+          %{user_id: insert(:user).id}
+        ]
       }
 
       {:ok, updated} = UpdateRecognition.call(recognition.id, params, Mock.system_user())
 
-      assert length(updated.user_recognitions) == 0
+      assert length(updated.user_recognitions) == 1
     end
 
     test "updates associations and updates record" do
@@ -213,7 +247,11 @@ defmodule Artemis.UpdateRecognitionTest do
     test "publishes event and record" do
       ArtemisPubSub.subscribe(Artemis.Event.get_broadcast_topic())
 
-      recognition = insert(:recognition)
+      recognition =
+        :recognition
+        |> insert()
+        |> with_user_recognitions()
+
       params = params_for(:recognition)
 
       {:ok, updated} = UpdateRecognition.call(recognition, params, Mock.system_user())

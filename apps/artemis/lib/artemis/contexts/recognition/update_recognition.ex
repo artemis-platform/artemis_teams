@@ -22,7 +22,6 @@ defmodule Artemis.UpdateRecognition do
       id
       |> get_record(user)
       |> update_record(params)
-      |> IO.inspect
       |> update_associations(params)
       |> Event.broadcast("recognition:updated", params, user)
     end)
