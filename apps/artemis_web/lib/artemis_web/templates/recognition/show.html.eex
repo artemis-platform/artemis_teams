@@ -13,6 +13,7 @@
     <%= h2 "Details" %>
     <%=
       render_key_value_list([
+        ["Created By", render_created_by(@conn, @recognition)],
         ["Description", raw(@recognition.description_html)]
       ])
     %>

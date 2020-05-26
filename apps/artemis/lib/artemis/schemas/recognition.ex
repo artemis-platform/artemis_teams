@@ -7,6 +7,8 @@ defmodule Artemis.Recognition do
     field :description, :string
     field :description_html, :string
 
+    belongs_to :created_by, Artemis.User, foreign_key: :created_by_id
+
     has_many :user_recognitions, Artemis.UserRecognition, on_delete: :delete_all, on_replace: :delete
     has_many :users, through: [:user_recognitions, :user]
 
@@ -17,12 +19,14 @@ defmodule Artemis.Recognition do
 
   def updatable_fields,
     do: [
+      :created_by_id,
       :description,
       :description_html
     ]
 
   def required_fields,
     do: [
+      :created_by_id,
       :description
     ]
 
@@ -34,6 +38,7 @@ defmodule Artemis.Recognition do
   def event_log_fields,
     do: [
       :id,
+      :created_by_id,
       :description
     ]
 
@@ -43,5 +48,6 @@ defmodule Artemis.Recognition do
     struct
     |> cast(params, updatable_fields())
     |> validate_required(required_fields())
+    |> foreign_key_constraint(:created_by)
   end
 end

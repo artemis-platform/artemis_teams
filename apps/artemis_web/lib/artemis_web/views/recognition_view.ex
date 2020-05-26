@@ -1,10 +1,6 @@
 defmodule ArtemisWeb.RecognitionView do
   use ArtemisWeb, :view
 
-  import Artemis.Helpers, only: [keys_to_atoms: 2]
-
-  alias Artemis.Permission
-
   # Data Table
 
   def data_table_available_columns() do
@@ -54,38 +50,17 @@ defmodule ArtemisWeb.RecognitionView do
     end
   end
 
+  # Helpers
+
   @doc """
-  Returns a matching `permission` record based on the passed `permission.id` match value.
-
-  The `permission` data could come from:
-
-  1. The existing record in the database.
-  2. The existing form data.
-
-  If the form has not been submitted, it uses the existing record data in the database.
-
-  Once the form is submitted, the existing form data takes precedence. This
-  ensures new values are not lost when the form is reloaded after an error.
+  Render the name of the user who created the recognition
   """
-  def find_permission(match, form, record) do
-    existing_permissions = record.permissions
-
-    submitted_permissions =
-      case form.params["permissions"] do
-        nil -> nil
-        values -> Enum.map(values, &struct(Permission, keys_to_atoms(&1, [])))
-      end
-
-    permissions = submitted_permissions || existing_permissions
-
-    Enum.find(permissions, fn %{id: id} ->
-      id =
-        case is_bitstring(id) do
-          true -> String.to_integer(id)
-          _ -> id
-        end
-
-      id == match
-    end)
+  def render_created_by(conn, %{created_by: %Artemis.User{}} = record) do
+    case has?(conn, "users:show") do
+      true -> link(record.created_by.name, to: Routes.user_path(conn, :show, record.created_by))
+      false -> record.created_by.name
+    end
   end
+
+  def render_created_by(_, _), do: "Unknown"
 end

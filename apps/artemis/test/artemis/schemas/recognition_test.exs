@@ -7,9 +7,43 @@ defmodule Artemis.RecognitionTest do
 
   alias Artemis.Recognition
   alias Artemis.Repo
+  alias Artemis.User
   alias Artemis.UserRecognition
 
-  @preload [:user_recognitions, :users]
+  @preload [:created_by, :user_recognitions, :users]
+
+  describe "associations - created by" do
+    setup do
+      recognition = insert(:recognition)
+
+      {:ok, recognition: Repo.preload(recognition, @preload)}
+    end
+
+    test "deleting association does not remove record and nilifies foreign key", %{recognition: recognition} do
+      assert Repo.get(User, recognition.created_by.id) != nil
+      assert recognition.created_by != nil
+
+      Repo.delete!(recognition.created_by)
+
+      assert Repo.get(User, recognition.created_by.id) == nil
+
+      recognition =
+        Recognition
+        |> preload(^@preload)
+        |> Repo.get(recognition.id)
+
+      assert recognition.created_by == nil
+    end
+
+    test "deleting record does not remove association", %{recognition: recognition} do
+      assert Repo.get(User, recognition.created_by.id) != nil
+
+      Repo.delete!(recognition)
+
+      assert Repo.get(User, recognition.created_by.id) != nil
+      assert Repo.get(Recognition, recognition.id) == nil
+    end
+  end
 
   describe "associations - user recognitions" do
     setup do

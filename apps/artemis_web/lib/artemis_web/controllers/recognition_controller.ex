@@ -69,7 +69,7 @@ defmodule ArtemisWeb.RecognitionController do
 
   def show(conn, %{"id" => id}) do
     authorize(conn, "recognitions:show", fn ->
-      recognition = GetRecognition.call!(id, current_user(conn), preload: [:users])
+      recognition = GetRecognition.call!(id, current_user(conn))
 
       render(conn, "show.html", recognition: recognition)
     end)
@@ -132,7 +132,8 @@ defmodule ArtemisWeb.RecognitionController do
   defp get_params(params, user) do
     params
     |> Artemis.Helpers.keys_to_strings()
-    |> Map.put("user", user)
+    |> Map.put("created_by", user)
+    |> Map.put("created_by_id", user.id)
     |> Map.put_new("users", [])
     |> maybe_add_user_recognitions()
   end

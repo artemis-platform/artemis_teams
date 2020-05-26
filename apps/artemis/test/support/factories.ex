@@ -110,6 +110,7 @@ defmodule Artemis.Factories do
     description = Faker.Lorem.paragraph()
 
     %Artemis.Recognition{
+      created_by: build(:user),
       description: description,
       description_html: description
     }
