@@ -136,6 +136,7 @@ defmodule ArtemisWeb.RecognitionFormLive do
   defp get_params(params, user) do
     params
     |> Artemis.Helpers.keys_to_strings()
+    |> Map.put("created_by", user)
     |> Map.put("created_by_id", user.id)
     |> Map.put_new("user_recognitions", [])
     |> maybe_add_user_recognitions()

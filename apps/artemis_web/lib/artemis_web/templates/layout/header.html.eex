@@ -92,11 +92,13 @@
               </a>
             </li>
           <% end %>
-          <li>
-            <a title="Alerts" href="#">
-              <i class="bullhorn icon"></i>
-            </a>
-          </li>
+          <%= if has?(@conn, "recognitions:list") do %>
+            <li>
+            <a title="Recognitions" href="<%= Routes.recognition_path(@conn, :index) %>">
+                <i class="trophy icon"></i>
+              </a>
+            </li>
+          <% end %>
           <li>
             <a title="Help" href="<%= Routes.wiki_page_path(@conn, :index, %{filters: %{tags: ["help"]}}) %>">
               <i class="help icon"></i>

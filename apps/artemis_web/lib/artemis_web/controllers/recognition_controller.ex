@@ -27,7 +27,7 @@ defmodule ArtemisWeb.RecognitionController do
 
   def show(conn, %{"id" => id}) do
     authorize(conn, "recognitions:show", fn ->
-      recognition = GetRecognition.call!(id, current_user(conn), preload: [:users])
+      recognition = GetRecognition.call!(id, current_user(conn), preload: [:created_by, :users])
 
       render(conn, "show.html", recognition: recognition)
     end)
