@@ -92,7 +92,7 @@ defmodule ArtemisWeb.RecognitionView do
   end
 
   @doc """
-  Render the name and link of the user who created the recognition
+  Render the name and link of the recognition users
   """
   def render_users_html(conn, %{users: users}) when is_list(users) do
     Enum.map(users, fn user ->
@@ -103,6 +103,22 @@ defmodule ArtemisWeb.RecognitionView do
         end
       end
     end)
+  end
+
+  @doc """
+  Render the name and link of the recognition users in a natural language sentence
+  """
+  def render_user_sentence(conn, %{users: users}) when is_list(users) do
+    users
+    |> Enum.map(fn user ->
+      content_tag(:span, class: "user") do
+        case has?(conn, "users:show") do
+          true -> content_tag(:a, user.name, href: Routes.user_path(conn, :show, user.id))
+          false -> user.name
+        end
+      end
+    end)
+    |> Enum.intersperse(", ")
   end
 
   @doc """

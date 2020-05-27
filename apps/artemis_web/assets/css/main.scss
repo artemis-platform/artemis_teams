@@ -1026,6 +1026,49 @@ a.summary-count:hover {
   }
 }
 
+/* === Components - Recognition === */
+
+.recognition.card {
+  display: flex;
+
+  aside {
+    align-items: center;
+    display: flex;
+    flex-shrink: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-right: 1.5rem;
+
+    i {
+      align-items: center;
+      border-radius: 50%;
+      border: 1px solid $light_blue;
+      display: flex;
+      justify-content: center;
+      margin: 0 0 0 0;
+      padding: 1.5rem;
+    }
+  }
+
+  content {
+    width: 100%;
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      margin: -2px 0 0.375rem 0;
+
+      .relative-date {
+        color: #888;
+      }
+    }
+
+    .description {
+      font-size: 1.125rem;
+    }
+  }
+}
+
 /* === Components - Event Instance === */
 
 .actions-current-event-instance {

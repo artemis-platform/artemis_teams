@@ -8,6 +8,7 @@ defmodule ArtemisWeb.RecognitionController do
   def index(conn, params) do
     authorize(conn, "recognitions:list", fn ->
       user = current_user(conn)
+      recognition_layout = Map.get(conn.query_params, "layout", "cards")
 
       params =
         params
@@ -17,6 +18,7 @@ defmodule ArtemisWeb.RecognitionController do
       recognitions = ListRecognitions.call(params, user)
 
       assigns = [
+        recognition_layout: recognition_layout,
         recognitions: recognitions
       ]
 

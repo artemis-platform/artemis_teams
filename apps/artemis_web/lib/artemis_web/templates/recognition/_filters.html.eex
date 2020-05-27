@@ -1,8 +1,4 @@
 <section>
-  <%= h5 "Search" %>
-
-  <%= render_search @conn %>
-
   <%= h5 "Presets" %>
 
   <div class="preset-filters">
@@ -10,6 +6,32 @@
     <%= filter_link(@conn, "Recognizing Me", created_by_id: nil, user_id: [current_user(@conn).id]) %>
     <%= filter_link(@conn, "Created by Me", created_by_id: [current_user(@conn).id], user_id: nil) %>
   </div>
+
+  <%= h5 "Layout" %>
+
+  <div class="ui buttons query-param-buttons small">
+    <%=
+      label = [
+        content_tag(:i, nil, class: "icon clone outline"),
+        content_tag(:span, "Cards")
+      ]
+
+      query_param_button(@conn, label, layout: nil)
+    %>
+
+    <%=
+      label = [
+        content_tag(:i, nil, class: "icon list"),
+        content_tag(:span, "Table")
+      ]
+
+      query_param_button(@conn, label, layout: "table")
+    %>
+  </div>
+
+  <%= h5 "Search" %>
+
+  <%= render_search @conn %>
 
   <%= h5 "Filters" %>
 
