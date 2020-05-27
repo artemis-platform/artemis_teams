@@ -1,0 +1,33 @@
+<section>
+  <%= h5 "Presets" %>
+
+  <div class="preset-filters">
+    <%= link "All", to: assigns[:reset_link] || Routes.recognition_path(@conn, :index) %>
+    <%= filter_link(@conn, "Recognizing Me", created_by_id: nil, user_id: [current_user(@conn).id]) %>
+    <%= filter_link(@conn, "Created by Me", created_by_id: [current_user(@conn).id], user_id: nil) %>
+  </div>
+
+  <%= h5 "Search" %>
+
+  <%= render_search @conn %>
+
+  <%= h5 "Filters" %>
+
+  <div class="filters">
+    <% user_options = Artemis.User.unique_select_values_for(:name) %>
+
+    <div>
+      <i class="user icon"></i>
+      <%=
+        filter_multi_select(@conn, "User", :user_id, user_options)
+      %>
+    </div>
+
+    <div>
+      <i class="pencil alternate icon"></i>
+      <%=
+        filter_multi_select(@conn, "Creator", :created_by_id, user_options)
+      %>
+    </div>
+  </div>
+</section>

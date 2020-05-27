@@ -9,7 +9,7 @@
   <%= render_flash_notifications @conn %>
   <%= render_event_log_notifications @conn, "EventTemplate", @event_template.id %>
 
-  <article id="home-page" class="page">
+  <article id="event-instance-page" class="page">
     <content>
       <section>
         <%= h2 @event_template.title %>

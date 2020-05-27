@@ -9,25 +9,33 @@
   <%= render_flash_notifications @conn %>
   <%= render_event_log_notifications @conn, "Recognition" %>
 
-  <section>
-    <div class="table-header">
-      <%= render_search @conn %>
-      <div class="table-actions">
-        <%= render_data_table_column_selector(@conn, data_table_available_columns()) %>
+  <article id="recognition-page" class="page">
+    <content>
+      <section>
+        <div class="table-header">
+          <%= render_search @conn %>
+          <div class="table-actions">
+            <%= render_data_table_column_selector(@conn, data_table_available_columns()) %>
 
-        <%= render_export_actions(@conn, available_columns: data_table_available_columns()) %>
-      </div>
-    </div>
+            <%= render_export_actions(@conn, available_columns: data_table_available_columns()) %>
+          </div>
+        </div>
 
-    <%=
-      render_data_table(
-        @conn,
-        @recognitions.entries,
-        allowed_columns: data_table_allowed_columns(),
-        default_columns: ["description", "actions"]
-      )
-    %>
+        <%=
+          render_data_table(
+            @conn,
+            @recognitions.entries,
+            allowed_columns: data_table_allowed_columns(),
+            default_columns: ["description", "actions"]
+          )
+        %>
 
-    <%= render_pagination @conn, @recognitions %>
-  </section>
+        <%= render_pagination @conn, @recognitions %>
+      </section>
+    </content>
+
+    <aside class="right">
+      <%= render "_filters.html", assigns %>
+    </aside>
+  </article>
 </div>

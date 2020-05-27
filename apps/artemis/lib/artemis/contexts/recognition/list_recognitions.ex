@@ -1,7 +1,7 @@
 defmodule Artemis.ListRecognitions do
   use Artemis.Context
 
-  # import Artemis.Helpers.Filter
+  import Artemis.Helpers.Filter
   import Artemis.Helpers.Search
   import Ecto.Query
 
@@ -39,6 +39,19 @@ defmodule Artemis.ListRecognitions do
   end
 
   defp filter_query(query, _params, _user), do: query
+
+  defp filter(query, "created_by_id", value), do: where(query, [i], i.created_by_id in ^split(value))
+  defp filter(query, "inserted_at", value), do: where(query, [i], i.inserted_at in ^split(value))
+  defp filter(query, "inserted_at_gt", value), do: where(query, [i], i.inserted_at > ^value)
+  defp filter(query, "inserted_at_gte", value), do: where(query, [i], i.inserted_at >= ^value)
+  defp filter(query, "inserted_at_lt", value), do: where(query, [i], i.inserted_at < ^value)
+  defp filter(query, "inserted_at_lte", value), do: where(query, [i], i.inserted_at <= ^value)
+
+  defp filter(query, "user_id", value) do
+    query
+    |> join(:left, [recognitions], user_recognitions in assoc(recognitions, :user_recognitions))
+    |> where([..., user_recognitions], user_recognitions.user_id in ^split(value))
+  end
 
   defp filter(query, _key, _value), do: query
 
