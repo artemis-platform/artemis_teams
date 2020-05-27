@@ -63,4 +63,18 @@ defmodule ArtemisWeb.RecognitionView do
   end
 
   def render_created_by(_, _), do: "Unknown"
+
+  @doc """
+  Render recognition form with Phoenix LiveView
+  """
+  def live_render_recognition_form(conn, assigns \\ []) do
+    id = Artemis.Helpers.UUID.call()
+
+    session =
+      assigns
+      |> Enum.into(%{})
+      |> Map.put_new(:user, current_user(conn))
+
+    Phoenix.LiveView.live_render(conn, ArtemisWeb.RecognitionFormLive, id: id, session: session)
+  end
 end

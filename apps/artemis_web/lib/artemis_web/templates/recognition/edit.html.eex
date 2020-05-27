@@ -14,6 +14,15 @@
   <%= render_event_log_notifications @conn, "Recognition", @recognition.id %>
 
   <section>
-    <%= render "form.html", Map.put(assigns, :action, Routes.recognition_path(@conn, :update, @recognition)) %>
+    <%=
+      Phoenix.LiveView.live_render(
+        @conn,
+        ArtemisWeb.RecognitionFormLive,
+        session: %{
+          recognition: @recognition,
+          user: current_user(@conn)
+        }
+      )
+    %>
   </section>
 </div>

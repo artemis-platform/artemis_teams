@@ -13,6 +13,6 @@
   <%= render_flash_notifications @conn %>
 
   <section>
-    <%= render "form.html", Map.put(assigns, :action, Routes.recognition_path(@conn, :create)) %>
+    <%= live_render_recognition_form @conn %>
   </section>
 </div>

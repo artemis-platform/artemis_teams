@@ -116,7 +116,7 @@ defmodule ArtemisWeb.Router do
 
       # Recognitions
 
-      resources "/recognitions", RecognitionController
+      resources "/recognitions", RecognitionController, except: [:create, :update]
 
       # Roles
 
