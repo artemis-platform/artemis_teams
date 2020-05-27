@@ -1,4 +1,8 @@
 <section>
+  <%= h5 "Search" %>
+
+  <%= render_search @conn %>
+
   <%= h5 "Presets" %>
 
   <div class="preset-filters">
@@ -6,10 +10,6 @@
     <%= filter_link(@conn, "Recognizing Me", created_by_id: nil, user_id: [current_user(@conn).id]) %>
     <%= filter_link(@conn, "Created by Me", created_by_id: [current_user(@conn).id], user_id: nil) %>
   </div>
-
-  <%= h5 "Search" %>
-
-  <%= render_search @conn %>
 
   <%= h5 "Filters" %>
 

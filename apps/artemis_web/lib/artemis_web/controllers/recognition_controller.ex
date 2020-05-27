@@ -8,7 +8,12 @@ defmodule ArtemisWeb.RecognitionController do
   def index(conn, params) do
     authorize(conn, "recognitions:list", fn ->
       user = current_user(conn)
-      params = Map.put(params, :paginate, true)
+
+      params =
+        params
+        |> Map.put(:paginate, true)
+        |> Map.put(:preload, [:created_by, :users])
+
       recognitions = ListRecognitions.call(params, user)
 
       assigns = [
