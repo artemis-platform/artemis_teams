@@ -7,19 +7,17 @@
 
 <div id="content">
   <%= render_flash_notifications @conn %>
-  <%= render_event_log_notifications @conn, "WikiPage", @wiki_page.id %>
-  <%= render_comment_notifications @conn, "WikiPage", @wiki_page.id, Routes.wiki_page_comment_path(@conn, :index_comment, @wiki_page) %>
-
-  <%= render ArtemisWeb.CommentView, "index.html", assigns %>
+  <%= render_event_log_notifications @conn, "Recognition", @recognition.id %>
+  <%= render_comment_notifications @conn, "Recognition", @recognition.id, Routes.recognition_comment_path(@conn, :index_comment, @recognition) %>
 
   <section>
-    <%= h3 "Add Comment" %>
+    <%= h2 "Edit Comment" %>
     <%=
       comment_form_assigns = assigns
-        |> Map.put(:action, @comment_create_action)
+        |> Map.put(:action, @comment_update_action.(@comment.id))
         |> Map.put(:changeset, @comment_changeset)
 
       render ArtemisWeb.CommentView, "form.html", comment_form_assigns
     %>
-  <section>
+  </section>
 </div>

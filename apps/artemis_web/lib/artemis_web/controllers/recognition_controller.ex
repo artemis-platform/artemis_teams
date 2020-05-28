@@ -1,6 +1,13 @@
 defmodule ArtemisWeb.RecognitionController do
   use ArtemisWeb, :controller
 
+  use ArtemisWeb.Controller.CommentsShow,
+    path: &Routes.recognition_path/3,
+    permission: "recognitions:show",
+    resource_getter: &Artemis.GetRecognition.call!/2,
+    resource_id_key: "recognition_id",
+    resource_type: "Recognition"
+
   alias Artemis.DeleteRecognition
   alias Artemis.GetRecognition
   alias Artemis.ListRecognitions

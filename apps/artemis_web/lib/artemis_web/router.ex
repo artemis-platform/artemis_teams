@@ -116,7 +116,14 @@ defmodule ArtemisWeb.Router do
 
       # Recognitions
 
-      resources "/recognitions", RecognitionController, except: [:create, :update]
+      resources "/recognitions", RecognitionController, except: [:create, :update] do
+        get "/comments", RecognitionController, :index_comment, as: :comment
+        post "/comments", RecognitionController, :create_comment, as: :comment
+        get "/comments/:id/edit", RecognitionController, :edit_comment, as: :comment
+        patch "/comments/:id", RecognitionController, :update_comment, as: :comment
+        put "/comments/:id", RecognitionController, :update_comment, as: :comment
+        delete "/comments/:id", RecognitionController, :delete_comment, as: :comment
+      end
 
       # Roles
 

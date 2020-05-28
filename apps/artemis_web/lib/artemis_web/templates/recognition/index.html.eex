@@ -13,29 +13,7 @@
     <content>
       <%= if @recognition_layout == "cards" do %>
         <%= Enum.map @recognitions.entries, fn recognition -> %>
-          <section class="recognition card">
-            <aside>
-              <i class="icon trophy"></i>
-            </aside>
-
-            <content>
-              <div class="heading">
-                <div>
-                  <span class="created-by"><%= render_created_by(@conn, recognition) %>
-                  recognized
-                  <span class="users"><%= render_user_sentence(@conn, recognition) %></span>
-                </div>
-
-                <div class="relative-date"><%= render_relative_time(recognition.inserted_at) %></div>
-              </div>
-
-              <div class="description"><%= raw recognition.description_html %></div>
-
-              <footer>
-
-              </footer>
-            </content>
-          </section>
+          <%= render "show/_card.html", Map.put(assigns, :recognition, recognition) %>
         <% end %>
 
         <%= render_pagination @conn, @recognitions %>

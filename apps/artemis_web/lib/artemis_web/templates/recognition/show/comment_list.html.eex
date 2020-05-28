@@ -7,8 +7,8 @@
 
 <div id="content">
   <%= render_flash_notifications @conn %>
-  <%= render_event_log_notifications @conn, "WikiPage", @wiki_page.id %>
-  <%= render_comment_notifications @conn, "WikiPage", @wiki_page.id, Routes.wiki_page_comment_path(@conn, :index_comment, @wiki_page) %>
+  <%= render_event_log_notifications @conn, "Recognition", @recognition.id %>
+  <%= render_comment_notifications @conn, "Recognition", @recognition.id, Routes.recognition_comment_path(@conn, :index_comment, @recognition) %>
 
   <%= render ArtemisWeb.CommentView, "index.html", assigns %>
 
