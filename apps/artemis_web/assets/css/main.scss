@@ -1029,6 +1029,11 @@ a.summary-count:hover {
 .recognition.card {
   display: flex;
 
+  // &:hover {
+  //   border: 1px solid #c4b7df;
+  //   box-shadow: 0 0 6px 3px rgba(0, 0, 0, 0.05);
+  // }
+
   aside {
     align-items: center;
     display: flex;
