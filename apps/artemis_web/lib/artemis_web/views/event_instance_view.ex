@@ -81,9 +81,12 @@ defmodule ArtemisWeb.EventInstanceView do
   Render event instance form
   """
   def render_event_instance_form(conn, assigns \\ []) do
-    session = Map.delete(assigns, :conn)
+    session =
+      assigns
+      |> Map.delete(:conn)
+      |> Artemis.Helpers.keys_to_strings()
 
-    Phoenix.LiveView.live_render(
+    live_render(
       conn,
       ArtemisWeb.EventInstanceFormLive,
       session: session

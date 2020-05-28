@@ -131,7 +131,8 @@ defmodule ArtemisWeb.RecognitionView do
       assigns
       |> Enum.into(%{})
       |> Map.put_new(:user, current_user(conn))
+      |> Artemis.Helpers.keys_to_strings()
 
-    Phoenix.LiveView.live_render(conn, ArtemisWeb.RecognitionFormLive, id: id, session: session)
+    live_render(conn, ArtemisWeb.RecognitionFormLive, id: id, session: session)
   end
 end

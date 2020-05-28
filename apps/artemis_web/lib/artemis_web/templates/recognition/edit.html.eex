@@ -15,12 +15,12 @@
 
   <section>
     <%=
-      Phoenix.LiveView.live_render(
+      live_render(
         @conn,
         ArtemisWeb.RecognitionFormLive,
         session: %{
-          recognition: @recognition,
-          user: current_user(@conn)
+          "recognition" => @recognition,
+          "user" => current_user(@conn)
         }
       )
     %>

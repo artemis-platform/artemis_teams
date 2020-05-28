@@ -10,12 +10,12 @@ defmodule ArtemisWeb.RecognitionFormLive do
   # LiveView Callbacks
 
   @impl true
-  def mount(session, socket) do
-    user = Map.get(session, :user)
+  def mount(_params, session, socket) do
+    user = Map.get(session, "user")
     recognition = get_recognition(session)
     changeset = Recognition.changeset(recognition)
     action = if recognition.id, do: :update, else: :create
-    redirect? = Map.get(session, :redirect, true)
+    redirect? = Map.get(session, "redirect", true)
 
     assigns =
       socket
@@ -124,7 +124,7 @@ defmodule ArtemisWeb.RecognitionFormLive do
 
   # Helpers
 
-  defp get_recognition(%{recognition: recognition}), do: recognition
+  defp get_recognition(%{"recognition" => recognition}), do: recognition
   defp get_recognition(_), do: %Recognition{user_recognitions: []}
 
   defp get_user_options(user) do
