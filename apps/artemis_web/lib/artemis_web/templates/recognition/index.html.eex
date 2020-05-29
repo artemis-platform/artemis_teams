@@ -12,9 +12,7 @@
   <article id="recognition-page" class="page">
     <content>
       <%= if @recognition_layout == "cards" do %>
-        <%= Enum.map @recognitions.entries, fn recognition -> %>
-          <%= render "show/_card.html", Map.put(assigns, :recognition, recognition) %>
-        <% end %>
+        <%= live_render_recognition_cards(@conn, recognitions: @recognitions.entries) %>
 
         <%= render_pagination @conn, @recognitions %>
       <% end %>

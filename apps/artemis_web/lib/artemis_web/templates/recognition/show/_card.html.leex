@@ -1,6 +1,6 @@
-<section class="recognition card">
+<section class="recognition card recognition-card">
   <aside>
-    <a href="<%= Routes.recognition_path(@conn, :show, @recognition) %>">
+    <a href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
       <i class="icon trophy"></i>
     </a>
   </aside>
@@ -8,9 +8,9 @@
   <content>
     <div class="heading">
       <div>
-        <span class="created-by"><%= render_created_by(@conn, @recognition) %>
+        <span class="created-by"><%= render_created_by(@socket, @recognition, @user) %>
         recognized
-        <span class="users"><%= render_user_sentence(@conn, @recognition) %></span>
+        <span class="users"><%= render_user_sentence(@socket, @recognition, @user) %></span>
       </div>
 
       <div class="relative-date"><%= render_relative_time(@recognition.inserted_at) %></div>
@@ -19,7 +19,7 @@
     <div class="description"><%= raw @recognition.description_html %></div>
 
     <footer>
-      <a href="<%= Routes.recognition_comment_path(@conn, :index_comment, @recognition) %>">
+      <a href="<%= Routes.recognition_comment_path(@socket, :index_comment, @recognition) %>">
         <i class="icon comment outline"></i>
         Comments
       </a>

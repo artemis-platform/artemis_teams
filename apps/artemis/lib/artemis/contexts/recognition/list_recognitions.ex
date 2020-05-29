@@ -8,7 +8,7 @@ defmodule Artemis.ListRecognitions do
   alias Artemis.Repo
   alias Artemis.Recognition
 
-  @default_order "inserted_at"
+  @default_order "-inserted_at"
   @default_page_size 25
   @default_preload []
 

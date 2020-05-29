@@ -9,5 +9,5 @@
   <%= render_flash_notifications @conn %>
   <%= render_event_log_notifications @conn, "Recognition", @recognition.id %>
 
-  <%= render "show/_card.html", assigns %>
+  <%= live_render_recognition_cards(@conn, recognitions: [@recognition]) %>
 </div>

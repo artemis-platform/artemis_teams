@@ -1,0 +1,3 @@
+<%= for recognition <- @recognitions do %>
+  <%= live_component @socket, ArtemisWeb.RecognitionCardComponent, id: recognition.id, recognition: recognition, user: @user %>
+<% end %>

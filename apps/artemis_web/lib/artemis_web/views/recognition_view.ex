@@ -73,14 +73,16 @@ defmodule ArtemisWeb.RecognitionView do
   @doc """
   Render the name and link of the user who created the recognition
   """
-  def render_created_by(conn, %{created_by: %Artemis.User{}} = record) do
-    case has?(conn, "users:show") do
+  def render_created_by(conn, record, current_user \\ nil)
+
+  def render_created_by(conn, %{created_by: %Artemis.User{}} = record, current_user) do
+    case has?(current_user || conn, "users:show") do
       true -> link(record.created_by.name, to: Routes.user_path(conn, :show, record.created_by))
       false -> record.created_by.name
     end
   end
 
-  def render_created_by(_, _), do: "Unknown"
+  def render_created_by(_, _, _), do: "Unknown"
 
   @doc """
   Render the name of the recognition users
@@ -94,10 +96,10 @@ defmodule ArtemisWeb.RecognitionView do
   @doc """
   Render the name and link of the recognition users
   """
-  def render_users_html(conn, %{users: users}) when is_list(users) do
+  def render_users_html(conn, %{users: users}, current_user \\ nil) when is_list(users) do
     Enum.map(users, fn user ->
       content_tag(:div) do
-        case has?(conn, "users:show") do
+        case has?(current_user || conn, "users:show") do
           true -> content_tag(:a, user.name, href: Routes.user_path(conn, :show, user.id))
           false -> user.name
         end
@@ -108,11 +110,11 @@ defmodule ArtemisWeb.RecognitionView do
   @doc """
   Render the name and link of the recognition users in a natural language sentence
   """
-  def render_user_sentence(conn, %{users: users}) when is_list(users) do
+  def render_user_sentence(conn, %{users: users}, current_user \\ nil) when is_list(users) do
     users
     |> Enum.map(fn user ->
       content_tag(:span, class: "user") do
-        case has?(conn, "users:show") do
+        case has?(current_user || conn, "users:show") do
           true -> content_tag(:a, user.name, href: Routes.user_path(conn, :show, user.id))
           false -> user.name
         end
@@ -125,7 +127,7 @@ defmodule ArtemisWeb.RecognitionView do
   Render recognition form with Phoenix LiveView
   """
   def live_render_recognition_form(conn, assigns \\ []) do
-    id = Artemis.Helpers.UUID.call()
+    id = "recognition-form-#{Artemis.Helpers.UUID.call()}"
 
     session =
       assigns
@@ -134,5 +136,20 @@ defmodule ArtemisWeb.RecognitionView do
       |> Artemis.Helpers.keys_to_strings()
 
     live_render(conn, ArtemisWeb.RecognitionFormLive, id: id, session: session)
+  end
+
+  @doc """
+  Render recognition cards with Phoenix LiveView
+  """
+  def live_render_recognition_cards(conn, assigns \\ []) do
+    id = "recognition-cards-#{Artemis.Helpers.UUID.call()}"
+
+    session =
+      assigns
+      |> Enum.into(%{})
+      |> Map.put_new(:user, current_user(conn))
+      |> Artemis.Helpers.keys_to_strings()
+
+    live_render(conn, ArtemisWeb.RecognitionCardsLive, id: id, session: session)
   end
 end
