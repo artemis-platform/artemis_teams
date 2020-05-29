@@ -109,7 +109,7 @@
       %>
     </content>
 
-    <aside class="right">
+    <aside class="right narrow">
       <%=
         reset_link = Routes.event_instance_path(@conn, :index, @event_template.id)
 

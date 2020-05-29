@@ -31,9 +31,10 @@ defmodule ArtemisWeb.EventView do
       {"Actions", "actions"},
       {"Active", "active"},
       {"Instances", "instances"},
-      {"Current Instance", "actions_current_instance"},
       {"Team", "team"},
-      {"Title", "title"}
+      {"Title", "title"},
+      {"Update Current Instance", "actions_update_current_event_instance"},
+      {"View Current Instance", "actions_view_current_event_instance"}
     ]
   end
 
@@ -44,10 +45,15 @@ defmodule ArtemisWeb.EventView do
         value: fn _conn, _row -> nil end,
         value_html: &data_table_actions_column_html/2
       ],
-      "actions_current_event_instance" => [
+      "actions_update_current_event_instance" => [
         label: fn _conn -> nil end,
         value: fn _conn, _row -> nil end,
-        value_html: &data_table_actions_current_event_instance_column_html/2
+        value_html: &data_table_actions_update_current_event_instance_column_html/2
+      ],
+      "actions_view_current_event_instance" => [
+        label: fn _conn -> nil end,
+        value: fn _conn, _row -> nil end,
+        value_html: &data_table_actions_view_current_event_instance_column_html/2
       ],
       "active" => [
         label: fn _conn -> "Active" end,
@@ -117,38 +123,29 @@ defmodule ArtemisWeb.EventView do
     end
   end
 
-  defp data_table_actions_current_event_instance_column_html(conn, row) do
-    today = Date.to_iso8601(Date.utc_today())
+  defp data_table_actions_update_current_event_instance_column_html(conn, row) do
+    date = get_current_instance_date(row)
 
-    allowed_actions = [
-      [
-        verify: has?(conn, "event-answers:update"),
-        link:
-          action("Update My Answers",
-            to: Routes.event_instance_path(conn, :edit, row, today),
-            color: "green",
-            size: "tiny"
-          )
-      ],
-      [
-        verify: has?(conn, "event-answers:show"),
-        link:
-          action("View My Answers",
-            to: Routes.event_instance_path(conn, :show, row, today),
-            color: "blue",
-            size: "tiny"
-          )
-      ]
-    ]
-
-    content_tag(:div, class: "actions-current-event-instance") do
-      Enum.reduce(allowed_actions, [], fn action, acc ->
-        case Keyword.get(action, :verify) do
-          true -> [acc | Keyword.get(action, :link)]
-          _ -> acc
-        end
-      end)
+    if has?(conn, "event-answers:update") do
+      content_tag(:div, class: "actions-current-event-instance") do
+        action("Update", to: Routes.event_instance_path(conn, :edit, row, date), color: "green", size: "tiny")
+      end
     end
+  end
+
+  defp data_table_actions_view_current_event_instance_column_html(conn, row) do
+    date = get_current_instance_date(row)
+
+    if has?(conn, "event-answers:show") do
+      content_tag(:div, class: "actions-current-event-instance") do
+        action("View", to: Routes.event_instance_path(conn, :show, row, date), color: "blue", size: "tiny")
+      end
+    end
+  end
+
+  # TODO: generate the current instance date based on record
+  defp get_current_instance_date(_event) do
+    Date.to_iso8601(Date.utc_today())
   end
 
   # Helpers

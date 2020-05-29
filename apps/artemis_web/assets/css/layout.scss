@@ -717,9 +717,26 @@ body.error-page {
       width: 100%;
     }
 
+    &>aside.left {
+      min-width: 300px;
+      margin-right: 1.5rem;
+
+      &.narrow {
+        min-width: 260px;
+      }
+
+      .buttons {
+        width: 100%;
+      }
+    }
+
     &>aside.right {
-      min-width: 240px;
-      margin-left: 1rem;
+      min-width: 300px;
+      margin-left: 1.5rem;
+
+      &.narrow {
+        min-width: 260px;
+      }
 
       .buttons {
         width: 100%;

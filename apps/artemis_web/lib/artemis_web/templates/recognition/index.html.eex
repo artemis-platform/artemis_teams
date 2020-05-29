@@ -42,7 +42,7 @@
       <% end %>
     </content>
 
-    <aside class="right">
+    <aside class="right narrow">
       <%= render "_filters.html", assigns %>
     </aside>
   </article>

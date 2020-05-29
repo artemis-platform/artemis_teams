@@ -14,21 +14,35 @@
 
   <article id="home-page" class="page">
     <content>
+      <%= if length(@recognitions.entries) == 0 do %>
+        <div class="ui placeholder segment tiny">
+          <div class="ui icon header">
+            <i class="trophy icon"></i>
+            No recognitions yet!
+          </div>
+          <a class="ui basic button blue" href="<%= Routes.recognition_path(@conn, :new) %>">New Recognition</a>
+        </div>
+      <% else %>
+        <%= ArtemisWeb.RecognitionView.live_render_recognition_cards(@conn, recognitions: @recognitions.entries) %>
+      <% end %>
+    </content>
+
+    <aside class="right">
       <section class="related-resources">
-        <%= h3 "My Events" %>
+        <%= h5 "My Events" %>
         <%=
           render_data_table(
             @conn,
             @event_templates,
             allowed_columns: ArtemisWeb.EventView.data_table_allowed_columns(),
-            default_columns: ["event_instances", "team", "actions_current_event_instance"],
+            default_columns: ["event_instances", "actions_update_current_event_instance"],
             headers: false
           )
         %>
       </section>
 
       <section class="related-resources">
-        <%= h3 "My Teams" %>
+        <%= h5 "My Teams" %>
         <%=
           render_data_table(
             @conn,
@@ -39,6 +53,11 @@
           )
         %>
       </section>
-    </content>
+
+      <section>
+        <%= h5 "New Recognition" %>
+        <%= ArtemisWeb.RecognitionView.live_render_recognition_form @conn, redirect: false %>
+      </section>
+    </aside>
   </article>
 </div>

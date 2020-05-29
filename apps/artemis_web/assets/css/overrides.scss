@@ -30,6 +30,14 @@ h5 {
   color: #767676 !important;
 }
 
+.ui.placeholder.segment {
+  background: #fff;
+  box-shadow: none !important;
+
+  padding: 3rem 1.5rem;
+  min-height: 1rem !important;
+}
+
 /* Select 2 */
 
 select {

@@ -2,6 +2,7 @@ defmodule ArtemisWeb.HomeController do
   use ArtemisWeb, :controller
 
   alias Artemis.ListEventTemplates
+  alias Artemis.ListRecognitions
   alias Artemis.ListUserTeams
 
   def index(conn, _params) do
@@ -9,6 +10,7 @@ defmodule ArtemisWeb.HomeController do
 
     assigns = [
       event_templates: get_related_event_templates(user),
+      recognitions: get_recognitions(user),
       user_teams: get_related_user_teams(user)
     ]
 
@@ -26,6 +28,15 @@ defmodule ArtemisWeb.HomeController do
     }
 
     ListEventTemplates.call(params, user)
+  end
+
+  defp get_recognitions(user) do
+    params = %{
+      paginate: true,
+      preload: [:created_by, :users]
+    }
+
+    ListRecognitions.call(params, user)
   end
 
   defp get_related_user_teams(user) do
