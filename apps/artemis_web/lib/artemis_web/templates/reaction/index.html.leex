@@ -1,0 +1,17 @@
+<ul class="reactions">
+  <li>
+    <a href="#" phx-click="create" phx-target="<%= @myself %>" phx-value-value="+1">
+      <i class="icon heart outline"></i>
+    </a>
+  </li>
+  <%= if @resource_reactions_count > 0 do %>
+    <%= Enum.map @resource_reactions, fn reaction -> %>
+      <li class="reaction">
+        <a href="#" phx-click="delete" phx-throttle="1000" phx-target="<%= @myself %>" phx-value-id="<%= reaction.id %>">
+          <%= reaction.value %>
+          <%= reaction.id %>
+        </a>
+      </li>
+    <% end %>
+  <% end %>
+</ul>

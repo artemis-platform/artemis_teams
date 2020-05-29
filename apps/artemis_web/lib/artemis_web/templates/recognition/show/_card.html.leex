@@ -39,23 +39,17 @@
         <% end %>
       </a>
 
-      <a href="#" phx-click="create-reaction" phx-target="<%= @myself %>" phx-value-value="+1">
-        <i class="icon heart outline"></i>
-        <%= if @recognition_reactions_status == :loading do %>
-          Reactions
-        <% end %>
-
-        <%= if @recognition_reactions_status == :loaded do %>
-          <%=
-            ngettext(
-              "%{count} Reaction",
-              "%{count} Reactions",
-              @recognition_reactions_count,
-              count: @recognition_reactions_count
-            )
-          %>
-        <% end %>
-      </a>
+      <%=
+        live_component(
+          @socket,
+          ArtemisWeb.ReactionsComponent,
+          id: @recognition.id,
+          reactions: @reactions,
+          resource_id: @recognition.id,
+          resource_type: "Recognition",
+          user: @user
+        )
+      %>
 
       <a class="recognition-link" href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
         <i class="icon linkify"></i>link
