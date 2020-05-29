@@ -4,8 +4,8 @@ defmodule Artemis.DeleteWikiPageTest do
   import Artemis.Factories
 
   alias Artemis.Comment
-  alias Artemis.WikiPage
   alias Artemis.DeleteWikiPage
+  alias Artemis.WikiPage
 
   describe "call!" do
     test "raises an exception when id not found" do

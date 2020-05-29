@@ -7,6 +7,7 @@ defmodule Artemis.UserTest do
 
   alias Artemis.AuthProvider
   alias Artemis.Comment
+  alias Artemis.Reaction
   alias Artemis.Repo
   alias Artemis.User
   alias Artemis.UserRecognition
@@ -18,6 +19,7 @@ defmodule Artemis.UserTest do
   @preload [
     :auth_providers,
     :comments,
+    :reactions,
     :roles,
     :user_recognitions,
     :user_roles,
@@ -218,6 +220,69 @@ defmodule Artemis.UserTest do
 
       Enum.map(user.comments, fn comment ->
         assert Repo.get(Comment, comment.id).user_id == nil
+      end)
+    end
+  end
+
+  describe "associations - reactions" do
+    setup do
+      user =
+        :user
+        |> insert
+        |> with_reactions
+
+      {:ok, user: Repo.preload(user, @preload)}
+    end
+
+    test "cannot update associations through parent", %{user: user} do
+      new_reaction = insert(:reaction, user: user)
+
+      user =
+        User
+        |> preload(^@preload)
+        |> Repo.get(user.id)
+
+      assert length(user.reactions) == 4
+
+      {:ok, updated} =
+        user
+        |> User.associations_changeset(%{reactions: [new_reaction]})
+        |> Repo.update()
+
+      updated = Repo.preload(updated, @preload)
+
+      assert length(updated.reactions) == 4
+    end
+
+    test "deleting association does not remove record", %{user: user} do
+      assert Repo.get(User, user.id) != nil
+      assert length(user.reactions) == 3
+
+      Enum.map(user.reactions, &Repo.delete(&1))
+
+      user =
+        User
+        |> preload(^@preload)
+        |> Repo.get(user.id)
+
+      assert Repo.get(User, user.id) != nil
+      assert length(user.reactions) == 0
+    end
+
+    test "deleting record nilifies associations", %{user: user} do
+      assert Repo.get(User, user.id) != nil
+      assert length(user.reactions) == 3
+
+      Enum.map(user.reactions, fn reaction ->
+        assert Repo.get(Reaction, reaction.id).user_id == user.id
+      end)
+
+      Repo.delete(user)
+
+      assert Repo.get(User, user.id) == nil
+
+      Enum.map(user.reactions, fn reaction ->
+        assert Repo.get(Reaction, reaction.id).user_id == nil
       end)
     end
   end

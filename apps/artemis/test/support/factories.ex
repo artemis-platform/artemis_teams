@@ -106,6 +106,15 @@ defmodule Artemis.Factories do
     }
   end
 
+  def reaction_factory do
+    %Artemis.Reaction{
+      resource_id: "1",
+      resource_type: "Recognition",
+      value: Faker.Lorem.word(),
+      user: build(:user)
+    }
+  end
+
   def recognition_factory do
     description = Faker.Lorem.paragraph()
 
@@ -228,6 +237,11 @@ defmodule Artemis.Factories do
   def with_permissions(%Artemis.Role{} = role, number \\ 3) do
     insert_list(number, :permission, roles: [role])
     role
+  end
+
+  def with_reactions(%Artemis.User{} = user, number \\ 3) do
+    insert_list(number, :reaction, user: user)
+    user
   end
 
   def with_roles(%Artemis.Permission{} = permission, number \\ 3) do

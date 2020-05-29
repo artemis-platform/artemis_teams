@@ -22,6 +22,7 @@ defmodule Artemis.User do
     has_many :roles, through: [:user_roles, :role]
     has_many :permissions, through: [:roles, :permissions]
     has_many :user_recognitions, Artemis.UserRecognition, on_delete: :delete_all, on_replace: :delete
+    has_many :reactions, Artemis.Reaction, on_delete: :nilify_all
     has_many :recognitions, through: [:user_recognitions, :recognition]
     has_many :user_teams, Artemis.UserTeam, on_delete: :delete_all, on_replace: :delete
     has_many :teams, through: [:user_teams, :team]

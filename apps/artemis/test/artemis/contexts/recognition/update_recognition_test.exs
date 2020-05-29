@@ -137,7 +137,7 @@ defmodule Artemis.UpdateRecognitionTest do
         id: recognition.id,
         description: "Updated Description",
         user_recognitions: [
-          %{id: user_recognition.id}
+          %{id: user_recognition.id, user_id: insert(:user).id}
         ]
       }
 
