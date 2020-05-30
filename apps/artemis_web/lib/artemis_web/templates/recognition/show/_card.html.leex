@@ -21,35 +21,37 @@
     <div class="description"><%= raw @recognition.description_html %></div>
 
     <footer>
-      <a href="<%= Routes.recognition_comment_path(@socket, :index_comment, @recognition) %>">
-        <i class="icon comment outline"></i>
-        <%= if @recognition_comments_status == :loading do %>
-          Comments
-        <% end %>
+      <div class="actions">
+        <%=
+          live_component(
+            @socket,
+            ArtemisWeb.ReactionsComponent,
+            id: @recognition.id,
+            reactions: @reactions,
+            resource_id: @recognition.id,
+            resource_type: "Recognition",
+            user: @user
+          )
+        %>
 
-        <%= if @recognition_comments_status == :loaded do %>
-          <%=
-            ngettext(
-              "%{count} Comment",
-              "%{count} Comments",
-              @recognition_comments_count,
-              count: @recognition_comments_count
-            )
-          %>
-        <% end %>
-      </a>
+        <a class="comments" href="<%= Routes.recognition_comment_path(@socket, :index_comment, @recognition) %>">
+          <i class="icon comment outline"></i>
+          <%= if @recognition_comments_status == :loading do %>
+            Comments
+          <% end %>
 
-      <%=
-        live_component(
-          @socket,
-          ArtemisWeb.ReactionsComponent,
-          id: @recognition.id,
-          reactions: @reactions,
-          resource_id: @recognition.id,
-          resource_type: "Recognition",
-          user: @user
-        )
-      %>
+          <%= if @recognition_comments_status == :loaded do %>
+            <%=
+              ngettext(
+                "%{count} Comment",
+                "%{count} Comments",
+                @recognition_comments_count,
+                count: @recognition_comments_count
+              )
+            %>
+          <% end %>
+        </a>
+      </div>
 
       <a class="recognition-link" href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
         <i class="icon linkify"></i>link

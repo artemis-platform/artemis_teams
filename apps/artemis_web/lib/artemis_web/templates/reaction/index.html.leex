@@ -28,14 +28,14 @@
       <li class="reaction">
         <%= if user_reaction_id = Map.get(@resource_user_reactions, value) do %>
 
-          <a href="#" phx-click="delete" phx-throttle="250" phx-target="<%= @myself %>" phx-value-id="<%= user_reaction_id %>">
+          <a href="#" class="reaction delete" phx-click="delete" phx-throttle="250" phx-target="<%= @myself %>" phx-value-id="<%= user_reaction_id %>">
             <%= render_emoji_html value %>
             <%= length reactions %>
           </a>
 
         <% else %>
 
-          <a href="#" phx-click="create" phx-throttle="250" phx-target="<%= @myself %>" phx-value-value="<%= hd(reactions).value %>">
+          <a href="#" class="reaction create" phx-click="create" phx-throttle="250" phx-target="<%= @myself %>" phx-value-value="<%= hd(reactions).value %>">
             <%= render_emoji_html value %>
             <%= length reactions %>
           </a>
