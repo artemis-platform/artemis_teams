@@ -1113,6 +1113,46 @@ ul.reactions {
 
 /* === Components - Recognition === */
 
+.recognitions-summary {
+  display: flex;
+  justify-content: space-between;
+  flex-flow: row wrap;
+
+  & > * {
+    margin-bottom: 1rem;
+    min-width: 140px;
+  }
+
+  a {
+    align-items: center;
+    color: #333;
+    display: flex;
+
+    .total {
+      align-items: center;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+      display: flex;
+      font-size: 1.125rem;
+      font-weight: 500;
+      justify-content: center;
+      margin: 0 0 0 0;
+      height: 4rem;
+      width: 4rem;
+    }
+
+    .label {
+      font-size: 1.125rem;
+      margin-left: 1rem;
+    }
+  }
+
+  .link {
+    align-items: center;
+    display: flex;
+  }
+}
+
 .recognition.card {
   display: flex;
 
