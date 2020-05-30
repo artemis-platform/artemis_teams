@@ -4,6 +4,8 @@ defmodule Artemis.CreateReaction do
   alias Artemis.Reaction
   alias Artemis.Repo
 
+  @preload [:user]
+
   def call!(params, user) do
     case call(params, user) do
       {:error, _} -> raise(Artemis.Context.Error, "Error creating reaction")
@@ -14,7 +16,8 @@ defmodule Artemis.CreateReaction do
   def call(params, user) do
     with_transaction(fn ->
       params
-      |> insert_record
+      |> insert_record()
+      |> preload()
       |> Event.broadcast("reaction:created", user)
     end)
   end
@@ -30,4 +33,7 @@ defmodule Artemis.CreateReaction do
   defp create_params(params) do
     Artemis.Helpers.keys_to_strings(params)
   end
+
+  defp preload({:ok, record}), do: {:ok, Repo.preload(record, @preload)}
+  defp preload(error), do: error
 end

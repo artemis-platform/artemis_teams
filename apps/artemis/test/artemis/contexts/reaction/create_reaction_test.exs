@@ -35,6 +35,14 @@ defmodule Artemis.CreateReactionTest do
 
       assert reaction.value == params.value
     end
+
+    test "preloads associations" do
+      params = params_for(:reaction, user: Mock.system_user())
+
+      {:ok, reaction} = CreateReaction.call(params, Mock.system_user())
+
+      assert reaction.user != nil
+    end
   end
 
   describe "broadcasts" do

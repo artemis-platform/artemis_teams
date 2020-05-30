@@ -77,6 +77,15 @@ defmodule Artemis.UpdateReactionTest do
 
       assert updated.value == params.value
     end
+
+    test "preloads associations" do
+      reaction = insert(:reaction)
+      params = params_for(:reaction)
+
+      {:ok, updated} = UpdateReaction.call(reaction.id, params, Mock.system_user())
+
+      assert updated.user != nil
+    end
   end
 
   describe "broadcast" do

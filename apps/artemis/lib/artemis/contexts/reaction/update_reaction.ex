@@ -6,6 +6,8 @@ defmodule Artemis.UpdateReaction do
   alias Artemis.Helpers.Markdown
   alias Artemis.Repo
 
+  @preload [:user]
+
   def call!(id, params, user) do
     case call(id, params, user) do
       {:error, _} -> raise(Artemis.Context.Error, "Error updating reaction")
@@ -18,6 +20,7 @@ defmodule Artemis.UpdateReaction do
       id
       |> get_record(user)
       |> update_record(params)
+      |> preload()
       |> Event.broadcast("reaction:updated", user)
     end)
   end
@@ -43,4 +46,7 @@ defmodule Artemis.UpdateReaction do
       body -> Map.put(params, "body_html", Markdown.to_html!(body))
     end
   end
+
+  defp preload({:ok, record}), do: {:ok, Repo.preload(record, @preload)}
+  defp preload(error), do: error
 end
