@@ -128,6 +128,7 @@ defmodule ArtemisWeb do
       import ArtemisWeb.ViewHelper.BulkActions
       import ArtemisWeb.ViewHelper.Cache
       import ArtemisWeb.ViewHelper.Conditionals
+      import ArtemisWeb.ViewHelper.Emoji
       import ArtemisWeb.ViewHelper.Errors
       import ArtemisWeb.ViewHelper.Events
       import ArtemisWeb.ViewHelper.Export

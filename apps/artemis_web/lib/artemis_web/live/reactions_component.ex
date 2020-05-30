@@ -10,6 +10,7 @@ defmodule ArtemisWeb.ReactionsComponent do
   def update(assigns, socket) do
     socket =
       socket
+      |> assign(:available_reactions, get_available_reactions())
       |> assign(:id, assigns.id)
       |> assign(:resource_id, get_resource_id(assigns))
       |> assign(:resource_type, assigns.resource_type)
@@ -51,20 +52,43 @@ defmodule ArtemisWeb.ReactionsComponent do
   defp get_resource_id(%{id: id}) when is_integer(id), do: Integer.to_string(id)
   defp get_resource_id(%{id: id}), do: id
 
+  defp get_available_reactions() do
+    [
+      ":thumbsup:",
+      ":tada:",
+      ":100:",
+      ":smile:",
+      ":sweat_smile:",
+      ":joy:"
+    ]
+  end
+
   defp assign_resource_reactions(socket, %{reactions: reactions}) when is_list(reactions) do
     resource_id = socket.assigns.resource_id
+    user_id = socket.assigns.user.id
     filtered_reactions = Enum.filter(reactions, &(&1.resource_id == resource_id))
+    grouped_reactions = Enum.group_by(filtered_reactions, & &1.value)
+
+    user_reactions =
+      Enum.reduce(filtered_reactions, %{}, fn reaction, acc ->
+        case reaction.user_id == user_id do
+          true -> Map.put(acc, reaction.value, reaction.id)
+          false -> acc
+        end
+      end)
 
     socket
-    |> assign(:resource_reactions, filtered_reactions)
+    |> assign(:resource_reactions_by_value, grouped_reactions)
     |> assign(:resource_reactions_count, length(filtered_reactions))
     |> assign(:resource_reactions_status, :loaded)
+    |> assign(:resource_user_reactions, user_reactions)
   end
 
   defp assign_resource_reactions(socket, _assigns) do
     socket
-    |> assign(:resource_reactions, [])
+    |> assign(:resource_reactions_by_value, %{})
     |> assign(:resource_reactions_count, 0)
     |> assign(:resource_reactions_status, :loading)
+    |> assign(:resource_user_reactions, %{})
   end
 end

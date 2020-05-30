@@ -20,7 +20,7 @@ defmodule Artemis.GetReaction do
     get_record([id: value], user, options, get_by)
   end
 
-  defp get_record(value, user, options, get_by) do
+  defp get_record(value, _user, options, get_by) do
     Reaction
     |> preload(^Keyword.get(options, :preload, @default_preload))
     |> get_by.(value)

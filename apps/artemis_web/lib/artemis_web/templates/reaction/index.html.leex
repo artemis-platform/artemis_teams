@@ -1,16 +1,46 @@
 <ul class="reactions">
   <li>
-    <a href="#" phx-click="create" phx-target="<%= @myself %>" phx-value-value="+1">
-      <i class="icon heart outline"></i>
-    </a>
+    <div class="ui compact menu">
+      <div class="ui simple dropdown item icon">
+        <i class="icon heart outline"></i>
+        <div class="menu">
+          <%= Enum.map @available_reactions, fn available_reaction -> %>
+            <%= if Map.get(@resource_user_reactions, available_reaction) do %>
+
+              <a href="#" phx-click="delete" phx-throttle="250" phx-target="<%= @myself %>" phx-value-id="<%= available_reaction %>">
+                <%= render_emoji_html available_reaction %>
+              </a>
+
+            <% else %>
+
+              <a href="#" phx-click="create" phx-throttle="250" phx-target="<%= @myself %>" phx-value-value="<%= available_reaction %>">
+                <%= render_emoji_html available_reaction %>
+              </a>
+
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </li>
   <%= if @resource_reactions_count > 0 do %>
-    <%= Enum.map @resource_reactions, fn reaction -> %>
+    <%= Enum.map @resource_reactions_by_value, fn {value, reactions} -> %>
       <li class="reaction">
-        <a href="#" phx-click="delete" phx-throttle="1000" phx-target="<%= @myself %>" phx-value-id="<%= reaction.id %>">
-          <%= reaction.value %>
-          <%= reaction.id %>
-        </a>
+        <%= if user_reaction_id = Map.get(@resource_user_reactions, value) do %>
+
+          <a href="#" phx-click="delete" phx-throttle="250" phx-target="<%= @myself %>" phx-value-id="<%= user_reaction_id %>">
+            <%= render_emoji_html value %>
+            <%= length reactions %>
+          </a>
+
+        <% else %>
+
+          <a href="#" phx-click="create" phx-throttle="250" phx-target="<%= @myself %>" phx-value-value="<%= hd(reactions).value %>">
+            <%= render_emoji_html value %>
+            <%= length reactions %>
+          </a>
+
+        <% end %>
       </li>
     <% end %>
   <% end %>

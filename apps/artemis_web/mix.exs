@@ -50,6 +50,7 @@ defmodule ArtemisWeb.MixProject do
       {:plug_cowboy, "~> 2.2"},
       {:guardian, "~> 1.2"},
       {:oauth2, "~> 0.9"},
+      {:exmoji, github: "mroth/exmoji"},
       {:floki, "~> 0.26.0"},
       {:nimble_csv, "~> 0.5"},
       {:scrivener_html, git: "https://github.com/artemis-platform/scrivener_html.git", branch: "master"},
