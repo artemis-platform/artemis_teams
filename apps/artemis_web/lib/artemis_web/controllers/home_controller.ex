@@ -11,7 +11,6 @@ defmodule ArtemisWeb.HomeController do
     assigns = [
       event_templates: get_related_event_templates(user),
       recognition_totals: get_recognition_totals(user),
-      recognitions: get_recognitions(user),
       user_teams: get_related_user_teams(user)
     ]
 
@@ -77,16 +76,6 @@ defmodule ArtemisWeb.HomeController do
       from_user: from_user,
       to_user: to_user
     }
-  end
-
-  defp get_recognitions(user) do
-    params = %{
-      page_size: 10,
-      paginate: true,
-      preload: [:created_by, :users]
-    }
-
-    ListRecognitions.call(params, user)
   end
 
   defp get_related_user_teams(user) do

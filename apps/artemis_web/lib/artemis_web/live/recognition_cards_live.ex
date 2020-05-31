@@ -10,12 +10,14 @@ defmodule ArtemisWeb.RecognitionCardsLive do
   def mount(_params, session, socket) do
     user = Map.get(session, "user")
     recognitions = Map.get(session, "recognitions", :loading)
-    reload_on_create_event = Map.get(session, "reload_on_create_event", false)
+    reload_on_create_event = Map.get(session, "reload_on_create_event", true)
+    params = Map.get(session, "params", %{})
     broadcast_topic = Artemis.Event.get_broadcast_topic()
 
     assigns =
       socket
       |> assign(:comments, :loading)
+      |> assign(:params, params)
       |> assign(:reactions, :loading)
       |> assign(:recognitions, recognitions)
       |> assign(:reload_on_create_event, reload_on_create_event)
@@ -200,16 +202,22 @@ defmodule ArtemisWeb.RecognitionCardsLive do
   defp load_recognitions(socket) do
     user = socket.assigns.user
 
-    params = %{
-      page_size: 10,
+    default_params = %{
+      page_size: 10
+    }
+
+    required_params = %{
       paginate: true,
       preload: [:created_by, :users]
     }
 
-    recognitions =
-      params
-      |> Artemis.ListRecognitions.call(user)
-      |> Map.get(:entries)
+    params =
+      default_params
+      |> Artemis.Helpers.keys_to_strings()
+      |> Map.merge(Artemis.Helpers.keys_to_strings(socket.assigns.params))
+      |> Map.merge(Artemis.Helpers.keys_to_strings(required_params))
+
+    recognitions = Artemis.ListRecognitions.call(params, user)
 
     assign(socket, :recognitions, recognitions)
   end
@@ -217,6 +225,7 @@ defmodule ArtemisWeb.RecognitionCardsLive do
   defp get_ids(socket) do
     socket.assigns
     |> Map.get(:recognitions)
+    |> Map.get(:entries)
     |> Enum.map(&Integer.to_string(&1.id))
   end
 
@@ -230,6 +239,10 @@ defmodule ArtemisWeb.RecognitionCardsLive do
     Enum.member?(get_ids(socket), payload.data.resource_id)
   end
 
+  defp update_entries(%Scrivener.Page{entries: entries} = current, new) do
+    Map.put(current, :entries, update_entries(entries, new))
+  end
+
   defp update_entries(current, new) do
     Enum.map(current, fn item ->
       case item.id == new.id do
@@ -237,6 +250,10 @@ defmodule ArtemisWeb.RecognitionCardsLive do
         false -> item
       end
     end)
+  end
+
+  defp delete_entries(%Scrivener.Page{entries: entries} = current, new) do
+    Map.put(current, :entries, delete_entries(entries, new))
   end
 
   defp delete_entries(current, new) do

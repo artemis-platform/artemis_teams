@@ -1,15 +1,36 @@
 <%= unless @recognitions == :loading do %>
-  <%= for recognition <- @recognitions do %>
-    <%=
-      live_component(
-        @socket,
-        ArtemisWeb.RecognitionCardComponent,
-        id: recognition.id,
-        comments: @comments,
-        reactions: @reactions,
-        recognition: recognition,
-        user: @user
-      )
-    %>
+  <%= if length(@recognitions.entries) == 0 do %>
+    <%= if @params == %{} do %>
+      <div class="ui placeholder segment tiny">
+        <div class="ui icon header">
+          <i class="trophy icon"></i>
+          No recognitions yet!
+        </div>
+        <a class="ui basic button blue" href="<%= Routes.recognition_path(@socket, :new) %>">Recognize Someone</a>
+      </div>
+    <% else %>
+      <div class="ui placeholder segment tiny">
+        <div class="ui icon header">
+          <i class="trophy icon"></i>
+          No matching recognitions found
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <%= for recognition <- Artemis.Helpers.indifferent_get(@recognitions, "entries") do %>
+      <%=
+        live_component(
+          @socket,
+          ArtemisWeb.RecognitionCardComponent,
+          id: recognition.id,
+          comments: @comments,
+          reactions: @reactions,
+          recognition: recognition,
+          user: @user
+        )
+      %>
+    <% end %>
+
+    <%= render_pagination @socket, @recognitions, query_params: @params %>
   <% end %>
 <% end %>

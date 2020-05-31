@@ -7,14 +7,11 @@
 
 <div id="content">
   <%= render_flash_notifications @conn %>
-  <%= render_event_log_notifications @conn, "Recognition" %>
 
   <article id="recognition-page" class="page">
     <content>
       <%= if @recognition_layout == "cards" do %>
-        <%= live_render_recognition_cards(@conn, recognitions: @recognitions.entries) %>
-
-        <%= render_pagination @conn, @recognitions %>
+        <%= live_render_recognition_cards(@conn, params: @conn.query_params, recognitions: @recognitions) %>
       <% end %>
 
       <%= if @recognition_layout == "table" do %>
