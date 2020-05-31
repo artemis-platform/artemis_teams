@@ -2,6 +2,7 @@ defmodule Artemis.DeleteEventAnswer do
   use Artemis.Context
 
   alias Artemis.DeleteManyAssociatedComments
+  alias Artemis.DeleteManyAssociatedReactions
   alias Artemis.GetEventAnswer
   alias Artemis.Repo
 
@@ -17,6 +18,7 @@ defmodule Artemis.DeleteEventAnswer do
       id
       |> get_record(user)
       |> delete_associated_comments(user)
+      |> delete_associated_reactions(user)
       |> delete_record()
       |> Event.broadcast("event-answer:deleted", params, user)
     end)
@@ -30,6 +32,17 @@ defmodule Artemis.DeleteEventAnswer do
     resource_id = record.id
 
     {:ok, _} = DeleteManyAssociatedComments.call(resource_type, resource_id, user)
+
+    record
+  rescue
+    _ -> record
+  end
+
+  defp delete_associated_reactions(record, user) do
+    resource_type = "EventAnswer"
+    resource_id = record.id
+
+    {:ok, _} = DeleteManyAssociatedReactions.call(resource_type, resource_id, user)
 
     record
   rescue
