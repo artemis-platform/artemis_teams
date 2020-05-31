@@ -110,6 +110,11 @@
             </div>
           <% end %>
         </section>
+
+        <section>
+          <%= h5 "Recognize Someone" %>
+          <%= ArtemisWeb.RecognitionView.live_render_recognition_form @conn, redirect: false %>
+        </section>
       <% end %>
     </aside>
   </article>

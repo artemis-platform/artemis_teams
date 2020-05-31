@@ -44,7 +44,7 @@
 
     <aside class="right narrow">
       <section>
-        <%= h5 "Recognitions" %>
+        <%= h5 "Recognize Someone" %>
         <%= ArtemisWeb.RecognitionView.live_render_recognition_form @conn, redirect: false %>
       </section>
     </aside>
