@@ -13,7 +13,7 @@
     <%=
       label = [
         content_tag(:i, nil, class: "icon clone outline"),
-        content_tag(:span, "Cards")
+        content_tag(:span, "Full")
       ]
 
       query_param_button(@conn, label, layout: nil)
@@ -22,10 +22,10 @@
     <%=
       label = [
         content_tag(:i, nil, class: "icon list"),
-        content_tag(:span, "Table")
+        content_tag(:span, "Compact")
       ]
 
-      query_param_button(@conn, label, layout: "table")
+      query_param_button(@conn, label, layout: "compact")
     %>
   </div>
 

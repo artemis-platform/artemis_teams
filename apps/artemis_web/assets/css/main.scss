@@ -1029,6 +1029,10 @@ a.summary-count:hover {
 .card {
   display: flex;
 
+  .placeholder {
+    width: 100%;
+  }
+
   aside {
     display: flex;
     flex-shrink: 1;

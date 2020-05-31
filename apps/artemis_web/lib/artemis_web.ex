@@ -135,6 +135,7 @@ defmodule ArtemisWeb do
       import ArtemisWeb.ViewHelper.Filter
       import ArtemisWeb.ViewHelper.Form
       import ArtemisWeb.ViewHelper.HTML
+      import ArtemisWeb.ViewHelper.Loading
       import ArtemisWeb.ViewHelper.Navigation
       import ArtemisWeb.ViewHelper.Notifications
       import ArtemisWeb.ViewHelper.Numbers

@@ -1,4 +1,9 @@
-<%= unless @recognitions == :loading do %>
+<%= if @recognitions == :loading do %>
+
+  <%= render_loading_card() %>
+
+<% else %>
+
   <%= if length(@recognitions.entries) == 0 do %>
     <%= if @params == %{} do %>
       <div class="ui placeholder segment tiny">
@@ -33,4 +38,5 @@
 
     <%= render_pagination @socket, @recognitions, query_params: @params %>
   <% end %>
+
 <% end %>

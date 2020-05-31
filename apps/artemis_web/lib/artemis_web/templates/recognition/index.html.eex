@@ -10,11 +10,11 @@
 
   <article id="recognition-page" class="page">
     <content>
-      <%= if @recognition_layout == "cards" do %>
-        <%= live_render_recognition_cards(@conn, params: @conn.query_params, recognitions: @recognitions) %>
+      <%= if @recognition_layout == "full" do %>
+        <%= live_render_recognition_cards(@conn, params: @conn.query_params) %>
       <% end %>
 
-      <%= if @recognition_layout == "table" do %>
+      <%= if @recognition_layout == "compact" do %>
         <section>
           <div class="table-header">
             <%= render_search @conn %>
