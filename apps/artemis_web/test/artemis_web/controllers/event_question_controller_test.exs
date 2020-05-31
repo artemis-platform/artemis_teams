@@ -13,9 +13,9 @@ defmodule ArtemisWeb.EventQuestionControllerTest do
   end
 
   describe "index" do
-    test "redirects to event template show", %{conn: conn, event_template: event_template} do
-      conn = get(conn, Routes.event_question_path(conn, :index, event_template))
-      assert redirected_to(conn) == Routes.event_path(conn, :show, event_template)
+    test "lists all event questions", %{conn: conn, event_template: event_template} do
+      conn = get(conn, Routes.event_integration_path(conn, :index, event_template))
+      assert html_response(conn, 200) =~ "Questions"
     end
   end
 
@@ -59,7 +59,7 @@ defmodule ArtemisWeb.EventQuestionControllerTest do
 
     test "renders form for editing chosen event_question", %{conn: conn, event_template: event_template, record: record} do
       conn = get(conn, Routes.event_question_path(conn, :edit, event_template, record))
-      assert html_response(conn, 200) =~ "Edit Event Question"
+      assert html_response(conn, 200) =~ "Save"
     end
   end
 
@@ -78,7 +78,7 @@ defmodule ArtemisWeb.EventQuestionControllerTest do
       conn =
         put(conn, Routes.event_question_path(conn, :update, event_template, record), event_question: @invalid_attrs)
 
-      assert html_response(conn, 200) =~ "Edit Event Question"
+      assert html_response(conn, 200) =~ "Save"
     end
   end
 

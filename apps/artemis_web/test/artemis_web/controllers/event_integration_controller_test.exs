@@ -13,9 +13,9 @@ defmodule ArtemisWeb.EventIntegrationControllerTest do
   end
 
   describe "index" do
-    test "redirects to event template show", %{conn: conn, event_template: event_template} do
+    test "lists all event integrations", %{conn: conn, event_template: event_template} do
       conn = get(conn, Routes.event_integration_path(conn, :index, event_template))
-      assert redirected_to(conn) == Routes.event_path(conn, :show, event_template)
+      assert html_response(conn, 200) =~ "Integrations"
     end
   end
 
@@ -36,7 +36,7 @@ defmodule ArtemisWeb.EventIntegrationControllerTest do
       assert redirected_to(conn) == Routes.event_path(conn, :show, event_template)
 
       conn = get(conn, Routes.event_path(conn, :show, event_template))
-      assert html_response(conn, 200) =~ "Name"
+      assert html_response(conn, 200) =~ "Details"
     end
 
     test "renders errors when data is invalid", %{conn: conn, event_template: event_template} do
@@ -63,7 +63,7 @@ defmodule ArtemisWeb.EventIntegrationControllerTest do
       record: record
     } do
       conn = get(conn, Routes.event_integration_path(conn, :edit, event_template, record))
-      assert html_response(conn, 200) =~ "Edit Event Integration"
+      assert html_response(conn, 200) =~ "Save"
     end
   end
 
@@ -86,7 +86,7 @@ defmodule ArtemisWeb.EventIntegrationControllerTest do
           event_integration: @invalid_attrs
         )
 
-      assert html_response(conn, 200) =~ "Edit Event Integration"
+      assert html_response(conn, 200) =~ "Save"
     end
   end
 

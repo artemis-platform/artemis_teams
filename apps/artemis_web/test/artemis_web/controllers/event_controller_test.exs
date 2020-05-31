@@ -59,7 +59,7 @@ defmodule ArtemisWeb.EventControllerTest do
 
     test "renders form for editing chosen event_template", %{conn: conn, record: record} do
       conn = get(conn, Routes.event_path(conn, :edit, record))
-      assert html_response(conn, 200) =~ "Edit Event"
+      assert html_response(conn, 200) =~ "Save"
     end
   end
 
@@ -76,7 +76,7 @@ defmodule ArtemisWeb.EventControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, record: record} do
       conn = put(conn, Routes.event_path(conn, :update, record), event_template: @invalid_attrs)
-      assert html_response(conn, 200) =~ "Edit Event"
+      assert html_response(conn, 200) =~ "Error"
     end
   end
 

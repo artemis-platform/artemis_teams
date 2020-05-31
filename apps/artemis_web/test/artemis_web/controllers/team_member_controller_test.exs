@@ -4,7 +4,7 @@ defmodule ArtemisWeb.TeamMemberControllerTest do
   import Artemis.Factories
 
   @update_attrs %{type: "admin"}
-  @invalid_attrs %{user_id: nil}
+  @invalid_attrs %{type: "invalid"}
 
   setup %{conn: conn} do
     team = insert(:team)
@@ -74,18 +74,15 @@ defmodule ArtemisWeb.TeamMemberControllerTest do
       conn = get(conn, Routes.team_path(conn, :show, team))
       assert html_response(conn, 200) =~ "admin"
     end
-
-    test "renders errors when data is invalid", %{conn: conn, team: team, record: record} do
-      conn = put(conn, Routes.team_member_path(conn, :update, team, record), user_team: @invalid_attrs)
-
-      assert html_response(conn, 200) =~ "Edit Team Member"
-    end
   end
 
   describe "delete team member" do
     setup [:create_record]
 
     test "deletes chosen team member", %{conn: conn, team: team, record: record} do
+      other_admin = insert(:user)
+      insert(:user_team, team: team, type: "admin", user: other_admin)
+
       conn = delete(conn, Routes.team_member_path(conn, :delete, team, record))
       assert redirected_to(conn) == Routes.team_path(conn, :show, team)
 
@@ -96,7 +93,7 @@ defmodule ArtemisWeb.TeamMemberControllerTest do
   end
 
   defp create_record(params) do
-    record = insert(:user_team, team: params[:team])
+    record = insert(:user_team, team: params[:team], type: "admin")
 
     {:ok, record: record}
   end
