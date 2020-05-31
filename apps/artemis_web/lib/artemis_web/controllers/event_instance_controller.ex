@@ -150,6 +150,7 @@ defmodule ArtemisWeb.EventInstanceController do
         filters: %{
           event_template_id: event_template_id
         },
+        page_size: 50,
         paginate: true,
         preload: [:event_question, :project, :user]
       }

@@ -1024,6 +1024,97 @@ a.summary-count:hover {
   }
 }
 
+/* === Components - Card === */
+
+.card {
+  display: flex;
+
+  aside {
+    display: flex;
+    flex-shrink: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-right: 1.5rem;
+
+    &.centered {
+      align-items: center;
+    }
+
+    a {
+      color: #333;
+
+      &:hover {
+        color: $light_blue;
+      }
+    }
+
+    i.primary {
+      align-items: center;
+      border-radius: 50%;
+      border: 1px solid $light_blue;
+      display: flex;
+      justify-content: center;
+      margin: 0 0 0 0;
+      padding: 1.5rem;
+    }
+  }
+
+  content {
+    width: 100%;
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      margin: -2px 0 0.75rem 0;
+
+      .relative-date {
+        color: #888;
+      }
+    }
+
+    .body {
+      font-size: 1.125rem;
+    }
+
+    footer {
+      align-items: center;
+      color: #888;
+      display: flex;
+      justify-content: space-between;
+      height: 2rem;
+      margin: 0.75rem 0 -0.5rem 0;
+
+      .actions {
+        display: flex;
+      }
+
+      .reactions {
+        margin-right: 0.75rem;
+      }
+
+      a.permalink,
+      a.comments {
+        align-items: center;
+        border-bottom: 1px solid #fff;
+        color: #888;
+        display: flex;
+
+        &:hover {
+          border-bottom: 1px solid #888;
+        }
+      }
+
+      .permalink i {
+        font-size: 12px;
+      }
+
+      i {
+        line-height: 1rem;
+      }
+    }
+  }
+}
+
 /* === Components - Reactions === */
 
 ul.reactions {
@@ -1153,94 +1244,10 @@ ul.reactions {
   }
 }
 
-.recognition.card {
-  display: flex;
-
-  // &:hover {
-  //   border: 1px solid #c4b7df;
-  //   box-shadow: 0 0 6px 3px rgba(0, 0, 0, 0.05);
-  // }
+.card.recognition {
 
   aside {
-    align-items: center;
-    display: flex;
-    flex-shrink: 1;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding-right: 1.5rem;
-
-    a {
-      color: #333;
-
-      &:hover {
-        color: $light_blue;
-      }
-
-      i {
-        align-items: center;
-        border-radius: 50%;
-        border: 1px solid $light_blue;
-        display: flex;
-        justify-content: center;
-        margin: 0 0 0 0;
-        padding: 1.5rem;
-      }
-    }
-  }
-
-  content {
-    width: 100%;
-
-    .heading {
-      display: flex;
-      justify-content: space-between;
-      margin: -2px 0 0.75rem 0;
-
-      .relative-date {
-        color: #888;
-      }
-    }
-
-    .description {
-      font-size: 1.125rem;
-    }
-
-    footer {
-      align-items: center;
-      color: #888;
-      display: flex;
-      justify-content: space-between;
-      height: 2rem;
-      margin: 0.75rem 0 -0.5rem 0;
-
-      .actions {
-        display: flex;
-      }
-
-      .reactions {
-        margin-right: 0.75rem;
-      }
-
-      a.recognition-link,
-      a.comments {
-        align-items: center;
-        border-bottom: 1px solid #fff;
-        color: #888;
-        display: flex;
-
-        &:hover {
-          border-bottom: 1px solid #888;
-        }
-      }
-
-      .recognition-link i {
-        font-size: 12px;
-      }
-
-      i {
-        line-height: 1rem;
-      }
-    }
+    width: 65px;
   }
 }
 

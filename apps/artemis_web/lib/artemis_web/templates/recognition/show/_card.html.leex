@@ -1,7 +1,7 @@
 <section class="recognition card recognition-card">
-  <aside>
+  <aside class="centered">
     <a href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
-      <i class="icon trophy"></i>
+      <i class="icon trophy primary"></i>
     </a>
   </aside>
 
@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <div class="description"><%= raw @recognition.description_html %></div>
+    <div class="body"><%= raw @recognition.description_html %></div>
 
     <footer>
       <div class="actions">
@@ -53,7 +53,7 @@
         </a>
       </div>
 
-      <a class="recognition-link" href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
+      <a class="permalink" href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
         <i class="icon linkify"></i>link
       </a>
     </footer>
