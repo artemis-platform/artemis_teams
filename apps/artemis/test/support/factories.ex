@@ -169,7 +169,6 @@ defmodule Artemis.Factories do
 
   def user_recognition_factory do
     %Artemis.UserRecognition{
-      viewed: true,
       recognition: build(:recognition),
       user: build(:user)
     }

@@ -3,8 +3,6 @@ defmodule Artemis.UserRecognition do
   use Artemis.Schema.SQL
 
   schema "user_recognitions" do
-    field :viewed, :boolean, default: false
-
     belongs_to :recognition, Artemis.Recognition, on_replace: :delete
     belongs_to :user, Artemis.User, on_replace: :delete
 
