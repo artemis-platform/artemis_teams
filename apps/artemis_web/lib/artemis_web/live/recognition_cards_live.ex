@@ -83,6 +83,18 @@ defmodule ArtemisWeb.RecognitionCardsLive do
     {:noreply, assign(socket, :reactions, reactions)}
   end
 
+  def handle_info(%{event: "recognition:updated", payload: payload}, socket) do
+    recognitions = maybe_update_recognition(socket, payload)
+
+    {:noreply, assign(socket, :recognitions, recognitions)}
+  end
+
+  def handle_info(%{event: "recognition:deleted", payload: payload}, socket) do
+    recognitions = maybe_delete_recognition(socket, payload)
+
+    {:noreply, assign(socket, :recognitions, recognitions)}
+  end
+
   def handle_info(_, socket) do
     {:noreply, socket}
   end
@@ -109,14 +121,14 @@ defmodule ArtemisWeb.RecognitionCardsLive do
 
   defp maybe_update_comment(socket, payload) do
     case resource_type_match?(payload) && resource_id_match?(socket, payload) do
-      true -> update_comment(socket.assigns.comments, payload.data)
+      true -> update_entries(socket.assigns.comments, payload.data)
       false -> socket.assigns.comments
     end
   end
 
   defp maybe_delete_comment(socket, payload) do
     case resource_type_match?(payload) && resource_id_match?(socket, payload) do
-      true -> delete_comment(socket.assigns.comments, payload.data)
+      true -> delete_entries(socket.assigns.comments, payload.data)
       false -> socket.assigns.comments
     end
   end
@@ -141,15 +153,29 @@ defmodule ArtemisWeb.RecognitionCardsLive do
 
   defp maybe_update_reaction(socket, payload) do
     case resource_type_match?(payload) && resource_id_match?(socket, payload) do
-      true -> update_reaction(socket.assigns.reactions, payload.data)
+      true -> update_entries(socket.assigns.reactions, payload.data)
       false -> socket.assigns.reactions
     end
   end
 
   defp maybe_delete_reaction(socket, payload) do
     case resource_type_match?(payload) && resource_id_match?(socket, payload) do
-      true -> delete_reaction(socket.assigns.reactions, payload.data)
+      true -> delete_entries(socket.assigns.reactions, payload.data)
       false -> socket.assigns.reactions
+    end
+  end
+
+  defp maybe_update_recognition(socket, payload) do
+    case id_match?(socket, payload) do
+      true -> update_entries(socket.assigns.recognitions, payload.data)
+      false -> socket.assigns.recognitions
+    end
+  end
+
+  defp maybe_delete_recognition(socket, payload) do
+    case id_match?(socket, payload) do
+      true -> delete_entries(socket.assigns.recognitions, payload.data)
+      false -> socket.assigns.recognitions
     end
   end
 
@@ -161,13 +187,17 @@ defmodule ArtemisWeb.RecognitionCardsLive do
     |> Enum.map(&Integer.to_string(&1.id))
   end
 
+  defp id_match?(socket, payload) do
+    Enum.member?(get_ids(socket), Integer.to_string(payload.data.id))
+  end
+
   defp resource_type_match?(payload), do: payload.data.resource_type == "Recognition"
 
   defp resource_id_match?(socket, payload) do
     Enum.member?(get_ids(socket), payload.data.resource_id)
   end
 
-  defp update_comment(current, new) do
+  defp update_entries(current, new) do
     Enum.map(current, fn item ->
       case item.id == new.id do
         true -> new
@@ -176,27 +206,7 @@ defmodule ArtemisWeb.RecognitionCardsLive do
     end)
   end
 
-  defp delete_comment(current, new) do
-    current
-    |> Enum.reduce([], fn item, acc ->
-      case item.id == new.id do
-        true -> acc
-        false -> [item | acc]
-      end
-    end)
-    |> Enum.reverse()
-  end
-
-  defp update_reaction(current, new) do
-    Enum.map(current, fn item ->
-      case item.id == new.id do
-        true -> new
-        false -> item
-      end
-    end)
-  end
-
-  defp delete_reaction(current, new) do
+  defp delete_entries(current, new) do
     current
     |> Enum.reduce([], fn item, acc ->
       case item.id == new.id do
