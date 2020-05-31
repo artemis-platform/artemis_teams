@@ -61,7 +61,7 @@
           <a class="ui basic button blue" href="<%= Routes.recognition_path(@conn, :new) %>">New Recognition</a>
         </div>
       <% else %>
-        <%= ArtemisWeb.RecognitionView.live_render_recognition_cards(@conn, recognitions: @recognitions.entries) %>
+        <%= ArtemisWeb.RecognitionView.live_render_recognition_cards(@conn, recognitions: @recognitions.entries, reload_on_create_event: true) %>
       <% end %>
     </content>
 

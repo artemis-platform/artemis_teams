@@ -9,7 +9,8 @@ defmodule ArtemisWeb.RecognitionCardsLive do
   @impl true
   def mount(_params, session, socket) do
     user = Map.get(session, "user")
-    recognitions = Map.get(session, "recognitions")
+    recognitions = Map.get(session, "recognitions", :loading)
+    reload_on_create_event = Map.get(session, "reload_on_create_event", false)
     broadcast_topic = Artemis.Event.get_broadcast_topic()
 
     assigns =
@@ -17,10 +18,10 @@ defmodule ArtemisWeb.RecognitionCardsLive do
       |> assign(:comments, :loading)
       |> assign(:reactions, :loading)
       |> assign(:recognitions, recognitions)
+      |> assign(:reload_on_create_event, reload_on_create_event)
       |> assign(:user, user)
 
-    if connected?(socket), do: Process.send_after(self(), :list_comments, 10)
-    if connected?(socket), do: Process.send_after(self(), :list_reactions, 10)
+    if connected?(socket), do: Process.send_after(self(), :async_load_data, 10)
 
     :ok = ArtemisPubSub.subscribe(broadcast_topic)
 
@@ -35,10 +36,14 @@ defmodule ArtemisWeb.RecognitionCardsLive do
   # GenServer Callbacks
 
   @impl true
-  def handle_info(:list_comments, socket) do
-    comments = list_comments(socket)
+  def handle_info(:async_load_data, socket) do
+    socket =
+      socket
+      |> maybe_load_recognitions()
+      |> load_comments()
+      |> load_reactions()
 
-    {:noreply, assign(socket, :comments, comments)}
+    {:noreply, socket}
   end
 
   def handle_info(%{event: "comment:created", payload: payload}, socket) do
@@ -59,12 +64,6 @@ defmodule ArtemisWeb.RecognitionCardsLive do
     {:noreply, assign(socket, :comments, comments)}
   end
 
-  def handle_info(:list_reactions, socket) do
-    reactions = list_reactions(socket)
-
-    {:noreply, assign(socket, :reactions, reactions)}
-  end
-
   def handle_info(%{event: "reaction:created", payload: payload}, socket) do
     reactions = maybe_add_reaction(socket, payload)
 
@@ -81,6 +80,12 @@ defmodule ArtemisWeb.RecognitionCardsLive do
     reactions = maybe_delete_reaction(socket, payload)
 
     {:noreply, assign(socket, :reactions, reactions)}
+  end
+
+  def handle_info(%{event: "recognition:created", payload: _payload}, socket) do
+    socket = if socket.assigns.reload_on_create_event, do: load_recognitions(socket), else: socket
+
+    {:noreply, socket}
   end
 
   def handle_info(%{event: "recognition:updated", payload: payload}, socket) do
@@ -101,7 +106,14 @@ defmodule ArtemisWeb.RecognitionCardsLive do
 
   # Helpers - GenServer Callback Events
 
-  defp list_comments(socket) do
+  defp maybe_load_recognitions(socket) do
+    case socket.assigns.recognitions do
+      :loading -> load_recognitions(socket)
+      _ -> socket
+    end
+  end
+
+  defp load_comments(socket) do
     params = %{
       filters: %{
         resource_id: get_ids(socket),
@@ -109,7 +121,9 @@ defmodule ArtemisWeb.RecognitionCardsLive do
       }
     }
 
-    ListComments.call(params, socket.assigns.user)
+    comments = ListComments.call(params, socket.assigns.user)
+
+    assign(socket, :comments, comments)
   end
 
   defp maybe_add_comment(socket, payload) do
@@ -133,7 +147,7 @@ defmodule ArtemisWeb.RecognitionCardsLive do
     end
   end
 
-  defp list_reactions(socket) do
+  defp load_reactions(socket) do
     params = %{
       filters: %{
         resource_id: get_ids(socket),
@@ -141,7 +155,9 @@ defmodule ArtemisWeb.RecognitionCardsLive do
       }
     }
 
-    ListReactions.call(params, socket.assigns.user)
+    reactions = ListReactions.call(params, socket.assigns.user)
+
+    assign(socket, :reactions, reactions)
   end
 
   defp maybe_add_reaction(socket, payload) do
@@ -180,6 +196,23 @@ defmodule ArtemisWeb.RecognitionCardsLive do
   end
 
   # Helpers
+
+  defp load_recognitions(socket) do
+    user = socket.assigns.user
+
+    params = %{
+      page_size: 10,
+      paginate: true,
+      preload: [:created_by, :users]
+    }
+
+    recognitions =
+      params
+      |> Artemis.ListRecognitions.call(user)
+      |> Map.get(:entries)
+
+    assign(socket, :recognitions, recognitions)
+  end
 
   defp get_ids(socket) do
     socket.assigns
