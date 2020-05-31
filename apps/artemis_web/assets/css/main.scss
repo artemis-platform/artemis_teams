@@ -1259,6 +1259,10 @@ ul.reactions {
   width: 100%;
 }
 
+.event-instance-date h3 {
+  margin-top: 2rem;
+}
+
 .event-instance {
 
   .event-question {
@@ -1281,44 +1285,27 @@ ul.event-answers {
   list-style: none;
   margin: 0;
   padding: 0;
+}
 
-  &>li {
-    background: #fafafa;
-    border: 1px solid #e8e8e8;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    margin-bottom: 0.5rem;
-    padding: 0.375rem 0.5rem;
+.card.event-answer {
 
-    .icon {
-      font-size: 0.875em;
-      opacity: 0.75;
+  .percent {
+    color: #666;
+    display: inline-block;
+    font-weight: 300;
+    margin-left: 0.5rem;
+  }
+
+  aside {
+    color: #666;
+    width: 12rem;
+
+    a {
+      color: #666;
     }
 
-    .username {
-      flex-shrink: 0;
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-right: 1rem;
-      min-width: 110px;
-    }
-
-    .project {
-      flex-shrink: 0;
-      font-size: 0.875rem;
-      margin-right: 1rem;
-      min-width: 180px;
-    }
-
-    .value {
-
-      .percent {
-        color: #666;
-        display: inline-block;
-        font-weight: 300;
-        margin-left: 1rem;
-      }
+    i {
+      font-size: 12px;
     }
   }
 }
