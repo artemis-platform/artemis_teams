@@ -14,13 +14,7 @@ defmodule ArtemisWeb.ProjectController do
   def index(conn, params) do
     authorize(conn, "projects:list", fn ->
       user = current_user(conn)
-
-      params =
-        params
-        |> Map.put(:paginate, true)
-        |> Map.put(:preload, @preload)
-
-      projects = ListProjects.call(params, user)
+      projects = get_related_projects(params, user)
 
       assigns = [
         projects: projects
@@ -77,7 +71,9 @@ defmodule ArtemisWeb.ProjectController do
         user: user
       ]
 
-      render(conn, "show.html", assigns)
+      authorize_in_team(conn, project.team_id, fn ->
+        render(conn, "show.html", assigns)
+      end)
     end)
   end
 
@@ -94,42 +90,68 @@ defmodule ArtemisWeb.ProjectController do
         team: team
       ]
 
-      render(conn, "edit.html", assigns)
+      authorize_in_team(conn, project.team_id, fn ->
+        render(conn, "edit.html", assigns)
+      end)
     end)
   end
 
   def update(conn, %{"id" => id, "project" => params}) do
     authorize(conn, "projects:update", fn ->
       user = current_user(conn)
+      project = GetProject.call(id, user)
 
-      case UpdateProject.call(id, params, user) do
-        {:ok, project} ->
-          conn
-          |> put_flash(:info, "Project updated successfully.")
-          |> redirect(to: Routes.project_path(conn, :show, project))
+      authorize_in_team(conn, project.team_id, fn ->
+        case UpdateProject.call(id, params, user) do
+          {:ok, project} ->
+            conn
+            |> put_flash(:info, "Project updated successfully.")
+            |> redirect(to: Routes.project_path(conn, :show, project))
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          project = GetProject.call(id, user, preload: @preload)
-          team = GetTeam.call!(project.team_id, user)
+          {:error, %Ecto.Changeset{} = changeset} ->
+            project = GetProject.call(id, user, preload: @preload)
+            team = GetTeam.call!(project.team_id, user)
 
-          assigns = [
-            changeset: changeset,
-            project: project,
-            team: team
-          ]
+            assigns = [
+              changeset: changeset,
+              project: project,
+              team: team
+            ]
 
-          render(conn, "edit.html", assigns)
-      end
+            render(conn, "edit.html", assigns)
+        end
+      end)
     end)
   end
 
   def delete(conn, %{"id" => id} = params) do
     authorize(conn, "projects:delete", fn ->
-      {:ok, _project} = DeleteProject.call(id, params, current_user(conn))
+      user = current_user(conn)
+      project = GetProject.call(id, user)
 
-      conn
-      |> put_flash(:info, "Project deleted successfully.")
-      |> redirect(to: Routes.project_path(conn, :index))
+      authorize_in_team(conn, project.team_id, fn ->
+        {:ok, _project} = DeleteProject.call(id, params, user)
+
+        conn
+        |> put_flash(:info, "Project deleted successfully.")
+        |> redirect(to: Routes.project_path(conn, :index))
+      end)
     end)
+  end
+
+  # Helpers
+
+  defp get_related_projects(params, user) do
+    required_params = %{
+      filters: %{
+        user_id: user.id
+      },
+      paginate: true,
+      preload: @preload
+    }
+
+    project_params = Map.merge(params, Artemis.Helpers.keys_to_strings(required_params))
+
+    ListProjects.call(project_params, user)
   end
 end

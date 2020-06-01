@@ -24,7 +24,9 @@ defmodule ArtemisWeb.EventReportController do
         projects: projects
       ]
 
-      render_format(conn, "index", assigns)
+      authorize_in_team(conn, event_template.team_id, fn ->
+        render_format(conn, "index", assigns)
+      end)
     end)
   end
 

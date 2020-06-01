@@ -29,7 +29,9 @@ defmodule ArtemisWeb.TeamMemberController do
         user_team: user_team
       ]
 
-      render(conn, "new.html", assigns)
+      authorize_in_team(conn, team.id, fn ->
+        render(conn, "new.html", assigns)
+      end)
     end)
   end
 
@@ -38,38 +40,44 @@ defmodule ArtemisWeb.TeamMemberController do
       user = current_user(conn)
       team = GetTeam.call!(team_id, user)
 
-      case CreateOrUpdateUserTeam.call(params, user) do
-        {:ok, _team_user} ->
-          conn
-          |> put_flash(:info, "Team member created successfully.")
-          |> redirect(to: Routes.team_path(conn, :show, team_id))
+      authorize_in_team(conn, team.id, fn ->
+        case CreateOrUpdateUserTeam.call(params, user) do
+          {:ok, _team_user} ->
+            conn
+            |> put_flash(:info, "Team member created successfully.")
+            |> redirect(to: Routes.team_path(conn, :show, team_id))
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          user_options = get_user_options(team, user)
-          user_team = %UserTeam{team_id: team_id}
+          {:error, %Ecto.Changeset{} = changeset} ->
+            user_options = get_user_options(team, user)
+            user_team = %UserTeam{team_id: team_id}
 
-          assigns = [
-            changeset: changeset,
-            team: team,
-            user_options: user_options,
-            user_team: user_team
-          ]
+            assigns = [
+              changeset: changeset,
+              team: team,
+              user_options: user_options,
+              user_team: user_team
+            ]
 
-          render(conn, "new.html", assigns)
+            render(conn, "new.html", assigns)
 
-        {:error, message} ->
-          conn
-          |> put_flash(:error, "Error updating existing team member. #{message}.")
-          |> redirect(to: Routes.team_path(conn, :show, team_id))
-      end
+          {:error, message} ->
+            conn
+            |> put_flash(:error, "Error updating existing team member. #{message}.")
+            |> redirect(to: Routes.team_path(conn, :show, team_id))
+        end
+      end)
     end)
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"team_id" => team_id, "id" => id}) do
     authorize(conn, "user-teams:show", fn ->
-      user_team = GetUserTeam.call!(id, current_user(conn))
+      user = current_user(conn)
+      team = GetTeam.call!(team_id, user)
+      user_team = GetUserTeam.call!(id, user)
 
-      render(conn, "show.html", user_team: user_team)
+      authorize_in_team(conn, team.id, fn ->
+        render(conn, "show.html", user_team: user_team)
+      end)
     end)
   end
 
@@ -88,7 +96,9 @@ defmodule ArtemisWeb.TeamMemberController do
         user_team: user_team
       ]
 
-      render(conn, "edit.html", assigns)
+      authorize_in_team(conn, team.id, fn ->
+        render(conn, "edit.html", assigns)
+      end)
     end)
   end
 
@@ -98,40 +108,47 @@ defmodule ArtemisWeb.TeamMemberController do
       team = GetTeam.call!(team_id, user)
       params = Map.put(params, "id", id)
 
-      case CreateOrUpdateUserTeam.call(params, user) do
-        {:ok, _team_user} ->
-          conn
-          |> put_flash(:info, "Team member updated successfully.")
-          |> redirect(to: Routes.team_path(conn, :show, team_id))
+      authorize_in_team(conn, team.id, fn ->
+        case CreateOrUpdateUserTeam.call(params, user) do
+          {:ok, _team_user} ->
+            conn
+            |> put_flash(:info, "Team member updated successfully.")
+            |> redirect(to: Routes.team_path(conn, :show, team_id))
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          user_options = get_user_options(team, user)
-          user_team = GetUserTeam.call(id, user, preload: @preload)
+          {:error, %Ecto.Changeset{} = changeset} ->
+            user_options = get_user_options(team, user)
+            user_team = GetUserTeam.call(id, user, preload: @preload)
 
-          assigns = [
-            changeset: changeset,
-            team: team,
-            user_options: user_options,
-            user_team: user_team
-          ]
+            assigns = [
+              changeset: changeset,
+              team: team,
+              user_options: user_options,
+              user_team: user_team
+            ]
 
-          render(conn, "edit.html", assigns)
+            render(conn, "edit.html", assigns)
 
-        {:error, message} ->
-          conn
-          |> put_flash(:error, "Error updating team member. #{message}.")
-          |> redirect(to: Routes.team_path(conn, :show, team_id))
-      end
+          {:error, message} ->
+            conn
+            |> put_flash(:error, "Error updating team member. #{message}.")
+            |> redirect(to: Routes.team_path(conn, :show, team_id))
+        end
+      end)
     end)
   end
 
   def delete(conn, %{"team_id" => team_id, "id" => id} = params) do
     authorize(conn, "user-teams:delete", fn ->
-      {:ok, _team_user} = DeleteUserTeam.call(id, params, current_user(conn))
+      user = current_user(conn)
+      team = GetTeam.call!(team_id, user)
 
-      conn
-      |> put_flash(:info, "Team member deleted successfully.")
-      |> redirect(to: Routes.team_path(conn, :show, team_id))
+      authorize_in_team(conn, team.id, fn ->
+        {:ok, _team_user} = DeleteUserTeam.call(id, params, current_user(conn))
+
+        conn
+        |> put_flash(:info, "Team member deleted successfully.")
+        |> redirect(to: Routes.team_path(conn, :show, team_id))
+      end)
     end)
   end
 
