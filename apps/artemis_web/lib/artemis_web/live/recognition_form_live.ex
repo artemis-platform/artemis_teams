@@ -3,6 +3,7 @@ defmodule ArtemisWeb.RecognitionFormLive do
 
   alias Artemis.CreateRecognition
   alias Artemis.GetRecognition
+  alias Artemis.GetSystemUser
   alias Artemis.ListUsers
   alias Artemis.Recognition
   alias Artemis.UpdateRecognition
@@ -128,7 +129,7 @@ defmodule ArtemisWeb.RecognitionFormLive do
   defp get_recognition(_), do: %Recognition{user_recognitions: []}
 
   defp get_user_options(user) do
-    user
+    GetSystemUser.call!()
     |> ListUsers.call()
     |> Enum.map(&{&1.name, &1.id})
   end

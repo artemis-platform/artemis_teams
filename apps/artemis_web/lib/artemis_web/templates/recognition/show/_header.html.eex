@@ -5,10 +5,10 @@
     </h1>
 
     <div class="actions">
-      <%= if has?(@conn, "recognitions:delete") do %>
+      <%= if can_delete_recognition?(@conn, @recognition) do %>
         <%= delete_confirmation "Delete", Routes.recognition_path(@conn, :delete, @recognition) %>
       <% end %>
-      <%= if has?(@conn, "recognitions:update") do %>
+      <%= if can_update_recognition?(@conn, @recognition) do %>
         <%= action "Edit", to: Routes.recognition_path(@conn, :edit, @recognition), color: "green" %>
       <% end %>
     </div>

@@ -6,6 +6,66 @@ defmodule Artemis.UpdateRecognitionTest do
   alias Artemis.UpdateRecognition
   alias Artemis.UserRecognition
 
+  describe "access permissions" do
+    setup do
+      user = insert(:user)
+
+      recognition =
+        :recognition
+        |> insert(created_by: user)
+        |> with_user_recognitions()
+
+      {:ok, recognition: recognition, user: user}
+    end
+
+    test "returns error with no permissions", %{recognition: recognition, user: user} do
+      params = %{
+        description: "Updated Description"
+      }
+
+      {:error, "Record not found"} = UpdateRecognition.call(recognition, params, user)
+    end
+
+    test "requires access:self permission to update own record", %{recognition: recognition, user: user} do
+      with_permission(user, "recognitions:access:self")
+
+      params = %{
+        description: "Updated Description"
+      }
+
+      {:ok, updated} = UpdateRecognition.call(recognition, params, user)
+
+      assert updated.description == params.description
+    end
+
+    test "requires access:all permission to update other records", %{user: user} do
+      other_user = insert(:user)
+
+      other_recognition =
+        :recognition
+        |> insert(created_by: other_user)
+        |> with_user_recognitions()
+
+      params = %{
+        description: "Updated Description"
+      }
+
+      # Errors without permissions
+
+      {:error, "Record not found"} = UpdateRecognition.call(other_recognition, params, user)
+
+      assert other_recognition.description != params.description
+
+      # Succeeds with permissions
+
+      with_permission(user, "recognitions:access:all")
+
+      {:ok, updated} = UpdateRecognition.call(other_recognition, params, user)
+
+      assert updated.description == params.description
+    end
+  end
+
   describe "call!" do
     test "raises an exception when id not found" do
       invalid_id = 50_000_000

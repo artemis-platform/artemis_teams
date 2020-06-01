@@ -8,6 +8,52 @@ defmodule Artemis.DeleteRecognitionTest do
   alias Artemis.Reaction
   alias Artemis.Recognition
 
+  describe "access permissions" do
+    setup do
+      user = insert(:user)
+
+      recognition =
+        :recognition
+        |> insert(created_by: user)
+        |> with_user_recognitions()
+
+      {:ok, recognition: recognition, user: user}
+    end
+
+    test "returns error with no permissions", %{recognition: recognition, user: user} do
+      {:error, "Record not found"} = DeleteRecognition.call(recognition, user)
+    end
+
+    test "requires access:self permission to delete own record", %{recognition: recognition, user: user} do
+      with_permission(user, "recognitions:access:self")
+
+      {:ok, deleted} = DeleteRecognition.call(recognition, user)
+
+      assert deleted.id == recognition.id
+    end
+
+    test "requires access:all permission to delete other records", %{user: user} do
+      other_user = insert(:user)
+
+      other_recognition =
+        :recognition
+        |> insert(created_by: other_user)
+        |> with_user_recognitions()
+
+      # Errors without permissions
+
+      {:error, "Record not found"} = DeleteRecognition.call(other_recognition, user)
+
+      # Succeeds with permissions
+
+      with_permission(user, "recognitions:access:all")
+
+      {:ok, deleted} = DeleteRecognition.call(other_recognition, user)
+
+      assert deleted.id == other_recognition.id
+    end
+  end
+
   describe "call!" do
     test "raises an exception when id not found" do
       invalid_id = 50_000_000

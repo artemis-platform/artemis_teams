@@ -1,9 +1,11 @@
 defmodule Artemis.DeleteRecognition do
   use Artemis.Context
 
+  import Ecto.Query
+
   alias Artemis.DeleteManyAssociatedComments
   alias Artemis.DeleteManyAssociatedReactions
-  alias Artemis.GetRecognition
+  alias Artemis.Recognition
   alias Artemis.Repo
 
   def call!(id, params \\ %{}, user) do
@@ -25,7 +27,20 @@ defmodule Artemis.DeleteRecognition do
   end
 
   def get_record(%{id: id}, user), do: get_record(id, user)
-  def get_record(id, user), do: GetRecognition.call(id, user)
+
+  def get_record(id, user) do
+    Recognition
+    |> restrict_access(user)
+    |> Repo.get(id)
+  end
+
+  defp restrict_access(query, user) do
+    cond do
+      has?(user, "recognitions:access:all") -> query
+      has?(user, "recognitions:access:self") -> where(query, [r], r.created_by_id == ^user.id)
+      true -> where(query, [r], is_nil(r.id))
+    end
+  end
 
   def delete_associated_comments(record, user) do
     resource_type = "Recognition"

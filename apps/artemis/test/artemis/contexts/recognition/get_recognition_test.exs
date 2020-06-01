@@ -6,10 +6,12 @@ defmodule Artemis.GetRecognitionTest do
   alias Artemis.GetRecognition
 
   setup do
-    recognition = insert(:recognition)
-    insert(:user, recognitions: [recognition])
+    user = insert(:user)
+    recognition = insert(:recognition, created_by: user)
 
-    {:ok, recognition: recognition}
+    insert_list(3, :user, recognitions: [recognition])
+
+    {:ok, recognition: recognition, user: user}
   end
 
   describe "call" do

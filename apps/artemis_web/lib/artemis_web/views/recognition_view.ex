@@ -47,7 +47,7 @@ defmodule ArtemisWeb.RecognitionView do
         link: link("Show", to: Routes.recognition_path(conn, :show, row))
       ],
       [
-        verify: has?(conn, "recognitions:update"),
+        verify: can_update_recognition?(conn, row),
         link: link("Edit", to: Routes.recognition_path(conn, :edit, row))
       ]
     ]
@@ -151,5 +151,33 @@ defmodule ArtemisWeb.RecognitionView do
       |> Artemis.Helpers.keys_to_strings()
 
     live_render(conn, ArtemisWeb.RecognitionCardsLive, id: id, session: session)
+  end
+
+  @doc """
+  Checks if user is has permissions to update record
+  """
+  def can_update_recognition?(conn, record) do
+    user = current_user(conn)
+    owner? = record.created_by_id == user.id
+
+    cond do
+      has_all?(user, ["recognitions:update", "recognitions:access:all"]) -> true
+      has_all?(user, ["recognitions:update", "recognitions:access:self"]) && owner? -> true
+      true -> false
+    end
+  end
+
+  @doc """
+  Checks if user is has permissions to delete record
+  """
+  def can_delete_recognition?(conn, record) do
+    user = current_user(conn)
+    owner? = record.created_by_id == user.id
+
+    cond do
+      has_all?(user, ["recognitions:delete", "recognitions:access:all"]) -> true
+      has_all?(user, ["recognitions:delete", "recognitions:access:self"]) && owner? -> true
+      true -> false
+    end
   end
 end

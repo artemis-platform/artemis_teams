@@ -2,11 +2,12 @@ defmodule Artemis.UpdateRecognition do
   use Artemis.Context
   use Assoc.Updater, repo: Artemis.Repo
 
-  alias Artemis.GetRecognition
+  import Ecto.Query
+
   alias Artemis.GetUserRecognition
   alias Artemis.Helpers.Markdown
-  alias Artemis.Repo
   alias Artemis.Recognition
+  alias Artemis.Repo
 
   def call!(id, params, user) do
     case call(id, params, user) do
@@ -63,7 +64,21 @@ defmodule Artemis.UpdateRecognition do
   defp get_user_recognition(_params, _user), do: nil
 
   def get_record(%{id: id}, user), do: get_record(id, user)
-  def get_record(id, user), do: GetRecognition.call(id, user)
+
+  def get_record(id, user) do
+    Recognition
+    |> restrict_access(user)
+    |> preload([:created_by, :user_recognitions, :users])
+    |> Repo.get(id)
+  end
+
+  defp restrict_access(query, user) do
+    cond do
+      has?(user, "recognitions:access:all") -> query
+      has?(user, "recognitions:access:self") -> where(query, [r], r.created_by_id == ^user.id)
+      true -> where(query, [r], is_nil(r.id))
+    end
+  end
 
   defp update_record(nil, _params), do: {:error, "Record not found"}
 

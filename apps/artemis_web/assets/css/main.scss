@@ -1253,6 +1253,18 @@ ul.reactions {
   aside {
     width: 65px;
   }
+
+  content {
+
+    .heading span.created-by,
+    .heading span.user {
+      font-weight: 600;
+
+      a {
+        font-weight: 500;
+      }
+    }
+  }
 }
 
 /* === Components - Event Instance === */
