@@ -1073,6 +1073,10 @@ a.summary-count:hover {
 
       .relative-date {
         color: #888;
+
+        &:hover::after {
+          font-size: 13px;
+        }
       }
     }
 
@@ -1096,7 +1100,7 @@ a.summary-count:hover {
         margin-right: 0.75rem;
       }
 
-      a.permalink,
+      .links a,
       a.comments {
         align-items: center;
         border-bottom: 1px solid #fff;
@@ -1108,8 +1112,16 @@ a.summary-count:hover {
         }
       }
 
-      .permalink i {
-        font-size: 12px;
+      .links {
+        display: flex;
+
+        .edit {
+          margin-right: 0.5rem;
+        }
+
+        .permalink i {
+          font-size: 12px;
+        }
       }
 
       i {

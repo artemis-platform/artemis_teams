@@ -156,8 +156,13 @@ defmodule ArtemisWeb.RecognitionView do
   @doc """
   Checks if user is has permissions to update record
   """
-  def can_update_recognition?(conn, record) do
-    user = current_user(conn)
+  def can_update_recognition?(%Plug.Conn{} = conn, record) do
+    conn
+    |> current_user()
+    |> can_update_recognition?(record)
+  end
+
+  def can_update_recognition?(user, record) do
     owner? = record.created_by_id == user.id
 
     cond do
@@ -170,6 +175,12 @@ defmodule ArtemisWeb.RecognitionView do
   @doc """
   Checks if user is has permissions to delete record
   """
+  def can_delete_recognition?(%Plug.Conn{} = conn, record) do
+    conn
+    |> current_user()
+    |> can_delete_recognition?(record)
+  end
+
   def can_delete_recognition?(conn, record) do
     user = current_user(conn)
     owner? = record.created_by_id == user.id

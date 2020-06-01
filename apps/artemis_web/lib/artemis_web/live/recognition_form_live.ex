@@ -128,7 +128,7 @@ defmodule ArtemisWeb.RecognitionFormLive do
   defp get_recognition(%{"recognition" => recognition}), do: recognition
   defp get_recognition(_), do: %Recognition{user_recognitions: []}
 
-  defp get_user_options(user) do
+  defp get_user_options(_user) do
     GetSystemUser.call!()
     |> ListUsers.call()
     |> Enum.map(&{&1.name, &1.id})

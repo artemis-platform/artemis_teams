@@ -11,7 +11,9 @@
           <i class="trophy icon"></i>
           No recognitions yet!
         </div>
-        <a class="ui basic button blue" href="<%= Routes.recognition_path(@socket, :new) %>">Recognize Someone</a>
+        <%= if has?(@user, "recognitions:create") do %>
+          <a class="ui basic button blue" href="<%= Routes.recognition_path(@socket, :new) %>">Recognize Someone</a>
+        <% end %>
       </div>
     <% else %>
       <div class="ui placeholder segment tiny">

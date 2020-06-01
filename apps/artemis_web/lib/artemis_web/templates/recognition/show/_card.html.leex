@@ -13,7 +13,7 @@
         <span class="users"><%= render_user_sentence(@socket, @recognition, @user) %></span>
       </div>
 
-      <div class="relative-date">
+      <div class="relative-date" data-tooltip="<%= render_date_time(@recognition.inserted_at) %>" data-position="left center">
         <%= render_relative_time(@recognition.inserted_at) %>
       </div>
     </div>
@@ -53,9 +53,16 @@
         </a>
       </div>
 
-      <a class="permalink" href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
-        <i class="icon linkify"></i>link
-      </a>
+      <div class="links">
+        <%= if can_update_recognition?(@user, @recognition) do %>
+          <a class="edit" href="<%= Routes.recognition_path(@socket, :edit, @recognition) %>">
+            <i class="icon pencil alternate"></i>edit
+          </a>
+        <% end %>
+        <a class="permalink" href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
+          <i class="icon linkify"></i>link
+        </a>
+      </div>
     </footer>
   </content>
 </section>
