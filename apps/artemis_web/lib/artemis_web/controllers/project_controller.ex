@@ -7,6 +7,7 @@ defmodule ArtemisWeb.ProjectController do
   alias Artemis.GetProject
   alias Artemis.GetTeam
   alias Artemis.ListProjects
+  alias Artemis.ListTeams
   alias Artemis.UpdateProject
 
   @preload [:team]
@@ -26,12 +27,15 @@ defmodule ArtemisWeb.ProjectController do
 
   def new(conn, params) do
     authorize(conn, "projects:create", fn ->
+      user = current_user(conn)
       project = %Project{team_id: Map.get(params, "team_id")}
       changeset = Project.changeset(project)
+      team_options = get_related_team_options(user)
 
       assigns = [
         changeset: changeset,
-        project: project
+        project: project,
+        team_options: team_options
       ]
 
       render(conn, "new.html", assigns)
@@ -40,7 +44,9 @@ defmodule ArtemisWeb.ProjectController do
 
   def create(conn, %{"project" => params}) do
     authorize(conn, "projects:create", fn ->
-      case CreateProject.call(params, current_user(conn)) do
+      user = current_user(conn)
+
+      case CreateProject.call(params, user) do
         {:ok, project} ->
           conn
           |> put_flash(:info, "Project created successfully.")
@@ -48,10 +54,12 @@ defmodule ArtemisWeb.ProjectController do
 
         {:error, %Ecto.Changeset{} = changeset} ->
           project = %Project{}
+          team_options = get_related_team_options(user)
 
           assigns = [
             changeset: changeset,
-            project: project
+            project: project,
+            team_options: team_options
           ]
 
           render(conn, "new.html", assigns)
@@ -83,11 +91,13 @@ defmodule ArtemisWeb.ProjectController do
       project = GetProject.call(id, user, preload: @preload)
       team = GetTeam.call!(project.team_id, user)
       changeset = Project.changeset(project)
+      team_options = get_related_team_options(user)
 
       assigns = [
         changeset: changeset,
         project: project,
-        team: team
+        team: team,
+        team_options: team_options
       ]
 
       authorize_in_team(conn, project.team_id, fn ->
@@ -111,11 +121,13 @@ defmodule ArtemisWeb.ProjectController do
           {:error, %Ecto.Changeset{} = changeset} ->
             project = GetProject.call(id, user, preload: @preload)
             team = GetTeam.call!(project.team_id, user)
+            team_options = get_related_team_options(user)
 
             assigns = [
               changeset: changeset,
               project: project,
-              team: team
+              team: team,
+              team_options: team_options
             ]
 
             render(conn, "edit.html", assigns)
@@ -153,5 +165,23 @@ defmodule ArtemisWeb.ProjectController do
     project_params = Map.merge(params, Artemis.Helpers.keys_to_strings(required_params))
 
     ListProjects.call(project_params, user)
+  end
+
+  defp get_related_team_options(user) do
+    team_ids =
+      user
+      |> Map.get(:user_teams)
+      |> Enum.filter(&(&1.type == "admin"))
+      |> Enum.map(& &1.team_id)
+
+    params = %{
+      filters: %{
+        id: team_ids
+      }
+    }
+
+    params
+    |> ListTeams.call(user)
+    |> Enum.map(&[key: &1.name, value: &1.id])
   end
 end

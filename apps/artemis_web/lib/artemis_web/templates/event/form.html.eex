@@ -7,7 +7,7 @@
   <div class="field">
     <%= label_with_errors f, :team_id, "Team" %>
     <%=
-      team_options = [blank_option() | Artemis.Team.unique_select_values_for(:name)]
+      team_options = [blank_option() | @team_options]
 
       select f, :team_id, team_options, class: "enhanced clearable", placeholder: ""
     %>
