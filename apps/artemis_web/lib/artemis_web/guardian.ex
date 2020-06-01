@@ -14,7 +14,7 @@ defmodule ArtemisWeb.Guardian do
 
   def resource_from_claims(%{"sub" => id}) do
     system_user = GetSystemUser.call!()
-    resource = GetUser.call(id, system_user, preload: [:permissions])
+    resource = GetUser.call(id, system_user, preload: [:permissions, :user_teams])
 
     {:ok, resource}
   end

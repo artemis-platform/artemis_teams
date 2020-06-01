@@ -1,5 +1,6 @@
 defmodule Artemis.UserAccess do
   alias Artemis.Repo
+  alias Artemis.Team
   alias Artemis.User
 
   # User Permissions - Boolean Queries
@@ -29,6 +30,30 @@ defmodule Artemis.UserAccess do
 
   def has_all?(_, _), do: false
 
+  # User Teams - Boolean Queries
+
+  def in_team?(%User{} = user, %Team{id: id}), do: in_team?(user, id)
+
+  def in_team?(%User{} = user, team_id) do
+    team_id = Artemis.Helpers.to_integer(team_id)
+
+    Enum.any?(user_teams(user), &(&1.team_id == team_id))
+  end
+
+  def team_admin?(user, team), do: has_team_type?(user, team, "admin")
+
+  def team_member?(user, team), do: has_team_type?(user, team, "member")
+
+  def team_viewer?(user, team), do: has_team_type?(user, team, "viewer")
+
+  def has_team_type?(%User{} = user, %Team{id: id}, type), do: has_team_type?(user, id, type)
+
+  def has_team_type?(%User{} = user, team_id, type) do
+    team_id = Artemis.Helpers.to_integer(team_id)
+
+    Enum.any?(user_teams(user), &(&1.team_id == team_id && &1.type == type))
+  end
+
   # Helpers
 
   defp user_permissions(user) do
@@ -37,5 +62,11 @@ defmodule Artemis.UserAccess do
     |> Map.get(:permissions)
     |> Enum.map(& &1.slug)
     |> MapSet.new()
+  end
+
+  defp user_teams(user) do
+    user
+    |> Repo.preload([:user_teams])
+    |> Map.get(:user_teams)
   end
 end
