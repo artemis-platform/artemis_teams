@@ -20,23 +20,7 @@ defmodule ArtemisWeb.RecognitionCardComponent do
 
   @impl true
   def render(assigns) do
-    Phoenix.View.render(ArtemisWeb.RecognitionView, "show/_card.html", assigns)
-  end
-
-  # Callbacks
-
-  @impl true
-  def handle_event("create-reaction", %{"value" => value}, socket) do
-    params = %{
-      resource_id: Integer.to_string(socket.assigns.recognition.id),
-      resource_type: "Recognition",
-      user_id: socket.assigns.user.id,
-      value: value
-    }
-
-    {:ok, _} = CreateReaction.call(params, socket.assigns.user)
-
-    {:noreply, socket}
+    Phoenix.View.render(ArtemisWeb.RecognitionView, "_card.html", assigns)
   end
 
   # Helpers

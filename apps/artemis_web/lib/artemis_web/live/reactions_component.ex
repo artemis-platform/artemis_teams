@@ -22,7 +22,7 @@ defmodule ArtemisWeb.ReactionsComponent do
 
   @impl true
   def render(assigns) do
-    Phoenix.View.render(ArtemisWeb.ReactionView, "index.html", assigns)
+    Phoenix.View.render(ArtemisWeb.ReactionView, "_list.html", assigns)
   end
 
   # Callbacks

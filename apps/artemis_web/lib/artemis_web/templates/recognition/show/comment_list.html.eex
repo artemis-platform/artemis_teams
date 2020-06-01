@@ -10,7 +10,7 @@
   <%= render_event_log_notifications @conn, "Recognition", @recognition.id %>
   <%= render_comment_notifications @conn, "Recognition", @recognition.id, Routes.recognition_comment_path(@conn, :index_comment, @recognition) %>
 
-  <%= render ArtemisWeb.CommentView, "index.html", assigns %>
+  <%= ArtemisWeb.CommentView.live_render_comment_cards @conn, resource_type: "Recognition", resource_id: @recognition.id %>
 
   <section>
     <%= h3 "Add Comment" %>

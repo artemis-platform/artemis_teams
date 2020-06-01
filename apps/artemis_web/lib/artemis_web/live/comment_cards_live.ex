@@ -1,26 +1,26 @@
-defmodule ArtemisWeb.RecognitionCardsLive do
+defmodule ArtemisWeb.CommentCardsLive do
   use ArtemisWeb.LiveView
 
   alias Artemis.ListComments
   alias Artemis.ListReactions
-  alias Artemis.ListRecognitions
 
   # LiveView Callbacks
 
   @impl true
   def mount(_params, session, socket) do
     user = Map.get(session, "user")
-    recognitions = Map.get(session, "recognitions", :loading)
+    comments = Map.get(session, "comments", :loading)
     reload_on_create_event = Map.get(session, "reload_on_create_event", true)
     params = Map.get(session, "params", %{})
+    path = Map.get(session, "path")
     broadcast_topic = Artemis.Event.get_broadcast_topic()
 
     assigns =
       socket
-      |> assign(:comments, :loading)
       |> assign(:params, params)
+      |> assign(:path, path)
       |> assign(:reactions, :loading)
-      |> assign(:recognitions, recognitions)
+      |> assign(:comments, comments)
       |> assign(:reload_on_create_event, reload_on_create_event)
       |> assign(:user, user)
 
@@ -33,7 +33,7 @@ defmodule ArtemisWeb.RecognitionCardsLive do
 
   @impl true
   def render(assigns) do
-    Phoenix.View.render(ArtemisWeb.RecognitionView, "_cards.html", assigns)
+    Phoenix.View.render(ArtemisWeb.CommentView, "_cards.html", assigns)
   end
 
   # GenServer Callbacks
@@ -42,29 +42,10 @@ defmodule ArtemisWeb.RecognitionCardsLive do
   def handle_info(:async_load_data, socket) do
     socket =
       socket
-      |> maybe_load_recognitions()
-      |> load_comments()
+      |> maybe_load_comments()
       |> load_reactions()
 
     {:noreply, socket}
-  end
-
-  def handle_info(%{event: "comment:created", payload: payload}, socket) do
-    comments = maybe_add_comment(socket, payload)
-
-    {:noreply, assign(socket, :comments, comments)}
-  end
-
-  def handle_info(%{event: "comment:updated", payload: payload}, socket) do
-    comments = maybe_update_comment(socket, payload)
-
-    {:noreply, assign(socket, :comments, comments)}
-  end
-
-  def handle_info(%{event: "comment:deleted", payload: payload}, socket) do
-    comments = maybe_delete_comment(socket, payload)
-
-    {:noreply, assign(socket, :comments, comments)}
   end
 
   def handle_info(%{event: "reaction:created", payload: payload}, socket) do
@@ -85,22 +66,22 @@ defmodule ArtemisWeb.RecognitionCardsLive do
     {:noreply, assign(socket, :reactions, reactions)}
   end
 
-  def handle_info(%{event: "recognition:created", payload: _payload}, socket) do
-    socket = if socket.assigns.reload_on_create_event, do: load_recognitions(socket), else: socket
+  def handle_info(%{event: "comment:created", payload: _payload}, socket) do
+    socket = if socket.assigns.reload_on_create_event, do: load_comments(socket), else: socket
 
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "recognition:updated", payload: payload}, socket) do
-    recognitions = maybe_update_recognition(socket, payload)
+  def handle_info(%{event: "comment:updated", payload: payload}, socket) do
+    comments = maybe_update_comment(socket, payload)
 
-    {:noreply, assign(socket, :recognitions, recognitions)}
+    {:noreply, assign(socket, :comments, comments)}
   end
 
-  def handle_info(%{event: "recognition:deleted", payload: payload}, socket) do
-    recognitions = maybe_delete_recognition(socket, payload)
+  def handle_info(%{event: "comment:deleted", payload: payload}, socket) do
+    comments = maybe_delete_comment(socket, payload)
 
-    {:noreply, assign(socket, :recognitions, recognitions)}
+    {:noreply, assign(socket, :comments, comments)}
   end
 
   def handle_info(_, socket) do
@@ -109,44 +90,10 @@ defmodule ArtemisWeb.RecognitionCardsLive do
 
   # Helpers - GenServer Callback Events
 
-  defp maybe_load_recognitions(socket) do
-    case socket.assigns.recognitions do
-      :loading -> load_recognitions(socket)
+  defp maybe_load_comments(socket) do
+    case socket.assigns.comments do
+      :loading -> load_comments(socket)
       _ -> socket
-    end
-  end
-
-  defp load_comments(socket) do
-    params = %{
-      filters: %{
-        resource_id: get_ids(socket),
-        resource_type: "Recognition"
-      }
-    }
-
-    comments = ListComments.call(params, socket.assigns.user)
-
-    assign(socket, :comments, comments)
-  end
-
-  defp maybe_add_comment(socket, payload) do
-    case resource_type_match?(payload) && resource_id_match?(socket, payload) do
-      true -> [payload.data | socket.assigns.comments]
-      false -> socket.assigns.comments
-    end
-  end
-
-  defp maybe_update_comment(socket, payload) do
-    case resource_type_match?(payload) && resource_id_match?(socket, payload) do
-      true -> update_entries(socket.assigns.comments, payload.data)
-      false -> socket.assigns.comments
-    end
-  end
-
-  defp maybe_delete_comment(socket, payload) do
-    case resource_type_match?(payload) && resource_id_match?(socket, payload) do
-      true -> delete_entries(socket.assigns.comments, payload.data)
-      false -> socket.assigns.comments
     end
   end
 
@@ -154,7 +101,7 @@ defmodule ArtemisWeb.RecognitionCardsLive do
     params = %{
       filters: %{
         resource_id: get_ids(socket),
-        resource_type: "Recognition"
+        resource_type: "Comment"
       }
     }
 
@@ -184,32 +131,32 @@ defmodule ArtemisWeb.RecognitionCardsLive do
     end
   end
 
-  defp maybe_update_recognition(socket, payload) do
+  defp maybe_update_comment(socket, payload) do
     case id_match?(socket, payload) do
-      true -> update_entries(socket.assigns.recognitions, payload.data)
-      false -> socket.assigns.recognitions
+      true -> update_entries(socket.assigns.comments, payload.data)
+      false -> socket.assigns.comments
     end
   end
 
-  defp maybe_delete_recognition(socket, payload) do
+  defp maybe_delete_comment(socket, payload) do
     case id_match?(socket, payload) do
-      true -> delete_entries(socket.assigns.recognitions, payload.data)
-      false -> socket.assigns.recognitions
+      true -> delete_entries(socket.assigns.comments, payload.data)
+      false -> socket.assigns.comments
     end
   end
 
   # Helpers
 
-  defp load_recognitions(socket) do
+  defp load_comments(socket) do
     user = socket.assigns.user
 
     default_params = %{
-      page_size: 10
+      page_size: 25
     }
 
     required_params = %{
       paginate: true,
-      preload: [:created_by, :users]
+      preload: [:user]
     }
 
     params =
@@ -218,14 +165,14 @@ defmodule ArtemisWeb.RecognitionCardsLive do
       |> Map.merge(Artemis.Helpers.keys_to_strings(socket.assigns.params))
       |> Map.merge(Artemis.Helpers.keys_to_strings(required_params))
 
-    recognitions = ListRecognitions.call(params, user)
+    comments = ListComments.call(params, user)
 
-    assign(socket, :recognitions, recognitions)
+    assign(socket, :comments, comments)
   end
 
   defp get_ids(socket) do
     socket.assigns
-    |> Map.get(:recognitions)
+    |> Map.get(:comments)
     |> Map.get(:entries)
     |> Enum.map(&Integer.to_string(&1.id))
   end
@@ -234,7 +181,7 @@ defmodule ArtemisWeb.RecognitionCardsLive do
     Enum.member?(get_ids(socket), Integer.to_string(payload.data.id))
   end
 
-  defp resource_type_match?(payload), do: payload.data.resource_type == "Recognition"
+  defp resource_type_match?(payload), do: payload.data.resource_type == "Comment"
 
   defp resource_id_match?(socket, payload) do
     Enum.member?(get_ids(socket), payload.data.resource_id)

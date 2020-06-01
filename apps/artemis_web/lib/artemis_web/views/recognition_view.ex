@@ -181,8 +181,7 @@ defmodule ArtemisWeb.RecognitionView do
     |> can_delete_recognition?(record)
   end
 
-  def can_delete_recognition?(conn, record) do
-    user = current_user(conn)
+  def can_delete_recognition?(user, record) do
     owner? = record.created_by_id == user.id
 
     cond do
