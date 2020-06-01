@@ -72,6 +72,22 @@ defmodule ArtemisWeb do
         end
       end
 
+      # User Permissions
+
+      defp authorize_in_team(conn, team_id, render_controller) do
+        case in_team?(conn, team_id) do
+          true -> render_controller.()
+          false -> render_forbidden(conn)
+        end
+      end
+
+      defp authorize_team_admin(conn, team_id, render_controller) do
+        case team_admin?(conn, team_id) do
+          true -> render_controller.()
+          false -> render_forbidden(conn)
+        end
+      end
+
       # Features
 
       defp feature_active?(conn, feature, render_controller) do
