@@ -6,8 +6,7 @@ defmodule ArtemisWeb.Router do
   pipeline :browser do
     plug :accepts, ["html", "csv"]
     plug :fetch_session
-    plug :fetch_flash
-    plug Phoenix.LiveView.Flash
+    plug :fetch_live_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -114,6 +113,17 @@ defmodule ArtemisWeb.Router do
 
       resources "/projects", ProjectController
 
+      # Recognitions
+
+      resources "/recognitions", RecognitionController, except: [:create, :update] do
+        get "/comments", RecognitionController, :index_comment, as: :comment
+        post "/comments", RecognitionController, :create_comment, as: :comment
+        get "/comments/:id/edit", RecognitionController, :edit_comment, as: :comment
+        patch "/comments/:id", RecognitionController, :update_comment, as: :comment
+        put "/comments/:id", RecognitionController, :update_comment, as: :comment
+        delete "/comments/:id", RecognitionController, :delete_comment, as: :comment
+      end
+
       # Roles
 
       post "/roles/bulk-actions", RoleController, :index_bulk_actions
@@ -153,7 +163,6 @@ defmodule ArtemisWeb.Router do
 
       # Teams
 
-      post "/teams/bulk-actions", TeamController, :index_bulk_actions
       get "/teams/event-logs", TeamController, :index_event_log_list
       get "/teams/event-logs/:id", TeamController, :index_event_log_details
 

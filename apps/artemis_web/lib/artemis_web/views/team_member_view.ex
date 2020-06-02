@@ -42,7 +42,7 @@ defmodule ArtemisWeb.TeamMemberView do
         label: fn _conn -> "User" end,
         value: fn _conn, row -> row.user.name end,
         value_html: fn conn, row ->
-          case has?(conn, "user-teams:show") do
+          case has?(conn, "users:show") do
             true -> link(row.user.name, to: Routes.team_member_path(conn, :show, row.team, row))
             false -> row.user.name
           end
@@ -54,11 +54,11 @@ defmodule ArtemisWeb.TeamMemberView do
   defp data_table_actions_column_html(conn, row) do
     allowed_actions = [
       [
-        verify: has?(conn, "user-teams:show"),
+        verify: has?(conn, "user-teams:show") && team_admin?(conn, row.team),
         link: link("Show", to: Routes.team_member_path(conn, :show, row.team, row))
       ],
       [
-        verify: has?(conn, "user-teams:update"),
+        verify: has?(conn, "user-teams:update") && team_admin?(conn, row.team),
         link: link("Edit", to: Routes.team_member_path(conn, :edit, row.team, row))
       ]
     ]

@@ -93,6 +93,18 @@ defmodule ArtemisWeb.Config.Navigation do
           verify: &has?(&1, "projects:create")
         ]
       ],
+      Recognitions: [
+        [
+          label: "List Recognitions",
+          path: &Routes.recognition_path(&1, :index),
+          verify: &has?(&1, "recognitions:list")
+        ],
+        [
+          label: "Create New Recognition",
+          path: &Routes.recognition_path(&1, :new),
+          verify: &has?(&1, "recognitions:create")
+        ]
+      ],
       Roles: [
         [
           label: "List Roles",

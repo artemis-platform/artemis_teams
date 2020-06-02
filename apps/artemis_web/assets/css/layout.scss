@@ -14,8 +14,8 @@ code {
 
 #body h2 {
   border-bottom: 1px solid $blue_muted;
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 1.75rem;
+  font-weight: 300;
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
 }
@@ -96,7 +96,7 @@ code {
 
 #primary-header {
   $background: #fff;
-  $height: 4rem;
+  $height: 3.75rem;
   $logo_width: 174px;
 
   section {
@@ -152,15 +152,16 @@ code {
         color: #333;
         display: block;
         height: $height;
-        padding: 0 1.25rem 0 1.25rem;
+        padding: 0 1rem 0 1rem;
         line-height: $height;
         text-decoration: none;
       }
 
       & > ul > li.with-dropdown > a {
-        padding: 0 0.325rem 0 1.25rem;
+        padding: 0 0.125rem 0 0.875rem;
 
-        i {
+        .dropdown.icon {
+          display: inline-block;
           font-size: 0.875rem;
           opacity: 0.2;
         }
@@ -180,12 +181,10 @@ code {
         border-bottom-left-radius: 4px;
         border-bottom-right-radius: 4px;
         display: none;
-        // left: calc(0px - #{$logo_width});
         left: calc(0px - #{$logo_width} + 2rem);
         min-width: 100%;
         position: absolute;
         top: $height;
-        // width: calc(86vw + 4rem);
         width: calc(86vw);
         z-index: 1000;
 
@@ -264,7 +263,7 @@ code {
       display: flex;
       flex-grow: 1;
       height: $height;
-      padding: 0 1rem 0 2rem;
+      padding: 0 0.5rem 0 2rem;
 
       #quick-search {
         align-self: center;
@@ -637,7 +636,8 @@ body.error-page {
   &>article>section,
   &>article>content>section,
   &>article>row>section,
-  &>article>aside>section {
+  &>article>aside>section,
+  .card {
     background: #fff;
     border: 1px solid #e2e2e2;
     // box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
@@ -717,9 +717,26 @@ body.error-page {
       width: 100%;
     }
 
+    &>aside.left {
+      min-width: 300px;
+      margin-right: 1.5rem;
+
+      &.narrow {
+        min-width: 260px;
+      }
+
+      .buttons {
+        width: 100%;
+      }
+    }
+
     &>aside.right {
-      min-width: 240px;
-      margin-left: 1rem;
+      min-width: 300px;
+      margin-left: 1.5rem;
+
+      &.narrow {
+        min-width: 260px;
+      }
 
       .buttons {
         width: 100%;

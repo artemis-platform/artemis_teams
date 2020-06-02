@@ -4,25 +4,25 @@ defmodule ArtemisWeb.EventInstanceFormLive do
   # LiveView Callbacks
 
   @impl true
-  def mount(session, socket) do
+  def mount(_params, session, socket) do
     event_answers_with_defaults =
       add_default_event_answers(
-        session.event_answers,
-        session.date,
-        session.event_questions,
-        session.user
+        session["event_answers"],
+        session["date"],
+        session["event_questions"],
+        session["user"]
       )
 
     assigns =
       socket
-      |> assign(:action, session.action)
-      |> assign(:csrf_token, session.csrf_token)
-      |> assign(:date, session.date)
+      |> assign(:action, session["action"])
+      |> assign(:csrf_token, session["csrf_token"])
+      |> assign(:date, session["date"])
       |> assign(:event_answers, event_answers_with_defaults)
-      |> assign(:event_questions, session.event_questions)
-      |> assign(:event_template, session.event_template)
-      |> assign(:projects, session.projects)
-      |> assign(:user, session.user)
+      |> assign(:event_questions, session["event_questions"])
+      |> assign(:event_template, session["event_template"])
+      |> assign(:projects, session["projects"])
+      |> assign(:user, session["user"])
 
     {:ok, assigns}
   end

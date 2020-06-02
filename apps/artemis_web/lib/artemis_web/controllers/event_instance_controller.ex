@@ -32,7 +32,9 @@ defmodule ArtemisWeb.EventInstanceController do
         today: today
       ]
 
-      render_format(conn, "index", assigns)
+      authorize_in_team(conn, event_template.team_id, fn ->
+        render_format(conn, "index", assigns)
+      end)
     end)
   end
 
@@ -56,7 +58,9 @@ defmodule ArtemisWeb.EventInstanceController do
         filter_data: filter_data
       ]
 
-      render(conn, "show.html", assigns)
+      authorize_in_team(conn, event_template.team_id, fn ->
+        render(conn, "show.html", assigns)
+      end)
     end)
   end
 
@@ -77,7 +81,9 @@ defmodule ArtemisWeb.EventInstanceController do
         projects: projects
       ]
 
-      render(conn, "edit.html", assigns)
+      authorize_in_team(conn, event_template.team_id, fn ->
+        render(conn, "edit.html", assigns)
+      end)
     end)
   end
 
@@ -88,49 +94,55 @@ defmodule ArtemisWeb.EventInstanceController do
       event_questions = get_event_questions(event_template_id, user)
       event_answer_params = get_event_answer_params(params)
 
-      case UpdateEventInstance.call(event_answer_params, event_questions, user) do
-        {:ok, _changesets} ->
-          conn
-          |> put_flash(:info, "Event Instance updated successfully.")
-          |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
+      authorize_in_team(conn, event_template.team_id, fn ->
+        case UpdateEventInstance.call(event_answer_params, event_questions, user) do
+          {:ok, _changesets} ->
+            conn
+            |> put_flash(:info, "Event Instance updated successfully.")
+            |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
 
-        {:error, event_answers} ->
-          projects = get_projects(event_template.team_id, user)
+          {:error, event_answers} ->
+            projects = get_projects(event_template.team_id, user)
 
-          assigns = [
-            csrf_token: Phoenix.Controller.get_csrf_token(),
-            date: date,
-            event_answers: event_answers,
-            event_questions: event_questions,
-            event_template: event_template,
-            projects: projects
-          ]
+            assigns = [
+              csrf_token: Phoenix.Controller.get_csrf_token(),
+              date: date,
+              event_answers: event_answers,
+              event_questions: event_questions,
+              event_template: event_template,
+              projects: projects
+            ]
 
-          render(conn, "edit.html", assigns)
-      end
+            render(conn, "edit.html", assigns)
+        end
+      end)
     end)
   end
 
   def delete(conn, %{"event_id" => event_template_id, "id" => date}) do
     authorize(conn, "event-answers:delete", fn ->
       user = current_user(conn)
-      event_answers = get_event_answers_for_delete(event_template_id, date, user)
-      event_answer_ids = Enum.map(event_answers, & &1.id)
+      event_template = get_event_template!(event_template_id, user)
 
-      result = DeleteEventAnswer.call_many(event_answer_ids, [user])
-      success? = length(result.errors) == 0
+      authorize_in_team(conn, event_template.team_id, fn ->
+        event_answers = get_event_answers_for_delete(event_template_id, date, user)
+        event_answer_ids = Enum.map(event_answers, & &1.id)
 
-      case success? do
-        true ->
-          conn
-          |> put_flash(:info, "Event instance answers deleted successfully.")
-          |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
+        result = DeleteEventAnswer.call_many(event_answer_ids, [user])
+        success? = length(result.errors) == 0
 
-        false ->
-          conn
-          |> put_flash(:error, "Error deleting event instance answers.")
-          |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
-      end
+        case success? do
+          true ->
+            conn
+            |> put_flash(:info, "Event instance answers deleted successfully.")
+            |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
+
+          false ->
+            conn
+            |> put_flash(:error, "Error deleting event instance answers.")
+            |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
+        end
+      end)
     end)
   end
 
@@ -150,6 +162,7 @@ defmodule ArtemisWeb.EventInstanceController do
         filters: %{
           event_template_id: event_template_id
         },
+        page_size: 50,
         paginate: true,
         preload: [:event_question, :project, :user]
       }

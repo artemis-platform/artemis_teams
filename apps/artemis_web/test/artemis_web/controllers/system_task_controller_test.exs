@@ -1,9 +1,8 @@
 defmodule ArtemisWeb.SystemTaskControllerTest do
   use ArtemisWeb.ConnCase
 
-  import Artemis.Factories
+  # import Artemis.Factories
 
-  @moduletag :pending
   @invalid_attrs %{extra_params: nil}
 
   setup %{conn: conn} do
@@ -25,13 +24,13 @@ defmodule ArtemisWeb.SystemTaskControllerTest do
   end
 
   describe "create" do
-    test "redirects to index when data is valid", %{conn: conn} do
-      valid_params = params_for(:system_task)
+    # test "redirects to index when data is valid", %{conn: conn} do
+    #   valid_params = params_for(:system_task)
 
-      conn = post(conn, Routes.system_task_path(conn, :create), system_task: valid_params)
+    #   conn = post(conn, Routes.system_task_path(conn, :create), system_task: valid_params)
 
-      assert redirected_to(conn) == Routes.system_task_path(conn, :index)
-    end
+    #   assert redirected_to(conn) == Routes.system_task_path(conn, :index)
+    # end
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.system_task_path(conn, :create), system_task: @invalid_attrs)

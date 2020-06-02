@@ -1,0 +1,44 @@
+<section class="comment card comment-card">
+  <aside class="centered">
+    <i class="icon comment primary"></i>
+  </aside>
+
+  <content>
+    <div class="heading">
+      <div class="title">
+        <%= @comment.title %>
+      </div>
+
+      <div class="relative-date" data-tooltip="<%= render_date_time(@comment.inserted_at) %>" data-position="left center">
+        <%= render_relative_time(@comment.inserted_at) %>
+      </div>
+    </div>
+
+    <div class="body"><%= raw @comment.body_html %></div>
+
+    <footer>
+      <div class="actions">
+        <%=
+          live_component(
+            @socket,
+            ArtemisWeb.ReactionsComponent,
+            id: @comment.id,
+            reactions: @reactions,
+            resource_id: @comment.id,
+            resource_type: "Comment",
+            user: @user
+          )
+        %>
+      </div>
+
+      <div class="links">
+        <%= if can_update_comment?(@user, @comment) do %>
+          <%= link "Edit", to:  "#{@path}/#{@comment.id}/edit" %>
+        <% end %>
+        <%= if can_delete_comment?(@user, @comment) do %>
+          <%= link "Delete", method: "delete", to: "#{@path}/#{@comment.id}", data: [confirm: "Delete Comment?"] %>
+        <% end %>
+      </div>
+    </footer>
+  </content>
+</section>

@@ -12,7 +12,8 @@ defmodule ArtemisWeb.ViewHelper.Pagination do
     params = Keyword.get(options, :params, [])
 
     query_params =
-      conn.query_params
+      options
+      |> Keyword.get(:query_params, Map.get(conn, :query_params, %{}))
       |> Artemis.Helpers.keys_to_atoms()
       |> Map.delete(:page)
       |> Enum.into([])
@@ -33,6 +34,25 @@ defmodule ArtemisWeb.ViewHelper.Pagination do
       false -> nil
     end
   end
+
+  def render_pagination(_, _, _), do: nil
+
+  @doc """
+  Creates a pagination struct with the given entries
+  """
+  def paginate(entries) when is_list(entries) do
+    size = length(entries)
+
+    %Scrivener.Page{
+      entries: entries,
+      page_number: 1,
+      page_size: size,
+      total_entries: size,
+      total_pages: 1
+    }
+  end
+
+  def paginate(entry), do: paginate([entry])
 
   @doc """
   Returns the current request path and query params.

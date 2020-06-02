@@ -1,0 +1,58 @@
+<ul class="reactions">
+  <li>
+    <div class="ui compact menu">
+      <div class="ui simple dropdown item icon new-reaction">
+        <i class="icon heart outline"></i>
+        <div class="menu">
+          <%= Enum.map @available_reactions, fn available_reaction -> %>
+            <%= if user_reaction_id = Map.get(@resource_user_reactions, available_reaction) do %>
+
+              <a href="#" phx-click="delete" phx-throttle="250" phx-target="<%= @myself %>" phx-value-id="<%= user_reaction_id %>">
+                <%= render_emoji_html available_reaction %>
+              </a>
+
+            <% else %>
+
+              <a href="#" phx-click="create" phx-throttle="250" phx-target="<%= @myself %>" phx-value-value="<%= available_reaction %>">
+                <%= render_emoji_html available_reaction %>
+              </a>
+
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </li>
+  <%= if @resource_reactions_count > 0 do %>
+    <%= Enum.map @resource_reactions_by_value, fn {value, reactions} -> %>
+      <li class="reaction">
+        <div class="ui compact menu">
+          <div class="ui simple dropdown item icon user-list">
+            <%= if user_reaction_id = Map.get(@resource_user_reactions, value) do %>
+
+              <a href="#" class="reaction delete" phx-click="delete" phx-throttle="250" phx-target="<%= @myself %>" phx-value-id="<%= user_reaction_id %>">
+                <%= render_emoji_html value %>
+                <%= length reactions %>
+              </a>
+
+            <% else %>
+
+              <a href="#" class="reaction create" phx-click="create" phx-throttle="250" phx-target="<%= @myself %>" phx-value-value="<%= hd(reactions).value %>">
+                <%= render_emoji_html value %>
+                <%= length reactions %>
+              </a>
+
+            <% end %>
+            <div class="menu">
+              <%= Enum.map reactions, fn reaction -> %>
+                <div class="item">
+                  <%= Artemis.Helpers.deep_get(reaction, [:user, :name]) %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </li>
+    <% end %>
+  <% end %>
+</ul>

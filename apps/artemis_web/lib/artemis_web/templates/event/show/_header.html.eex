@@ -2,6 +2,7 @@
   <header>
     <h1>
       <%= @event_template.title %>
+      <span class="subheading">Team Event</span>
     </h1>
 
     <div class="actions">

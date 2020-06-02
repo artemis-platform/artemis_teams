@@ -15,20 +15,16 @@ defmodule ArtemisWeb.EventIntegrationController do
     authorize(conn, "event-integrations:list", fn ->
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
-
-      params =
-        params
-        |> Map.put(:paginate, true)
-        |> Map.put(:preload, @preload)
-
-      event_integrations = ListEventIntegrations.call(params, user)
+      event_integrations = get_event_integrations(params, user)
 
       assigns = [
         event_integrations: event_integrations,
         event_template: event_template
       ]
 
-      render_format(conn, "index", assigns)
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        render_format(conn, "index", assigns)
+      end)
     end)
   end
 
@@ -45,7 +41,9 @@ defmodule ArtemisWeb.EventIntegrationController do
         event_template: event_template
       ]
 
-      render(conn, "new.html", assigns)
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        render(conn, "new.html", assigns)
+      end)
     end)
   end
 
@@ -54,23 +52,25 @@ defmodule ArtemisWeb.EventIntegrationController do
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
 
-      case CreateEventIntegration.call(params, user) do
-        {:ok, _event_integration} ->
-          conn
-          |> put_flash(:info, "Event Integration created successfully.")
-          |> redirect(to: Routes.event_path(conn, :show, event_template_id))
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        case CreateEventIntegration.call(params, user) do
+          {:ok, _event_integration} ->
+            conn
+            |> put_flash(:info, "Event Integration created successfully.")
+            |> redirect(to: Routes.event_path(conn, :show, event_template_id))
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          event_integration = %EventIntegration{event_template_id: event_template_id}
+          {:error, %Ecto.Changeset{} = changeset} ->
+            event_integration = %EventIntegration{event_template_id: event_template_id}
 
-          assigns = [
-            changeset: changeset,
-            event_integration: event_integration,
-            event_template: event_template
-          ]
+            assigns = [
+              changeset: changeset,
+              event_integration: event_integration,
+              event_template: event_template
+            ]
 
-          render(conn, "new.html", assigns)
-      end
+            render(conn, "new.html", assigns)
+        end
+      end)
     end)
   end
 
@@ -85,7 +85,9 @@ defmodule ArtemisWeb.EventIntegrationController do
         event_template: event_template
       ]
 
-      render(conn, "show.html", assigns)
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        render(conn, "show.html", assigns)
+      end)
     end)
   end
 
@@ -102,7 +104,9 @@ defmodule ArtemisWeb.EventIntegrationController do
         event_template: event_template
       ]
 
-      render(conn, "edit.html", assigns)
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        render(conn, "edit.html", assigns)
+      end)
     end)
   end
 
@@ -111,33 +115,56 @@ defmodule ArtemisWeb.EventIntegrationController do
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
 
-      case UpdateEventIntegration.call(id, params, user) do
-        {:ok, _event_integration} ->
-          conn
-          |> put_flash(:info, "Event Integration updated successfully.")
-          |> redirect(to: Routes.event_path(conn, :show, event_template_id))
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        case UpdateEventIntegration.call(id, params, user) do
+          {:ok, _event_integration} ->
+            conn
+            |> put_flash(:info, "Event Integration updated successfully.")
+            |> redirect(to: Routes.event_path(conn, :show, event_template_id))
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          event_integration = GetEventIntegration.call(id, user, preload: @preload)
+          {:error, %Ecto.Changeset{} = changeset} ->
+            event_integration = GetEventIntegration.call(id, user, preload: @preload)
 
-          assigns = [
-            changeset: changeset,
-            event_integration: event_integration,
-            event_template: event_template
-          ]
+            assigns = [
+              changeset: changeset,
+              event_integration: event_integration,
+              event_template: event_template
+            ]
 
-          render(conn, "edit.html", assigns)
-      end
+            render(conn, "edit.html", assigns)
+        end
+      end)
     end)
   end
 
   def delete(conn, %{"event_id" => event_template_id, "id" => id} = params) do
     authorize(conn, "event-integrations:delete", fn ->
-      {:ok, _event_integration} = DeleteEventIntegration.call(id, params, current_user(conn))
+      user = current_user(conn)
+      event_template = GetEventTemplate.call!(event_template_id, user)
 
-      conn
-      |> put_flash(:info, "Event Integration deleted successfully.")
-      |> redirect(to: Routes.event_path(conn, :show, event_template_id))
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        {:ok, _event_integration} = DeleteEventIntegration.call(id, params, user)
+
+        conn
+        |> put_flash(:info, "Event Integration deleted successfully.")
+        |> redirect(to: Routes.event_path(conn, :show, event_template_id))
+      end)
     end)
+  end
+
+  # Helpers
+
+  defp get_event_integrations(params, user) do
+    required_params = %{
+      filters: %{
+        event_template_id: Map.fetch!(params, "event_id")
+      },
+      paginate: true,
+      preload: @preload
+    }
+
+    event_integration_params = Map.merge(params, Artemis.Helpers.keys_to_strings(required_params))
+
+    ListEventIntegrations.call(event_integration_params, user)
   end
 end

@@ -1,11 +1,6 @@
 defmodule ArtemisWeb.TeamController do
   use ArtemisWeb, :controller
 
-  use ArtemisWeb.Controller.BulkActions,
-    bulk_actions: ArtemisWeb.TeamView.available_bulk_actions(),
-    path: &Routes.team_path(&1, :index),
-    permission: "teams:list"
-
   use ArtemisWeb.Controller.EventLogsIndex,
     path: &Routes.team_path/3,
     permission: "teams:list",
@@ -36,10 +31,8 @@ defmodule ArtemisWeb.TeamController do
       user = current_user(conn)
       params = Map.put(params, :paginate, true)
       teams = ListTeams.call(params, user)
-      allowed_bulk_actions = ArtemisWeb.TeamView.allowed_bulk_actions(user)
 
       assigns = [
-        allowed_bulk_actions: allowed_bulk_actions,
         teams: teams
       ]
 
@@ -90,47 +83,61 @@ defmodule ArtemisWeb.TeamController do
         user_teams: user_teams
       ]
 
-      render(conn, "show.html", assigns)
+      authorize_in_team(conn, team.id, fn ->
+        render(conn, "show.html", assigns)
+      end)
     end)
   end
 
   def edit(conn, %{"id" => id}) do
     authorize(conn, "teams:update", fn ->
-      team = GetTeam.call(id, current_user(conn), preload: @preload)
+      team = GetTeam.call!(id, current_user(conn), preload: @preload)
       changeset = Team.changeset(team)
 
-      render(conn, "edit.html", changeset: changeset, team: team)
+      authorize_in_team(conn, team.id, fn ->
+        render(conn, "edit.html", changeset: changeset, team: team)
+      end)
     end)
   end
 
   def update(conn, %{"id" => id, "team" => params}) do
     authorize(conn, "teams:update", fn ->
+      user = current_user(conn)
+      team = GetTeam.call!(id, user)
+
       update_params =
         params
         |> Map.delete("projects")
         |> Map.delete("user_teams")
 
-      case UpdateTeam.call(id, update_params, current_user(conn)) do
-        {:ok, team} ->
-          conn
-          |> put_flash(:info, "Team updated successfully.")
-          |> redirect(to: Routes.team_path(conn, :show, team))
+      authorize_in_team(conn, team.id, fn ->
+        case UpdateTeam.call(id, update_params, user) do
+          {:ok, team} ->
+            conn
+            |> put_flash(:info, "Team updated successfully.")
+            |> redirect(to: Routes.team_path(conn, :show, team))
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          team = GetTeam.call(id, current_user(conn), preload: @preload)
+          {:error, %Ecto.Changeset{} = changeset} ->
+            team = GetTeam.call(id, user, preload: @preload)
 
-          render(conn, "edit.html", changeset: changeset, team: team)
-      end
+            render(conn, "edit.html", changeset: changeset, team: team)
+        end
+      end)
     end)
   end
 
   def delete(conn, %{"id" => id} = params) do
     authorize(conn, "teams:delete", fn ->
-      {:ok, _team} = DeleteTeam.call(id, params, current_user(conn))
+      user = current_user(conn)
+      team = GetTeam.call!(id, user)
 
-      conn
-      |> put_flash(:info, "Team deleted successfully.")
-      |> redirect(to: Routes.team_path(conn, :index))
+      authorize_in_team(conn, team.id, fn ->
+        {:ok, _team} = DeleteTeam.call(id, params, user)
+
+        conn
+        |> put_flash(:info, "Team deleted successfully.")
+        |> redirect(to: Routes.team_path(conn, :index))
+      end)
     end)
   end
 

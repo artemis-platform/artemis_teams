@@ -9,7 +9,7 @@
   <%= render_flash_notifications @conn %>
   <%= render_event_log_notifications @conn, "EventTemplate", @event_template.id %>
 
-  <article id="home-page" class="page">
+  <article id="event-instance-page" class="page">
     <content>
       <section>
         <%= h2 @event_template.title %>
@@ -109,7 +109,7 @@
       %>
     </content>
 
-    <aside class="right">
+    <aside class="right narrow">
       <%=
         reset_link = Routes.event_instance_path(@conn, :index, @event_template.id)
 
@@ -124,6 +124,11 @@
       <section>
         <h5>Actions</h5>
         <%= render_export_actions(@conn, available_columns: data_table_available_columns(), custom_columns_link: false) %>
+      </section>
+
+      <section>
+        <%= h5 "Recognize Someone" %>
+        <%= ArtemisWeb.RecognitionView.live_render_recognition_form @conn, redirect: false %>
       </section>
     </aside>
 

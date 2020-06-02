@@ -57,7 +57,7 @@ defmodule ArtemisWeb.EventIntegrationPageTest do
       assert visible?("can't be blank")
     end
 
-    test "successfully creates a new record", %{event_integration: event_integration} do
+    test "successfully creates a new record", %{event_integration: _event_integration} do
       click_link("New")
 
       fill_inputs("#event-integration-form", %{

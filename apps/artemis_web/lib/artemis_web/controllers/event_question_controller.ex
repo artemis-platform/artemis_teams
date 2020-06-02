@@ -15,20 +15,16 @@ defmodule ArtemisWeb.EventQuestionController do
     authorize(conn, "event-questions:list", fn ->
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
-
-      params =
-        params
-        |> Map.put(:paginate, true)
-        |> Map.put(:preload, @preload)
-
-      event_questions = ListEventQuestions.call(params, user)
+      event_questions = get_event_questions(params, user)
 
       assigns = [
         event_questions: event_questions,
         event_template: event_template
       ]
 
-      render_format(conn, "index", assigns)
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        render_format(conn, "index", assigns)
+      end)
     end)
   end
 
@@ -45,7 +41,9 @@ defmodule ArtemisWeb.EventQuestionController do
         event_template: event_template
       ]
 
-      render(conn, "new.html", assigns)
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        render(conn, "new.html", assigns)
+      end)
     end)
   end
 
@@ -55,23 +53,25 @@ defmodule ArtemisWeb.EventQuestionController do
       event_template = GetEventTemplate.call!(event_template_id, user)
       params = Map.put(params, "event_template_id", event_template_id)
 
-      case CreateEventQuestion.call(params, user) do
-        {:ok, _event_question} ->
-          conn
-          |> put_flash(:info, "Event Question created successfully.")
-          |> redirect(to: Routes.event_path(conn, :show, event_template_id))
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        case CreateEventQuestion.call(params, user) do
+          {:ok, _event_question} ->
+            conn
+            |> put_flash(:info, "Event Question created successfully.")
+            |> redirect(to: Routes.event_path(conn, :show, event_template_id))
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          event_question = %EventQuestion{event_template_id: event_template_id}
+          {:error, %Ecto.Changeset{} = changeset} ->
+            event_question = %EventQuestion{event_template_id: event_template_id}
 
-          assigns = [
-            changeset: changeset,
-            event_question: event_question,
-            event_template: event_template
-          ]
+            assigns = [
+              changeset: changeset,
+              event_question: event_question,
+              event_template: event_template
+            ]
 
-          render(conn, "new.html", assigns)
-      end
+            render(conn, "new.html", assigns)
+        end
+      end)
     end)
   end
 
@@ -86,7 +86,9 @@ defmodule ArtemisWeb.EventQuestionController do
         event_template: event_template
       ]
 
-      render(conn, "show.html", assigns)
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        render(conn, "show.html", assigns)
+      end)
     end)
   end
 
@@ -103,7 +105,9 @@ defmodule ArtemisWeb.EventQuestionController do
         event_template: event_template
       ]
 
-      render(conn, "edit.html", assigns)
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        render(conn, "edit.html", assigns)
+      end)
     end)
   end
 
@@ -113,33 +117,56 @@ defmodule ArtemisWeb.EventQuestionController do
       event_template = GetEventTemplate.call!(event_template_id, user)
       params = Map.put(params, "event_template_id", event_template_id)
 
-      case UpdateEventQuestion.call(id, params, user) do
-        {:ok, _event_question} ->
-          conn
-          |> put_flash(:info, "Event Question updated successfully.")
-          |> redirect(to: Routes.event_path(conn, :show, event_template_id))
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        case UpdateEventQuestion.call(id, params, user) do
+          {:ok, _event_question} ->
+            conn
+            |> put_flash(:info, "Event Question updated successfully.")
+            |> redirect(to: Routes.event_path(conn, :show, event_template_id))
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          event_question = GetEventQuestion.call(id, user, preload: @preload)
+          {:error, %Ecto.Changeset{} = changeset} ->
+            event_question = GetEventQuestion.call(id, user, preload: @preload)
 
-          assigns = [
-            changeset: changeset,
-            event_question: event_question,
-            event_template: event_template
-          ]
+            assigns = [
+              changeset: changeset,
+              event_question: event_question,
+              event_template: event_template
+            ]
 
-          render(conn, "edit.html", assigns)
-      end
+            render(conn, "edit.html", assigns)
+        end
+      end)
     end)
   end
 
   def delete(conn, %{"event_id" => event_template_id, "id" => id} = params) do
     authorize(conn, "event-questions:delete", fn ->
-      {:ok, _event_question} = DeleteEventQuestion.call(id, params, current_user(conn))
+      user = current_user(conn)
+      event_template = GetEventTemplate.call!(event_template_id, user)
 
-      conn
-      |> put_flash(:info, "Event Question deleted successfully.")
-      |> redirect(to: Routes.event_path(conn, :show, event_template_id))
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        {:ok, _event_question} = DeleteEventQuestion.call(id, params, user)
+
+        conn
+        |> put_flash(:info, "Event Question deleted successfully.")
+        |> redirect(to: Routes.event_path(conn, :show, event_template_id))
+      end)
     end)
+  end
+
+  # Helpers
+
+  defp get_event_questions(params, user) do
+    required_params = %{
+      filters: %{
+        event_template_id: Map.fetch!(params, "event_id")
+      },
+      paginate: true,
+      preload: @preload
+    }
+
+    event_question_params = Map.merge(params, Artemis.Helpers.keys_to_strings(required_params))
+
+    ListEventQuestions.call(event_question_params, user)
   end
 end

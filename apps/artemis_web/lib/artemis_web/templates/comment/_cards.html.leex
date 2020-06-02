@@ -1,0 +1,21 @@
+<%= if @comments == :loading do %>
+
+  <%= render_loading_card() %>
+
+<% else %>
+
+  <%= for comment <- @comments.entries do %>
+    <%=
+      live_component(
+        @socket,
+        ArtemisWeb.CommentCardComponent,
+        id: comment.id,
+        comment: comment,
+        path: @path,
+        reactions: @reactions,
+        user: @user
+      )
+    %>
+  <% end %>
+
+<% end %>

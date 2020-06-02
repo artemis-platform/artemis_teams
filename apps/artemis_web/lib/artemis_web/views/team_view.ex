@@ -5,29 +5,6 @@ defmodule ArtemisWeb.TeamView do
 
   alias Artemis.Permission
 
-  # Bulk Actions
-
-  def available_bulk_actions() do
-    [
-      %BulkAction{
-        action: &Artemis.DeleteTeam.call_many(&1, &2),
-        authorize: &has?(&1, "teams:delete"),
-        extra_fields: &render_extra_fields_delete_warning(&1),
-        key: "delete",
-        label: "Delete Teams"
-      }
-    ]
-  end
-
-  def allowed_bulk_actions(user) do
-    Enum.reduce(available_bulk_actions(), [], fn entry, acc ->
-      case entry.authorize.(user) do
-        true -> [entry | acc]
-        false -> acc
-      end
-    end)
-  end
-
   # Data Table
 
   def data_table_available_columns() do
@@ -60,7 +37,7 @@ defmodule ArtemisWeb.TeamView do
         end,
         value: fn _conn, row -> row.name end,
         value_html: fn conn, row ->
-          case has?(conn, "teams:show") do
+          case has?(conn, "teams:show") && in_team?(conn, row.id) do
             true -> link(row.name, to: Routes.team_path(conn, :show, row))
             false -> row.name
           end
@@ -70,7 +47,7 @@ defmodule ArtemisWeb.TeamView do
         label: fn _conn -> "Total Users" end,
         value: fn _conn, row -> row.user_count end,
         value_html: fn conn, row ->
-          case has?(conn, "teams:show") do
+          case has?(conn, "teams:show") && in_team?(conn, row.id) do
             true -> link(row.user_count, to: Routes.team_path(conn, :show, row) <> "#link-users")
             false -> row.user_count
           end
@@ -82,11 +59,11 @@ defmodule ArtemisWeb.TeamView do
   defp data_table_actions_column_html(conn, row) do
     allowed_actions = [
       [
-        verify: has?(conn, "teams:show"),
+        verify: has?(conn, "teams:show") && in_team?(conn, row.id),
         link: link("Show", to: Routes.team_path(conn, :show, row))
       ],
       [
-        verify: has?(conn, "teams:update"),
+        verify: has?(conn, "teams:update") && team_admin?(conn, row.id),
         link: link("Edit", to: Routes.team_path(conn, :edit, row))
       ]
     ]

@@ -48,6 +48,7 @@ defmodule Artemis.ListTeams do
 
   defp filter_query(query, _params, _user), do: query
 
+  defp filter(query, "id", value), do: where(query, [r], r.id in ^split(value))
   defp filter(query, "name", value), do: where(query, [r], r.name in ^split(value))
 
   defp filter(query, "user_id", value) do

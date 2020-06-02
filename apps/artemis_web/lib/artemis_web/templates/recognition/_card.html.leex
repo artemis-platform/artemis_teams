@@ -1,0 +1,68 @@
+<section class="recognition card recognition-card">
+  <aside class="centered">
+    <a href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
+      <i class="icon trophy primary"></i>
+    </a>
+  </aside>
+
+  <content>
+    <div class="heading">
+      <div>
+        <span class="created-by"><%= render_created_by(@socket, @recognition, @user) %></span>
+        recognized
+        <span class="users"><%= render_user_sentence(@socket, @recognition, @user) %></span>
+      </div>
+
+      <div class="relative-date" data-tooltip="<%= render_date_time(@recognition.inserted_at) %>" data-position="left center">
+        <%= render_relative_time(@recognition.inserted_at) %>
+      </div>
+    </div>
+
+    <div class="body"><%= raw @recognition.description_html %></div>
+
+    <footer>
+      <div class="actions">
+        <%=
+          live_component(
+            @socket,
+            ArtemisWeb.ReactionsComponent,
+            id: @recognition.id,
+            reactions: @reactions,
+            resource_id: @recognition.id,
+            resource_type: "Recognition",
+            user: @user
+          )
+        %>
+
+        <a class="comments" href="<%= Routes.recognition_comment_path(@socket, :index_comment, @recognition) %>">
+          <i class="icon comment outline"></i>
+          <%= if @recognition_comments_status == :loading do %>
+            Comments
+          <% end %>
+
+          <%= if @recognition_comments_status == :loaded do %>
+            <%=
+              ngettext(
+                "%{count} Comment",
+                "%{count} Comments",
+                @recognition_comments_count,
+                count: @recognition_comments_count
+              )
+            %>
+          <% end %>
+        </a>
+      </div>
+
+      <div class="links">
+        <%= if can_update_recognition?(@user, @recognition) do %>
+          <a class="edit" href="<%= Routes.recognition_path(@socket, :edit, @recognition) %>">
+            <i class="icon pencil alternate"></i>edit
+          </a>
+        <% end %>
+        <a class="permalink" href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
+          <i class="icon linkify"></i>link
+        </a>
+      </div>
+    </footer>
+  </content>
+</section>

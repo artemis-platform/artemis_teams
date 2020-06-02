@@ -18,33 +18,22 @@
 
       <%= raw event_question.description_html %>
 
-      <%
-        event_answers_for_event_question =
-          @event_answers
-          |> Enum.filter(&(get_changeset_value(&1, :event_question_id) == event_question.id))
-          |> Enum.with_index()
-      %>
+      <%= Enum.map get_event_answers_for_event_question(@event_answers, event_question), fn {event_answer, index} -> %>
 
-      <%= if length(event_answers_for_event_question) > 0 do %>
+        <div class="<%= get_event_answer_class(event_answer) %>">
+          <%= if !event_answer.valid? && event_answer.action do %>
+            <div class="error">
+              <%= render_notification :error, body: "Error: Invalid Event Answer", header?: false, icon?: false %>
+            </div>
+          <% end %>
 
-        <%= Enum.map event_answers_for_event_question, fn {event_answer, index} -> %>
+          <%= if get_changeset_value(event_answer, :delete) do %>
+            <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][delete]" value="true">
+          <% end %>
 
-          <% deleted_class = if get_changeset_value(event_answer, :delete), do: "marked-for-deletion" %>
-
-          <div class="event-answer <%= deleted_class %>">
-
-            <%= if !event_answer.valid? && event_answer.action do %>
-              <div class="error">
-                <%= render_notification :error, body: "Error: Invalid Event Answer", header?: false, icon?: false %>
-              </div>
-            <% end %>
-
+          <div phx-update="ignore">
             <%= if get_changeset_value(event_answer, :id) do %>
               <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][id]" value="<%= get_changeset_value(event_answer, :id) %>">
-            <% end %>
-
-            <%= if get_changeset_value(event_answer, :delete) do %>
-              <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][delete]" value="true">
             <% end %>
 
             <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][changeset_id]" value="<%= get_changeset_value(event_answer, :changeset_id) %>">
@@ -54,20 +43,14 @@
             <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][user_id]" value="<%= get_changeset_value(event_answer, :user_id) %>">
 
             <div class="inline-fields">
-              <div class="field project-field" phx-update="ignore">
+              <div class="field project-field">
                 <select
                   class="enhanced clearable"
                   name="event_instance[<%= event_question.id %>][<%= index %>][project_id]"
-                  type="text"
                   placeholder="Project"
                 >
                   <option value=""></option>
-                  <%=
-                    current_project_id = get_changeset_value(event_answer, :project_id)
-                    project_id_values = Enum.map(@projects, &[key: &1.title, value: &1.id])
-
-                    deprecated_options_for_select(project_id_values, current_project_id)
-                  %>
+                  <%= get_options_for_project_field(@projects, event_answer) %>
                 </select>
               </div>
 
@@ -103,8 +86,8 @@
               <% end %>
             </div>
           </div>
+        </div>
 
-        <% end %>
       <% end %>
 
       <%= if event_question.multiple do %>

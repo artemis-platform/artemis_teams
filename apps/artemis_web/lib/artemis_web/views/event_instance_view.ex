@@ -81,9 +81,12 @@ defmodule ArtemisWeb.EventInstanceView do
   Render event instance form
   """
   def render_event_instance_form(conn, assigns \\ []) do
-    session = Map.delete(assigns, :conn)
+    session =
+      assigns
+      |> Map.delete(:conn)
+      |> Artemis.Helpers.keys_to_strings()
 
-    Phoenix.LiveView.live_render(
+    live_render(
       conn,
       ArtemisWeb.EventInstanceFormLive,
       session: session
@@ -150,5 +153,34 @@ defmodule ArtemisWeb.EventInstanceView do
 
   def render_event_instance_date(date) do
     Timex.format!(date, "{WDfull}, {Mfull} {D}, {YYYY}")
+  end
+
+  @doc """
+  Filter event answers for event question
+  """
+  def get_event_answers_for_event_question(event_answers, event_question) do
+    event_answers
+    |> Enum.filter(&(get_changeset_value(&1, :event_question_id) == event_question.id))
+    |> Enum.with_index()
+  end
+
+  @doc """
+  Return CSS class for event answer
+  """
+  def get_event_answer_class(event_answer) do
+    case get_changeset_value(event_answer, :delete) do
+      true -> "event-answer marked-for-deletion"
+      _ -> "event-answer"
+    end
+  end
+
+  @doc """
+  Return select options for project field
+  """
+  def get_options_for_project_field(projects, event_answer) do
+    current_project_id = get_changeset_value(event_answer, :project_id)
+    project_id_values = Enum.map(projects, &[key: &1.title, value: &1.id])
+
+    deprecated_options_for_select(project_id_values, current_project_id)
   end
 end

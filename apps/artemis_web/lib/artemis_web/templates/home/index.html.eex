@@ -14,21 +14,32 @@
 
   <article id="home-page" class="page">
     <content>
+      <%= if has?(@conn, "recognitions:list") do %>
+        <section>
+          <%= h2 "Recognitions" %>
+          <%= ArtemisWeb.RecognitionView.live_render_recognition_totals @conn %>
+        </section>
+
+        <%= ArtemisWeb.RecognitionView.live_render_recognition_cards(@conn, params: @conn.query_params) %>
+      <% end %>
+    </content>
+
+    <aside class="right">
       <section class="related-resources">
-        <%= h3 "My Events" %>
+        <%= h4 "My Events" %>
         <%=
           render_data_table(
             @conn,
             @event_templates,
             allowed_columns: ArtemisWeb.EventView.data_table_allowed_columns(),
-            default_columns: ["event_instances", "team", "actions_current_event_instance"],
+            default_columns: ["event_instances", "actions_update_current_event_instance"],
             headers: false
           )
         %>
       </section>
 
       <section class="related-resources">
-        <%= h3 "My Teams" %>
+        <%= h4 "My Teams" %>
         <%=
           render_data_table(
             @conn,
@@ -39,6 +50,6 @@
           )
         %>
       </section>
-    </content>
+    </aside>
   </article>
 </div>

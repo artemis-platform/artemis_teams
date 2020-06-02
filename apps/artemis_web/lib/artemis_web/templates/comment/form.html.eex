@@ -11,6 +11,7 @@
 
   <div>
     <%= hidden_input f, :topic, value: "General" %>
+
     <%= if @changeset.action do %>
       <%= render_notification :error, body: "Error Submitting Form" %>
     <% end %>

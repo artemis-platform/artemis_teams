@@ -1,0 +1,18 @@
+<div id="content-header">
+  <header>
+    <h1>New Recognition</h1>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <section>
+    <%= live_render_recognition_form @conn %>
+  </section>
+</div>

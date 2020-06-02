@@ -1,6 +1,6 @@
 <div id="content-header">
   <header>
-    <h1>New Event</h1>
+    <h1>New Team Event</h1>
   </header>
 </div>
 
@@ -12,7 +12,23 @@
 <div id="content">
   <%= render_flash_notifications @conn %>
 
-  <section>
-    <%= render "form.html", Map.put(assigns, :action, Routes.event_path(@conn, :create)) %>
-  </section>
+  <%= if length(@team_options) == 0 do %>
+
+    <div class="ui placeholder segment tiny">
+      <div class="ui icon header">
+        <i class="users icon"></i>
+        Create a Team First
+      </div>
+      <%= if has?(@conn, "teams:create") do %>
+        <a class="ui basic button blue" href="<%= Routes.team_path(@conn, :new) %>">New Team</a>
+      <% end %>
+    </div>
+
+  <% else %>
+
+    <section>
+      <%= render "form.html", Map.put(assigns, :action, Routes.event_path(@conn, :create)) %>
+    </section>
+
+  <% end %>
 </div>

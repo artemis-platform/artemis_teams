@@ -57,6 +57,14 @@ defmodule Artemis.ListEventAnswers do
     |> where([..., event_question], event_question.event_template_id in ^split(value))
   end
 
+  defp filter(query, "team_member_id", value) do
+    query
+    |> join(:left, [event_answer], event_question in assoc(event_answer, :event_question))
+    |> join(:left, [..., event_question], event_template in assoc(event_question, :event_template))
+    |> join(:left, [..., event_template], user_teams in assoc(event_template, :user_teams))
+    |> where([..., user_teams], user_teams.user_id in ^split(value))
+  end
+
   defp filter(query, "user_id", value), do: where(query, [i], i.user_id in ^split(value))
 
   defp get_records(query, %{"paginate" => true} = params), do: Repo.paginate(query, pagination_params(params))

@@ -93,6 +93,8 @@ defmodule ArtemisWeb.TeamControllerTest do
   defp create_record(_) do
     record = insert(:team)
 
+    insert(:user_team, type: "admin", team: record, user: Mock.system_user())
+
     {:ok, record: record}
   end
 end

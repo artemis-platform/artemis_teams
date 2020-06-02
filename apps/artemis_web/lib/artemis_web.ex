@@ -22,7 +22,7 @@ defmodule ArtemisWeb do
       use Phoenix.Controller, namespace: ArtemisWeb
 
       import Plug.Conn
-      import Phoenix.LiveView.Controller, only: [live_render: 3]
+      import Phoenix.LiveView.Controller
       import ArtemisWeb.Gettext
       import ArtemisWeb.Guardian.Helpers
       import ArtemisWeb.Helpers.Controller
@@ -72,6 +72,22 @@ defmodule ArtemisWeb do
         end
       end
 
+      # User Permissions
+
+      defp authorize_in_team(conn, team_id, render_controller) do
+        case in_team?(conn, team_id) do
+          true -> render_controller.()
+          false -> render_forbidden(conn)
+        end
+      end
+
+      defp authorize_team_admin(conn, team_id, render_controller) do
+        case team_admin?(conn, team_id) do
+          true -> render_controller.()
+          false -> render_forbidden(conn)
+        end
+      end
+
       # Features
 
       defp feature_active?(conn, feature, render_controller) do
@@ -116,7 +132,7 @@ defmodule ArtemisWeb do
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 1, get_flash: 2, view_module: 1]
-      import Phoenix.LiveView, only: [live_render: 2, live_render: 3, live_link: 1, live_link: 2]
+      import Phoenix.LiveView.Helpers
 
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
@@ -128,12 +144,14 @@ defmodule ArtemisWeb do
       import ArtemisWeb.ViewHelper.BulkActions
       import ArtemisWeb.ViewHelper.Cache
       import ArtemisWeb.ViewHelper.Conditionals
+      import ArtemisWeb.ViewHelper.Emoji
       import ArtemisWeb.ViewHelper.Errors
       import ArtemisWeb.ViewHelper.Events
       import ArtemisWeb.ViewHelper.Export
       import ArtemisWeb.ViewHelper.Filter
       import ArtemisWeb.ViewHelper.Form
       import ArtemisWeb.ViewHelper.HTML
+      import ArtemisWeb.ViewHelper.Loading
       import ArtemisWeb.ViewHelper.Navigation
       import ArtemisWeb.ViewHelper.Notifications
       import ArtemisWeb.ViewHelper.Numbers

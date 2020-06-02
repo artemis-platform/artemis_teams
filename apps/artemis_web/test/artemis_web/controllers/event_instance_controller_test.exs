@@ -8,20 +8,22 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
     event_template = insert(:event_template)
     event_question = insert(:event_question, event_template: event_template)
 
+    insert(:user_team, type: "admin", team: event_template.team, user: Mock.system_user())
+
     {:ok, conn: sign_in(conn), date: date, event_question: event_question, event_template: event_template}
   end
 
   describe "index" do
     test "lists all event_instances", %{conn: conn, event_template: event_template} do
       conn = get(conn, Routes.event_instance_path(conn, :index, event_template))
-      assert html_response(conn, 200) =~ "Event Instance"
+      assert html_response(conn, 200) =~ "Instances"
     end
   end
 
   describe "new event instance" do
     test "renders edit form", %{conn: conn, date: date, event_template: event_template} do
       conn = get(conn, Routes.event_instance_path(conn, :edit, event_template, date))
-      assert html_response(conn, 200) =~ "Event Instance"
+      assert html_response(conn, 200) =~ "Save"
     end
   end
 
@@ -58,8 +60,7 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
     } do
       user = Mock.system_user()
 
-      event_answer_params =
-        params_for(:event_answer, date: date, event_question: event_question, user: user, value: nil)
+      event_answer_params = params_for(:event_answer, date: date, event_question: event_question, user: user, value: "")
 
       invalid_params = %{
         event_template.id => %{
@@ -68,7 +69,7 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
       }
 
       conn = put(conn, Routes.event_instance_path(conn, :update, event_template, date), event_instance: invalid_params)
-      assert html_response(conn, 200) =~ "Edit Event Instance"
+      assert html_response(conn, 200) =~ "Save"
     end
   end
 
@@ -92,7 +93,7 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
     } do
       conn = get(conn, Routes.event_instance_path(conn, :edit, event_template, date))
 
-      assert html_response(conn, 200) =~ "Edit Event Instance"
+      assert html_response(conn, 200) =~ "Save"
     end
   end
 
@@ -145,7 +146,7 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
       }
 
       conn = put(conn, Routes.event_instance_path(conn, :update, event_template, date), event_instance: invalid_params)
-      assert html_response(conn, 200) =~ "Edit Event Instance"
+      assert html_response(conn, 200) =~ "Error"
     end
   end
 

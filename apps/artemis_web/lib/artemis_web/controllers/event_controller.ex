@@ -8,6 +8,7 @@ defmodule ArtemisWeb.EventController do
   alias Artemis.ListEventIntegrations
   alias Artemis.ListEventQuestions
   alias Artemis.ListEventTemplates
+  alias Artemis.ListTeams
   alias Artemis.UpdateEventTemplate
 
   @preload [:event_questions, :team]
@@ -15,13 +16,7 @@ defmodule ArtemisWeb.EventController do
   def index(conn, params) do
     authorize(conn, "event-templates:list", fn ->
       user = current_user(conn)
-
-      params =
-        params
-        |> Map.put(:paginate, true)
-        |> Map.put(:preload, @preload)
-
-      event_templates = ListEventTemplates.call(params, user)
+      event_templates = get_related_event_templates(params, user)
 
       assigns = [
         event_templates: event_templates
@@ -33,16 +28,26 @@ defmodule ArtemisWeb.EventController do
 
   def new(conn, params) do
     authorize(conn, "event-templates:create", fn ->
+      user = current_user(conn)
       event_template = %EventTemplate{}
       changeset = EventTemplate.changeset(event_template, params)
+      team_options = get_related_team_options(user)
 
-      render(conn, "new.html", changeset: changeset, event_template: event_template)
+      assigns = [
+        changeset: changeset,
+        event_template: event_template,
+        team_options: team_options
+      ]
+
+      render(conn, "new.html", assigns)
     end)
   end
 
   def create(conn, %{"event_template" => params}) do
     authorize(conn, "event-templates:create", fn ->
-      case CreateEventTemplate.call(params, current_user(conn)) do
+      user = current_user(conn)
+
+      case CreateEventTemplate.call(params, user) do
         {:ok, event_template} ->
           conn
           |> put_flash(:info, "EventTemplate created successfully.")
@@ -50,8 +55,15 @@ defmodule ArtemisWeb.EventController do
 
         {:error, %Ecto.Changeset{} = changeset} ->
           event_template = %EventTemplate{}
+          team_options = get_related_team_options(user)
 
-          render(conn, "new.html", changeset: changeset, event_template: event_template)
+          assigns = [
+            changeset: changeset,
+            event_template: event_template,
+            team_options: team_options
+          ]
+
+          render(conn, "new.html", assigns)
       end
     end)
   end
@@ -73,42 +85,104 @@ defmodule ArtemisWeb.EventController do
         event_template: event_template
       ]
 
-      render(conn, "show.html", assigns)
+      authorize_in_team(conn, event_template.team_id, fn ->
+        render(conn, "show.html", assigns)
+      end)
     end)
   end
 
   def edit(conn, %{"id" => id}) do
     authorize(conn, "event-templates:update", fn ->
-      event_template = GetEventTemplate.call(id, current_user(conn), preload: @preload)
+      user = current_user(conn)
+      event_template = GetEventTemplate.call(id, user, preload: @preload)
       changeset = EventTemplate.changeset(event_template)
+      team_options = get_related_team_options(user)
 
-      render(conn, "edit.html", changeset: changeset, event_template: event_template)
+      assigns = [
+        changeset: changeset,
+        event_template: event_template,
+        team_options: team_options
+      ]
+
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        render(conn, "edit.html", assigns)
+      end)
     end)
   end
 
   def update(conn, %{"id" => id, "event_template" => params}) do
     authorize(conn, "event-templates:update", fn ->
-      case UpdateEventTemplate.call(id, params, current_user(conn)) do
-        {:ok, event_template} ->
-          conn
-          |> put_flash(:info, "EventTemplate updated successfully.")
-          |> redirect(to: Routes.event_path(conn, :show, event_template))
+      user = current_user(conn)
+      event_template = GetEventTemplate.call(id, user, preload: @preload)
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          event_template = GetEventTemplate.call(id, current_user(conn), preload: @preload)
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        case UpdateEventTemplate.call(id, params, user) do
+          {:ok, event_template} ->
+            conn
+            |> put_flash(:info, "EventTemplate updated successfully.")
+            |> redirect(to: Routes.event_path(conn, :show, event_template))
 
-          render(conn, "edit.html", changeset: changeset, event_template: event_template)
-      end
+          {:error, %Ecto.Changeset{} = changeset} ->
+            team_options = get_related_team_options(user)
+
+            assigns = [
+              changeset: changeset,
+              event_template: event_template,
+              team_options: team_options
+            ]
+
+            render(conn, "edit.html", assigns)
+        end
+      end)
     end)
   end
 
   def delete(conn, %{"id" => id} = params) do
     authorize(conn, "event-templates:delete", fn ->
-      {:ok, _event_template} = DeleteEventTemplate.call(id, params, current_user(conn))
+      user = current_user(conn)
+      event_template = GetEventTemplate.call(id, user)
 
-      conn
-      |> put_flash(:info, "EventTemplate deleted successfully.")
-      |> redirect(to: Routes.event_path(conn, :index))
+      authorize_team_admin(conn, event_template.team_id, fn ->
+        {:ok, _event_template} = DeleteEventTemplate.call(id, params, user)
+
+        conn
+        |> put_flash(:info, "Event Template deleted successfully.")
+        |> redirect(to: Routes.event_path(conn, :index))
+      end)
     end)
+  end
+
+  # Helpers
+
+  defp get_related_event_templates(params, user) do
+    required_params = %{
+      filters: %{
+        user_id: user.id
+      },
+      paginate: true,
+      preload: @preload
+    }
+
+    event_template_params = Map.merge(params, Artemis.Helpers.keys_to_strings(required_params))
+
+    ListEventTemplates.call(event_template_params, user)
+  end
+
+  defp get_related_team_options(user) do
+    team_ids =
+      user
+      |> Map.get(:user_teams)
+      |> Enum.filter(&(&1.type == "admin"))
+      |> Enum.map(& &1.team_id)
+
+    params = %{
+      filters: %{
+        id: team_ids
+      }
+    }
+
+    params
+    |> ListTeams.call(user)
+    |> Enum.map(&[key: &1.name, value: &1.id])
   end
 end

@@ -2,7 +2,6 @@ defmodule Artemis.ListEventReports do
   use Artemis.Context
   use Artemis.ContextReport
 
-  # import Artemis.Ecto.DateMacros
   import Artemis.Helpers.Filter
   import Artemis.Helpers.Search
   import Ecto.Query

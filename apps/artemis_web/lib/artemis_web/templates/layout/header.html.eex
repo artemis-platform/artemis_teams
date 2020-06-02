@@ -9,10 +9,17 @@
       <% nav_items = primary_nav_items_for_current_user(@user) %>
       <ul>
         <li>
-          <a href="/">
+          <a title="Home" href="/">
             Home
           </a>
         </li>
+        <%= if render_primary_nav_section?(nav_items, ["Recognitions"]) do %>
+          <li>
+            <a title="Recognitions" href="<%= Routes.recognition_path(@conn, :index) %>">
+              Recognitions
+            </a>
+          </li>
+        <% end %>
         <%= if render_primary_nav_section?(nav_items, ["Teams"]) do %>
           <li>
             <a href="<%= Routes.team_path(@conn, :index) %>">
@@ -34,18 +41,11 @@
             </a>
           </li>
         <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Documentation"]) do %>
-          <li>
-            <a href="<%= Routes.wiki_page_path(@conn, :index) %>">
-              Docs
-            </a>
-          </li>
-        <% end %>
         <%= if render_primary_nav_section?(nav_items, ["Users", "Roles", "Permissions", "Features", "Event Logs", "HTTP Request Logs", "Sessions", "Tags", "Application"]) do %>
           <li class="with-dropdown">
             <a href="<%= Routes.user_path(@conn, :index) %>">
               Admin
-              <i class="angle down icon"></i>
+              <i class="angle down icon dropdown"></i>
             </a>
             <div class="dropdown">
               <content>
@@ -93,13 +93,8 @@
             </li>
           <% end %>
           <li>
-            <a title="Alerts" href="#">
-              <i class="bullhorn icon"></i>
-            </a>
-          </li>
-          <li>
-            <a title="Help" href="<%= Routes.wiki_page_path(@conn, :index, %{filters: %{tags: ["help"]}}) %>">
-              <i class="help icon"></i>
+            <a title="Docs" href="<%= Routes.wiki_page_path(@conn, :index) %>">
+              <i class="book icon"></i>
             </a>
           </li>
         </ul>
