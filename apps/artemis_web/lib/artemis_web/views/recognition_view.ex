@@ -124,6 +124,21 @@ defmodule ArtemisWeb.RecognitionView do
   end
 
   @doc """
+  Render recognition totals with Phoenix LiveView
+  """
+  def live_render_recognition_totals(conn, assigns \\ []) do
+    id = "recognition-totals-#{Artemis.Helpers.UUID.call()}"
+
+    session =
+      assigns
+      |> Enum.into(%{})
+      |> Map.put_new(:user, current_user(conn))
+      |> Artemis.Helpers.keys_to_strings()
+
+    live_render(conn, ArtemisWeb.RecognitionTotalsLive, id: id, session: session)
+  end
+
+  @doc """
   Render recognition form with Phoenix LiveView
   """
   def live_render_recognition_form(conn, assigns \\ []) do

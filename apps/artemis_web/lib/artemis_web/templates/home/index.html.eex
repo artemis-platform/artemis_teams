@@ -17,40 +17,7 @@
       <%= if has?(@conn, "recognitions:list") do %>
         <section>
           <%= h2 "Recognitions" %>
-          <div class="recognitions-summary">
-            <a href="<%= Routes.recognition_path(@conn, :index) %>">
-              <div class="total">
-                <%= @recognition_totals.all %>
-              </div>
-              <div class="label">
-                All Time
-              </div>
-            </a>
-
-            <a href="<%= Routes.recognition_path(@conn, :index, %{filters: %{user_id: [current_user(@conn).id]}}) %>">
-              <div class="total">
-                <%= @recognition_totals.to_user %>
-              </div>
-              <div class="label">
-                To Me
-              </div>
-            </a>
-
-            <a href="<%= Routes.recognition_path(@conn, :index, %{filters: %{created_by_id: [current_user(@conn).id]}}) %>">
-              <div class="total">
-                <%= @recognition_totals.from_user %>
-              </div>
-              <div class="label">
-                From Me
-              </div>
-            </a>
-
-            <div class="link">
-              <a class="ui button basic blue" href="<%= Routes.recognition_path(@conn, :new) %>">
-                New Recognition
-              </a>
-            </div>
-          </div>
+          <%= ArtemisWeb.RecognitionView.live_render_recognition_totals @conn %>
         </section>
 
         <%= ArtemisWeb.RecognitionView.live_render_recognition_cards(@conn, params: @conn.query_params) %>
