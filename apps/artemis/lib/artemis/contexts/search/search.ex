@@ -36,29 +36,59 @@ defmodule Artemis.Search do
 
   def get_searchable_resources do
     searchable_resources = %{
+      "teams" => [
+        enabled: true,
+        function: fn params, user ->
+          params
+          |> Artemis.Helpers.keys_to_strings()
+          |> Artemis.Helpers.deep_merge(%{"filters" => %{"user_id" => user.id}})
+          |> Artemis.ListTeams.call(user)
+        end,
+        permissions: "teams:list"
+      ],
       "event_answers" => [
         enabled: true,
-        function: &Artemis.ListEventAnswers.call/2,
+        function: fn params, user ->
+          params
+          |> Artemis.Helpers.keys_to_strings()
+          |> Artemis.Helpers.deep_merge(%{"filters" => %{"team_member_id" => user.id}})
+          |> Artemis.ListEventAnswers.call(user)
+        end,
         permissions: "event-answers:list"
       ],
       "event_questions" => [
         enabled: true,
-        function: &Artemis.ListEventQuestions.call/2,
+        function: fn params, user ->
+          params
+          |> Artemis.Helpers.keys_to_strings()
+          |> Artemis.Helpers.deep_merge(%{"filters" => %{"user_id" => user.id}})
+          |> Artemis.ListEventQuestions.call(user)
+        end,
         permissions: "event-questions:list"
       ],
       "event_templates" => [
         enabled: true,
-        function: &Artemis.ListEventTemplates.call/2,
+        function: fn params, user ->
+          params
+          |> Artemis.Helpers.keys_to_strings()
+          |> Artemis.Helpers.deep_merge(%{"filters" => %{"user_id" => user.id}})
+          |> Artemis.ListEventTemplates.call(user)
+        end,
         permissions: "event-templates:list"
       ],
       "event_integrations" => [
-        enabled: true,
+        enabled: false,
         function: &Artemis.ListEventIntegrations.call/2,
         permissions: "event-integrations:list"
       ],
       "projects" => [
         enabled: true,
-        function: &Artemis.ListProjects.call/2,
+        function: fn params, user ->
+          params
+          |> Artemis.Helpers.keys_to_strings()
+          |> Artemis.Helpers.deep_merge(%{"filters" => %{"user_id" => user.id}})
+          |> Artemis.ListProjects.call(user)
+        end,
         permissions: "projects:list"
       ],
       "recognitions" => [
@@ -80,11 +110,6 @@ defmodule Artemis.Search do
         enabled: true,
         function: &Artemis.ListRoles.call/2,
         permissions: "roles:list"
-      ],
-      "teams" => [
-        enabled: true,
-        function: &Artemis.ListTeams.call/2,
-        permissions: "teams:list"
       ],
       "users" => [
         enabled: true,

@@ -163,7 +163,6 @@ defmodule ArtemisWeb.Router do
 
       # Teams
 
-      post "/teams/bulk-actions", TeamController, :index_bulk_actions
       get "/teams/event-logs", TeamController, :index_event_log_list
       get "/teams/event-logs/:id", TeamController, :index_event_log_details
 

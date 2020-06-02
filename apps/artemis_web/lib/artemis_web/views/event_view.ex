@@ -69,7 +69,7 @@ defmodule ArtemisWeb.EventView do
         end,
         value: fn _conn, row -> row.title end,
         value_html: fn conn, row ->
-          case has?(conn, "event-answers:list") do
+          case has?(conn, "event-answers:list") && in_team?(conn, row.team) do
             true -> link(row.title, to: Routes.event_instance_path(conn, :index, row))
             false -> row.title
           end
@@ -79,7 +79,7 @@ defmodule ArtemisWeb.EventView do
         label: fn _conn -> "Team" end,
         value: fn _conn, row -> row.team.name end,
         value_html: fn conn, row ->
-          case has?(conn, "teams:show") do
+          case has?(conn, "teams:show") && in_team?(conn, row.team) do
             true -> link(row.team.name, to: Routes.team_path(conn, :show, row.team))
             false -> row.team.name
           end
@@ -92,7 +92,7 @@ defmodule ArtemisWeb.EventView do
         end,
         value: fn _conn, row -> row.title end,
         value_html: fn conn, row ->
-          case has?(conn, "event-templates:show") do
+          case has?(conn, "event-templates:show") && in_team?(conn, row.team) do
             true -> link(row.title, to: Routes.event_path(conn, :show, row))
             false -> row.title
           end
@@ -104,11 +104,11 @@ defmodule ArtemisWeb.EventView do
   defp data_table_actions_column_html(conn, row) do
     allowed_actions = [
       [
-        verify: has?(conn, "event-templates:show"),
+        verify: has?(conn, "event-templates:show") && in_team?(conn, row.team),
         link: link("Show", to: Routes.event_path(conn, :show, row))
       ],
       [
-        verify: has?(conn, "event-templates:update"),
+        verify: has?(conn, "event-templates:update") && team_admin?(conn, row.team),
         link: link("Edit", to: Routes.event_path(conn, :edit, row))
       ]
     ]

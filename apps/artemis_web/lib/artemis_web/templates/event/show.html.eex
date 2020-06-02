@@ -20,45 +20,49 @@
     %>
   </section>
 
-  <section class="related-resources">
-    <%= h3 "Active Event Questions" %>
+  <%= if team_admin?(@conn, @event_template.team_id) do %>
+    <section class="related-resources">
+      <%= h3 "Active Event Questions" %>
 
-    <%=
-      render_data_table(
-        @conn,
-        @event_questions,
-        allowed_columns: ArtemisWeb.EventQuestionView.data_table_allowed_columns(),
-        default_columns: ["title", "type", "required", "multiple", "actions"],
-        headers: false
-      )
-    %>
+      <%=
+        render_data_table(
+          @conn,
+          @event_questions,
+          allowed_columns: ArtemisWeb.EventQuestionView.data_table_allowed_columns(),
+          default_columns: ["title", "type", "required", "multiple", "actions"],
+          headers: false
+        )
+      %>
 
-    <%= if has?(@conn, "event-questions:create") do %>
-      <%= action "New Question", to: Routes.event_question_path(@conn, :new, @event_template), color: "blue" %>
-    <% end %>
-    <%= if has?(@conn, "event-questions:show") do %>
-      <%= action "View All Event Questions", to: Routes.event_question_path(@conn, :index, @event_template) %>
-    <% end %>
-  </section>
+      <%= if has?(@conn, "event-questions:create") && team_admin?(@conn, @event_template.team_id) do %>
+        <%= action "New Question", to: Routes.event_question_path(@conn, :new, @event_template), color: "blue" %>
+      <% end %>
+      <%= if has?(@conn, "event-questions:show") do %>
+        <%= action "View All Event Questions", to: Routes.event_question_path(@conn, :index, @event_template) %>
+      <% end %>
+    </section>
+  <% end %>
 
-  <section class="related-resources">
-    <%= h3 "Active Event Integrations" %>
+  <%= if team_admin?(@conn, @event_template.team_id) do %>
+    <section class="related-resources">
+      <%= h3 "Active Event Integrations" %>
 
-    <%=
-      render_data_table(
-        @conn,
-        @event_integrations,
-        allowed_columns: ArtemisWeb.EventIntegrationView.data_table_allowed_columns(),
-        default_columns: ["name", "actions"],
-        headers: false
-      )
-    %>
+      <%=
+        render_data_table(
+          @conn,
+          @event_integrations,
+          allowed_columns: ArtemisWeb.EventIntegrationView.data_table_allowed_columns(),
+          default_columns: ["name", "actions"],
+          headers: false
+        )
+      %>
 
-    <%= if has?(@conn, "event-integrations:create") do %>
-      <%= action "New Integration", to: Routes.event_integration_path(@conn, :new, @event_template), color: "blue" %>
-    <% end %>
-    <%= if has?(@conn, "event-integrations:show") do %>
-      <%= action "View All Event Integrations", to: Routes.event_integration_path(@conn, :index, @event_template) %>
-    <% end %>
-  </section>
+      <%= if has?(@conn, "event-integrations:create") && team_admin?(@conn, @event_template.team_id) do %>
+        <%= action "New Integration", to: Routes.event_integration_path(@conn, :new, @event_template), color: "blue" %>
+      <% end %>
+      <%= if has?(@conn, "event-integrations:show") do %>
+        <%= action "View All Event Integrations", to: Routes.event_integration_path(@conn, :index, @event_template) %>
+      <% end %>
+    </section>
+  <% end %>
 </div>

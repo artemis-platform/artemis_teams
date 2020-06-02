@@ -1,11 +1,6 @@
 defmodule ArtemisWeb.TeamController do
   use ArtemisWeb, :controller
 
-  use ArtemisWeb.Controller.BulkActions,
-    bulk_actions: ArtemisWeb.TeamView.available_bulk_actions(),
-    path: &Routes.team_path(&1, :index),
-    permission: "teams:list"
-
   use ArtemisWeb.Controller.EventLogsIndex,
     path: &Routes.team_path/3,
     permission: "teams:list",
@@ -36,10 +31,8 @@ defmodule ArtemisWeb.TeamController do
       user = current_user(conn)
       params = Map.put(params, :paginate, true)
       teams = ListTeams.call(params, user)
-      allowed_bulk_actions = ArtemisWeb.TeamView.allowed_bulk_actions(user)
 
       assigns = [
-        allowed_bulk_actions: allowed_bulk_actions,
         teams: teams
       ]
 

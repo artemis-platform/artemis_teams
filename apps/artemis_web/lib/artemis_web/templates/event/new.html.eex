@@ -13,18 +13,22 @@
   <%= render_flash_notifications @conn %>
 
   <%= if length(@team_options) == 0 do %>
+
     <div class="ui placeholder segment tiny">
       <div class="ui icon header">
         <i class="users icon"></i>
-        No Teams Found
+        Create a Team First
       </div>
       <%= if has?(@conn, "teams:create") do %>
-        <a class="ui basic button blue" href="<%= Routes.team_path(@conn, :new) %>">Create Team</a>
+        <a class="ui basic button blue" href="<%= Routes.team_path(@conn, :new) %>">New Team</a>
       <% end %>
     </div>
-  <% end %>
 
-  <section>
-    <%= render "form.html", Map.put(assigns, :action, Routes.event_path(@conn, :create)) %>
-  </section>
+  <% else %>
+
+    <section>
+      <%= render "form.html", Map.put(assigns, :action, Routes.event_path(@conn, :create)) %>
+    </section>
+
+  <% end %>
 </div>
