@@ -15,13 +15,7 @@ defmodule ArtemisWeb.EventIntegrationController do
     authorize(conn, "event-integrations:list", fn ->
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
-
-      params =
-        params
-        |> Map.put(:paginate, true)
-        |> Map.put(:preload, @preload)
-
-      event_integrations = ListEventIntegrations.call(params, user)
+      event_integrations = get_event_integrations(params, user)
 
       assigns = [
         event_integrations: event_integrations,
@@ -156,5 +150,21 @@ defmodule ArtemisWeb.EventIntegrationController do
         |> redirect(to: Routes.event_path(conn, :show, event_template_id))
       end)
     end)
+  end
+
+  # Helpers
+
+  defp get_event_integrations(params, user) do
+    required_params = %{
+      filters: %{
+        event_template_id: Map.fetch!(params, "event_id")
+      },
+      paginate: true,
+      preload: @preload
+    }
+
+    event_integration_params = Map.merge(params, Artemis.Helpers.keys_to_strings(required_params))
+
+    ListEventIntegrations.call(event_integration_params, user)
   end
 end

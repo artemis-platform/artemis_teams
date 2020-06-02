@@ -15,13 +15,7 @@ defmodule ArtemisWeb.EventQuestionController do
     authorize(conn, "event-questions:list", fn ->
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
-
-      params =
-        params
-        |> Map.put(:paginate, true)
-        |> Map.put(:preload, @preload)
-
-      event_questions = ListEventQuestions.call(params, user)
+      event_questions = get_event_questions(params, user)
 
       assigns = [
         event_questions: event_questions,
@@ -158,5 +152,21 @@ defmodule ArtemisWeb.EventQuestionController do
         |> redirect(to: Routes.event_path(conn, :show, event_template_id))
       end)
     end)
+  end
+
+  # Helpers
+
+  defp get_event_questions(params, user) do
+    required_params = %{
+      filters: %{
+        event_template_id: Map.fetch!(params, "event_id")
+      },
+      paginate: true,
+      preload: @preload
+    }
+
+    event_question_params = Map.merge(params, Artemis.Helpers.keys_to_strings(required_params))
+
+    ListEventQuestions.call(event_question_params, user)
   end
 end
