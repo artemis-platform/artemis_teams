@@ -8,6 +8,8 @@ defmodule ArtemisWeb.EventInstanceControllerTest do
     event_template = insert(:event_template)
     event_question = insert(:event_question, event_template: event_template)
 
+    insert(:user_team, type: "admin", team: event_template.team, user: Mock.system_user())
+
     {:ok, conn: sign_in(conn), date: date, event_question: event_question, event_template: event_template}
   end
 

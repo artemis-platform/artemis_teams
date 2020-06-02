@@ -28,6 +28,8 @@ defmodule ArtemisWeb.ProjectControllerTest do
     test "redirects to show when data is valid", %{conn: conn} do
       team = insert(:team)
 
+      insert(:user_team, type: "admin", team: team, user: Mock.system_user())
+
       params = params_for(:project, team: team)
 
       conn = post(conn, Routes.project_path(conn, :create), project: params)
@@ -95,6 +97,8 @@ defmodule ArtemisWeb.ProjectControllerTest do
 
   defp create_record(_) do
     record = insert(:project)
+
+    insert(:user_team, type: "admin", team: record.team, user: Mock.system_user())
 
     {:ok, record: record}
   end

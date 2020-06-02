@@ -28,6 +28,8 @@ defmodule ArtemisWeb.EventControllerTest do
     test "redirects to show when data is valid", %{conn: conn} do
       team = insert(:team)
 
+      insert(:user_team, type: "admin", team: team, user: Mock.system_user())
+
       params = params_for(:event_template, team: team)
 
       conn = post(conn, Routes.event_path(conn, :create), event_template: params)
@@ -95,6 +97,8 @@ defmodule ArtemisWeb.EventControllerTest do
 
   defp create_record(_) do
     record = insert(:event_template)
+
+    insert(:user_team, type: "admin", team: record.team, user: Mock.system_user())
 
     {:ok, record: record}
   end

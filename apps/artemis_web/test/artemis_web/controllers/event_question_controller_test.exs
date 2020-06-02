@@ -9,6 +9,8 @@ defmodule ArtemisWeb.EventQuestionControllerTest do
   setup %{conn: conn} do
     event_template = insert(:event_template)
 
+    insert(:user_team, type: "admin", team: event_template.team, user: Mock.system_user())
+
     {:ok, conn: sign_in(conn), event_template: event_template}
   end
 

@@ -112,9 +112,10 @@ defmodule ArtemisWeb.EventController do
 
   def update(conn, %{"id" => id, "event_template" => params}) do
     authorize(conn, "event-templates:update", fn ->
-      authorize_team_admin(conn, params["team_id"], fn ->
-        user = current_user(conn)
+      user = current_user(conn)
+      event_template = GetEventTemplate.call(id, user, preload: @preload)
 
+      authorize_team_admin(conn, event_template.team_id, fn ->
         case UpdateEventTemplate.call(id, params, user) do
           {:ok, event_template} ->
             conn
@@ -122,7 +123,6 @@ defmodule ArtemisWeb.EventController do
             |> redirect(to: Routes.event_path(conn, :show, event_template))
 
           {:error, %Ecto.Changeset{} = changeset} ->
-            event_template = GetEventTemplate.call(id, user, preload: @preload)
             team_options = get_related_team_options(user)
 
             assigns = [

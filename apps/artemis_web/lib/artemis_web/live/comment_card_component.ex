@@ -1,8 +1,6 @@
 defmodule ArtemisWeb.CommentCardComponent do
   use Phoenix.LiveComponent
 
-  alias Artemis.CreateReaction
-
   # LiveView Callbacks
 
   @impl true

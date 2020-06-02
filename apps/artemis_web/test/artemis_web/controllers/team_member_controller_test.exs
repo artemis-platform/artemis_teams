@@ -3,11 +3,12 @@ defmodule ArtemisWeb.TeamMemberControllerTest do
 
   import Artemis.Factories
 
-  @update_attrs %{type: "admin"}
   @invalid_attrs %{type: "invalid"}
 
   setup %{conn: conn} do
     team = insert(:team)
+
+    insert(:user_team, type: "admin", team: team, user: Mock.system_user())
 
     {:ok, conn: sign_in(conn), team: team}
   end
@@ -42,7 +43,10 @@ defmodule ArtemisWeb.TeamMemberControllerTest do
 
     test "renders errors when data is invalid", %{conn: conn, team: team} do
       conn = post(conn, Routes.team_member_path(conn, :create, team), user_team: @invalid_attrs)
-      assert html_response(conn, 200) =~ "New Team Member"
+
+      assert conn.private.phoenix_flash == %{
+               "error" => "Error updating existing team member. A team must have at least one admin."
+             }
     end
   end
 
@@ -68,7 +72,13 @@ defmodule ArtemisWeb.TeamMemberControllerTest do
     setup [:create_record]
 
     test "redirects when data is valid", %{conn: conn, team: team, record: record} do
-      conn = put(conn, Routes.team_member_path(conn, :update, team, record), user_team: @update_attrs)
+      update_attrs = %{
+        user_id: Mock.system_user().id,
+        team_id: team.id,
+        type: "admin"
+      }
+
+      conn = put(conn, Routes.team_member_path(conn, :update, team, record), user_team: update_attrs)
       assert redirected_to(conn) == Routes.team_path(conn, :show, team)
 
       conn = get(conn, Routes.team_path(conn, :show, team))
