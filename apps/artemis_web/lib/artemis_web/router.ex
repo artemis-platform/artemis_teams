@@ -99,6 +99,13 @@ defmodule ArtemisWeb.Router do
 
       resources "/http-request-logs", HttpRequestLogController, only: [:index, :show]
 
+      # Hello
+
+      live "/hello", HelloIndexLive, :index
+      live "/hello/new", HelloIndexLive, :new
+      live "/hello/:id", HelloIndexLive, :show
+      live "/hello/edit/:id", HelloIndexLive, :edit
+
       # Permissions
 
       post "/permissions/bulk-actions", PermissionController, :index_bulk_actions

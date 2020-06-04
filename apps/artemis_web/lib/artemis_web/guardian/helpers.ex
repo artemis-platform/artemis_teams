@@ -7,7 +7,9 @@ defmodule ArtemisWeb.Guardian.Helpers do
   Returns the logged in user
   """
   def current_user(%{"guardian_default_token" => token}) do
-    Guardian.resource_from_token(ArtemisWeb.Guardian, token)
+    ArtemisWeb.Guardian
+    |> Guardian.resource_from_token(token)
+    |> elem(1)
   end
 
   def current_user(conn) do

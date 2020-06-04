@@ -10,8 +10,10 @@ defmodule ArtemisWeb.ViewHelper.Breadcrumbs do
     |> render_breadcrumbs()
   end
 
-  def render_breadcrumbs(path) when is_bitstring(path) do
-    path
+  def render_breadcrumbs(value) when is_bitstring(value) do
+    value
+    |> URI.parse()
+    |> Map.get(:path)
     |> String.split("/", trim: true)
     |> render_breadcrumbs()
   end
