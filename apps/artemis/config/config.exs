@@ -37,6 +37,8 @@ config :artemis, :ibm_cloud,
 
 config :artemis, :interval_worker, default_log_limit: System.get_env("ARTEMIS_INTERVAL_WORKER_DEFAULT_LOG_LIMIT")
 
+config :config_tuples, distillery: false
+
 config :slugger, separator_char: ?-
 config :slugger, replacement_file: "lib/replacements.exs"
 
