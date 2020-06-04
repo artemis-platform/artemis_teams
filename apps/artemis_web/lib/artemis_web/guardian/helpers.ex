@@ -6,6 +6,10 @@ defmodule ArtemisWeb.Guardian.Helpers do
   @doc """
   Returns the logged in user
   """
+  def current_user(%{"guardian_default_token" => token}) do
+    Guardian.resource_from_token(ArtemisWeb.Guardian, token)
+  end
+
   def current_user(conn) do
     ArtemisWeb.Guardian.Plug.current_resource(conn)
   end
@@ -14,7 +18,7 @@ defmodule ArtemisWeb.Guardian.Helpers do
   Returns boolean if user is logged in
   """
   def current_user?(conn) do
-    case ArtemisWeb.Guardian.Plug.current_resource(conn) do
+    case current_user(conn) do
       nil -> false
       _ -> true
     end

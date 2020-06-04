@@ -39,7 +39,7 @@ defmodule ArtemisWeb.MixProject do
     [
       {:phoenix, "~> 1.5"},
       {:phoenix_pubsub, "~> 2.0"},
-      {:phoenix_ecto, "~> 4.0"},
+      {:phoenix_ecto, "~> 4.1"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.13"},
@@ -55,7 +55,7 @@ defmodule ArtemisWeb.MixProject do
       {:nimble_csv, "~> 0.5"},
       {:scrivener_html, git: "https://github.com/artemis-platform/scrivener_html.git", branch: "master"},
       {:number, "~> 1.0"},
-      {:timex, "~> 3.0"},
+      {:timex, "~> 3.6"},
       {:ueberauth, "~> 0.6"},
       {:ueberauth_github, "~> 0.7"},
       {:artemis, in_umbrella: true},
