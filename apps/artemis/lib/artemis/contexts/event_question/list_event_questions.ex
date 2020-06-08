@@ -23,7 +23,7 @@ defmodule Artemis.ListEventQuestions do
     params = default_params(params)
 
     EventQuestion
-    |> distinct(true)
+    |> distinct_query(params, default: true)
     |> preload(^Map.get(params, "preload"))
     |> filter_query(params, user)
     |> search_filter(params)
