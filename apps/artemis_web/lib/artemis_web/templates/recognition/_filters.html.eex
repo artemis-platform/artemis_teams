@@ -36,7 +36,13 @@
   <%= h5 "Filters" %>
 
   <div class="filters">
-    <% user_options = Artemis.User.unique_select_values_for(:name) %>
+    <%
+      user_options =
+        @conn
+        |> current_user()
+        |> Artemis.ListUsers.call()
+        |> select_options(key_field: :name, value_field: :id)
+    %>
 
     <div>
       <i class="user icon"></i>
