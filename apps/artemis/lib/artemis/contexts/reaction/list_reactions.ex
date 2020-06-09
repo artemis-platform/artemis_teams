@@ -22,7 +22,7 @@ defmodule Artemis.ListReactions do
     params = default_params(params)
 
     Reaction
-    |> distinct(true)
+    |> distinct_query(params, default: true)
     |> preload(^Map.get(params, "preload"))
     |> filter_query(params, user)
     |> order_query(params)

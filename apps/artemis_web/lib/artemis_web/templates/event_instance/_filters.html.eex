@@ -46,9 +46,9 @@
         <%=
           # TODO: generate this value correctly
           options =
-            :date
-            |> Artemis.EventAnswer.unique_values_for()
-            |> Enum.map(&Date.to_iso8601(&1))
+            %{distinct: :date}
+            |> Artemis.ListEventAnswers.call(current_user(@conn))
+            |> select_options(field: :date)
 
           filter_multi_select(@conn, "Date", :date, options)
         %>
