@@ -1,0 +1,32 @@
+<%=
+  header_assigns =
+    %{}
+    |> Map.put(:recognition, @recognition)
+    |> Map.put(:socket, @socket)
+    |> Map.put(:url, @url)
+    |> Map.put(:user, @user)
+
+  render "show/_header_live.html", header_assigns
+%>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @url %>
+  <%= render_presence @socket, url: @url, user: @user %>
+</div>
+
+<div id="content">
+  <%# <%= render_flash_notifications @conn %1> %>
+
+  <%= live_render_recognition_cards @socket, recognitions: paginate(@recognition), user: @user %>
+
+  <h3>Comments</h3>
+
+  <%=
+    ArtemisWeb.CommentView.live_render_comment_cards(
+      @socket,
+      resource_type: "Recognition",
+      resource_id: @recognition.id,
+      user: @user
+    )
+  %>
+</div>

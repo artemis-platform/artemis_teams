@@ -1,5 +1,4 @@
 defmodule ArtemisWeb.ViewHelper.Path do
-
   @doc """
   Returns the request path
   """
