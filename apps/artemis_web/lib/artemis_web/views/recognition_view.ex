@@ -157,7 +157,7 @@ defmodule ArtemisWeb.RecognitionView do
   Render recognition cards with Phoenix LiveView
   """
   def live_render_recognition_cards(conn, assigns \\ []) do
-    id = "recognition-cards-#{Artemis.Helpers.UUID.call()}"
+    id = "recognition-cards"
 
     session =
       assigns
@@ -177,7 +177,7 @@ defmodule ArtemisWeb.RecognitionView do
     |> can_update_recognition?(record)
   end
 
-  def can_update_recognition?(user, record) do
+  def can_update_recognition?(%Artemis.User{} = user, record) do
     owner? = record.created_by_id == user.id
 
     cond do
@@ -196,7 +196,7 @@ defmodule ArtemisWeb.RecognitionView do
     |> can_delete_recognition?(record)
   end
 
-  def can_delete_recognition?(user, record) do
+  def can_delete_recognition?(%Artemis.User{} = user, record) do
     owner? = record.created_by_id == user.id
 
     cond do

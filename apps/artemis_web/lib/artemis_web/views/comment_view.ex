@@ -33,12 +33,12 @@ defmodule ArtemisWeb.CommentView do
   Render comment cards with Phoenix LiveView
   """
   def live_render_comment_cards(conn, assigns \\ []) do
-    id = "comment-cards-#{Artemis.Helpers.UUID.call()}"
+    id = "comment-cards"
 
     session =
       assigns
       |> Enum.into(%{})
-      |> Map.put_new(:path, conn.request_path)
+      |> Map.put_new(:path, Map.get(conn, :request_path))
       |> Map.put_new(:user, current_user(conn))
       |> Artemis.Helpers.keys_to_strings()
 

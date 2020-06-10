@@ -56,11 +56,11 @@
       <div class="links">
         <%= if can_update_recognition?(@user, @recognition) do %>
           <a class="edit" href="<%= Routes.recognition_path(@socket, :edit, @recognition) %>">
-            <i class="icon pencil alternate"></i>edit
+            <i class="icon pencil alternate"></i>Edit
           </a>
         <% end %>
         <a class="permalink" href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
-          <i class="icon linkify"></i>link
+          <i class="icon linkify"></i>Link
         </a>
       </div>
     </footer>

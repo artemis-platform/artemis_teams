@@ -156,6 +156,7 @@ defmodule ArtemisWeb do
       import ArtemisWeb.ViewHelper.Notifications
       import ArtemisWeb.ViewHelper.Numbers
       import ArtemisWeb.ViewHelper.Pagination
+      import ArtemisWeb.ViewHelper.Path
       import ArtemisWeb.ViewHelper.Presence
       import ArtemisWeb.ViewHelper.Print
       import ArtemisWeb.ViewHelper.QueryParams
