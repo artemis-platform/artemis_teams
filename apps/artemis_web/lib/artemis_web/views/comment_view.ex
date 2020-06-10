@@ -46,6 +46,22 @@ defmodule ArtemisWeb.CommentView do
   end
 
   @doc """
+  Render comment form with Phoenix LiveView
+  """
+  def live_render_comment_form(conn, assigns \\ []) do
+    id = "comment-form"
+
+    session =
+      assigns
+      |> Enum.into(%{})
+      |> Map.put_new(:path, Map.get(conn, :request_path))
+      |> Map.put_new(:user, current_user(conn))
+      |> Artemis.Helpers.keys_to_strings()
+
+    live_render(conn, ArtemisWeb.CommentFormLive, id: id, session: session)
+  end
+
+  @doc """
   Checks if user is has permissions to update record
   """
   def can_update_comment?(%Plug.Conn{} = conn, record) do

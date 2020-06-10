@@ -22,7 +22,7 @@ defmodule ArtemisWeb.RecognitionView do
       "created_by" => [
         label: fn _conn -> "Created By" end,
         value: fn _conn, row -> render_created_by(row) end,
-        value_html: fn conn, row -> render_created_by(conn, row) end
+        value_html: fn conn, row -> render_user_name_html(conn, row.created_by) end
       ],
       "description" => [
         label: fn _conn -> "Description" end,
@@ -71,20 +71,6 @@ defmodule ArtemisWeb.RecognitionView do
   def render_created_by(_), do: "Unknown"
 
   @doc """
-  Render the name and link of the user who created the recognition
-  """
-  def render_created_by(conn, record, current_user \\ nil)
-
-  def render_created_by(conn, %{created_by: %Artemis.User{}} = record, current_user) do
-    case has?(current_user || conn, "users:show") do
-      true -> link(record.created_by.name, to: Routes.user_path(conn, :show, record.created_by))
-      false -> record.created_by.name
-    end
-  end
-
-  def render_created_by(_, _, _), do: "Unknown"
-
-  @doc """
   Render the name of the recognition users
   """
   def render_users(%{users: users}) when is_list(users) do
@@ -105,22 +91,6 @@ defmodule ArtemisWeb.RecognitionView do
         end
       end
     end)
-  end
-
-  @doc """
-  Render the name and link of the recognition users in a natural language sentence
-  """
-  def render_user_sentence(conn, %{users: users}, current_user \\ nil) when is_list(users) do
-    users
-    |> Enum.map(fn user ->
-      content_tag(:span, class: "user") do
-        case has?(current_user || conn, "users:show") do
-          true -> content_tag(:a, user.name, href: Routes.user_path(conn, :show, user.id))
-          false -> user.name
-        end
-      end
-    end)
-    |> Enum.intersperse(", ")
   end
 
   @doc """

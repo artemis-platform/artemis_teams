@@ -5,8 +5,9 @@
 
   <content>
     <div class="heading">
-      <div class="title">
-        <%= @comment.title %>
+      <div>
+        <span class="created-by"><%= render_user_name_html(@socket, @comment.user, @user) %></span>
+        commented
       </div>
 
       <div class="relative-date" data-tooltip="<%= render_date_time(@comment.inserted_at) %>" data-position="left center">

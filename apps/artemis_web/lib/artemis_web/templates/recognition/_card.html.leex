@@ -8,7 +8,7 @@
   <content>
     <div class="heading">
       <div>
-        <span class="created-by"><%= render_created_by(@socket, @recognition, @user) %></span>
+        <span class="created-by"><%= render_user_name_html(@socket, @recognition.created_by, @user) %></span>
         recognized
         <span class="users"><%= render_user_sentence(@socket, @recognition, @user) %></span>
       </div>

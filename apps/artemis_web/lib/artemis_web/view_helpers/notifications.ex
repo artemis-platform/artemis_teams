@@ -22,7 +22,7 @@ defmodule ArtemisWeb.ViewHelper.Notifications do
   @doc """
   Generates flash notifications
   """
-  def render_flash_notifications(conn) do
+  def render_flash_notifications(%Plug.Conn{} = conn) do
     Phoenix.View.render(ArtemisWeb.LayoutView, "flash_notifications.html", conn: conn)
   end
 

@@ -1,0 +1,31 @@
+<%= if @status == :success do %>
+
+  <%= render_notification :info, body: "Successfully saved comment" %>
+
+<% end %>
+
+<%= form_for @changeset, "#", [class: "ui form", id: "comment-form", phx_submit: "submit"], fn f -> %>
+  <%= if @action == :update do %>
+    <input name="comment[id]" type="hidden" value="<%= @comment.id %>">
+  <% end %>
+
+  <div class="field">
+    <%= label_with_errors f, :title %>
+    <%= text_input f, :title, placeholder: "Title" %>
+  </div>
+
+  <div class="field">
+    <%= label_with_errors f, :body %>
+    <%= textarea f, :body, rows: 2, placeholder: "Comment" %>
+  </div>
+
+  <div>
+    <%= hidden_input f, :topic, value: "General" %>
+
+    <%= if @changeset.action do %>
+      <%= render_notification :error, body: "Error Submitting Form" %>
+    <% end %>
+
+    <%= submit "Save Comment", class: "ui button primary" %>
+  </div>
+<% end %>

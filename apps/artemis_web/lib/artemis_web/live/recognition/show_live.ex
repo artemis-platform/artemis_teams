@@ -15,7 +15,8 @@ defmodule ArtemisWeb.RecognitionShowLive do
     # IO.inspect session
 
     user = current_user(session)
-    recognition = Artemis.GetRecognition.call(Map.get(params, "id"), user)
+    recognition_id = Map.get(params, "id")
+    recognition = Artemis.GetRecognition.call(recognition_id, user)
 
     # broadcast_topic = Artemis.Event.get_broadcast_topic()
 
