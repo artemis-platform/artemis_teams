@@ -34,7 +34,7 @@ defmodule ArtemisWeb.CommentFormLive do
 
   @impl true
   def render(assigns) do
-    Phoenix.View.render(ArtemisWeb.CommentView, "form-live.html", assigns)
+    Phoenix.View.render(ArtemisWeb.CommentView, "form_live.html", assigns)
   end
 
   # GenServer Callbacks

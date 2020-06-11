@@ -120,7 +120,9 @@ defmodule ArtemisWeb.Router do
 
       live "/recognitions/:id", RecognitionControllerLive, :show, as: :recognition_show
       live "/recognitions/:id/edit", RecognitionControllerLive, :edit, as: :recognition_show
-      live "/recognitions/:id/comments/:comment_id/edit", RecognitionControllerLive, :edit_comment, as: :recognition_show
+
+      live "/recognitions/:id/comments/:comment_id/edit", RecognitionControllerLive, :edit_comment,
+        as: :recognition_show
 
       # Roles
 

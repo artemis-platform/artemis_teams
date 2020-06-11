@@ -28,8 +28,49 @@ defmodule ArtemisWeb.LiveController do
       end
 
       @impl true
+      def render(%{render_error: status_code} = assigns) do
+        Phoenix.View.render(ArtemisWeb.ErrorView, "#{status_code}_live.html", assigns)
+      end
+
       def render(assigns) do
         Phoenix.View.render(ArtemisWeb.RecognitionView, "#{assigns.live_action}.html", assigns)
+      end
+
+      # Authorization
+
+      defp live_authorize(socket, permission, render_controller) do
+        case has?(socket.assigns.user, permission) do
+          true -> render_controller.()
+          false -> {:ok, assign(socket, render_error: 403)}
+        end
+      end
+
+      defp live_authorize_any(socket, permissions, render_controller) do
+        case has_any?(socket.assigns.user, permissions) do
+          true -> render_controller.()
+          false -> {:ok, assign(socket, render_error: 403)}
+        end
+      end
+
+      defp live_authorize_all(socket, permissions, render_controller) do
+        case has_all?(socket.assigns.user, permissions) do
+          true -> render_controller.()
+          false -> {:ok, assign(socket, render_error: 403)}
+        end
+      end
+
+      defp live_authorize_in_team(socket, team_id, render_controller) do
+        case in_team?(socket.assigns.user, team_id) do
+          true -> render_controller.()
+          false -> {:ok, assign(socket, render_error: 403)}
+        end
+      end
+
+      defp live_authorize_team_admin(socket, team_id, render_controller) do
+        case team_admin?(socket.assigns.user, team_id) do
+          true -> render_controller.()
+          false -> {:ok, assign(socket, render_error: 403)}
+        end
       end
 
       # Helpers
