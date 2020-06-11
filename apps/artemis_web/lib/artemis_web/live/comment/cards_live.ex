@@ -12,7 +12,9 @@ defmodule ArtemisWeb.CommentCardsLive do
     comments = Map.get(session, "comments", :loading)
     reload_on_create_event = Map.get(session, "reload_on_create_event", true)
     params = Map.get(session, "params", %{})
-    path = Map.get(session, "path")
+    path = Map.fetch!(session, "path")
+    resource_id = Map.fetch!(session, "resource_id")
+    resource_type = Map.fetch!(session, "resource_type")
     broadcast_topic = Artemis.Event.get_broadcast_topic()
 
     assigns =
@@ -20,6 +22,8 @@ defmodule ArtemisWeb.CommentCardsLive do
       |> assign(:params, params)
       |> assign(:path, path)
       |> assign(:reactions, :loading)
+      |> assign(:resource_id, resource_id)
+      |> assign(:resource_type, resource_type)
       |> assign(:comments, comments)
       |> assign(:reload_on_create_event, reload_on_create_event)
       |> assign(:user, user)
@@ -151,11 +155,14 @@ defmodule ArtemisWeb.CommentCardsLive do
     user = socket.assigns.user
 
     default_params = %{
-      page_size: 25
+      filters: %{
+        resource_id: socket.assigns.resource_id,
+        resource_type: socket.assigns.resource_type
+      }
     }
 
     required_params = %{
-      paginate: true,
+      paginate: false,
       preload: [:user]
     }
 
@@ -173,7 +180,6 @@ defmodule ArtemisWeb.CommentCardsLive do
   defp get_ids(socket) do
     socket.assigns
     |> Map.get(:comments)
-    |> Map.get(:entries)
     |> Enum.map(&Integer.to_string(&1.id))
   end
 

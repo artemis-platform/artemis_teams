@@ -15,7 +15,7 @@ defmodule ArtemisWeb.RecognitionShowLive do
     # IO.inspect session
 
     user = current_user(session)
-    recognition_id = Map.get(params, "id")
+    recognition_id = Map.get(params, "recognition_id") || Map.get(params, "id")
     recognition = Artemis.GetRecognition.call(recognition_id, user)
 
     # broadcast_topic = Artemis.Event.get_broadcast_topic()
@@ -37,11 +37,11 @@ defmodule ArtemisWeb.RecognitionShowLive do
 
   @impl true
   def handle_params(_params, url, socket) do
-    {:noreply, assign(socket, :url, url)}
+    {:noreply, assign(socket, path: URI.parse(url).path, url: url)}
   end
 
   @impl true
   def render(assigns) do
-    Phoenix.View.render(ArtemisWeb.RecognitionView, "show-live.html", assigns)
+    Phoenix.View.render(ArtemisWeb.RecognitionView, "#{assigns.live_action}_live.html", assigns)
   end
 end

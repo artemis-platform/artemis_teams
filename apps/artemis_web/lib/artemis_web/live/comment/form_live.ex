@@ -11,21 +11,21 @@ defmodule ArtemisWeb.CommentFormLive do
   @impl true
   def mount(_params, session, socket) do
     user = Map.fetch!(session, "user")
-    resource_type = Map.fetch!(session, "resource_type")
-    resource_id = Map.fetch!(session, "resource_id")
-    comment = get_comment(session)
+    comment = get_comment(session, user)
     changeset = Comment.changeset(comment)
     action = if comment.id, do: :update, else: :create
-    redirect? = Map.get(session, "redirect", true)
+    redirect_to = Map.get(session, "redirect_to")
+    resource_type = Map.fetch!(session, "resource_type")
+    resource_id = Map.fetch!(session, "resource_id")
 
     assigns =
       socket
       |> assign(:action, action)
       |> assign(:changeset, changeset)
       |> assign(:comment, comment)
+      |> assign(:redirect_to, redirect_to)
       |> assign(:resource_id, resource_id)
       |> assign(:resource_type, resource_type)
-      |> assign(:redirect?, redirect?)
       |> assign(:status, :unsubmitted)
       |> assign(:user, user)
 
@@ -80,27 +80,29 @@ defmodule ArtemisWeb.CommentFormLive do
   end
 
   defp update(socket, params) do
-    redirect? = socket.assigns.redirect?
     user = socket.assigns.user
     params = get_params(socket, params)
     id = Map.get(params, "id")
 
     case UpdateComment.call(id, params, user) do
       {:ok, comment} ->
-        case redirect? do
-          true ->
-            socket
-            |> put_flash(:info, "Comment updated successfully.")
-            |> redirect(to: ArtemisWeb.Router.Helpers.home_path(socket, :index))
+        case socket.assigns.redirect_to do
+          nil ->
+            new_changeset = Comment.changeset(comment)
 
-          _ ->
             socket
+            |> assign(:changeset, new_changeset)
             |> assign(:comment, comment)
             |> assign(:status, :success)
+
+          redirect_to ->
+            socket
+            |> put_flash(:info, "Successfully updated Comment")
+            |> redirect(to: redirect_to)
         end
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        comment = GetComment.call(id, user, preload: [:users])
+        comment = GetComment.call(id, user)
 
         socket
         |> assign(:changeset, changeset)
@@ -111,8 +113,9 @@ defmodule ArtemisWeb.CommentFormLive do
 
   # Helpers
 
-  defp get_comment(%{"comment" => comment}), do: comment
-  defp get_comment(_session), do: %Comment{}
+  defp get_comment(%{"comment" => comment}, _user), do: comment
+  defp get_comment(%{"id" => id}, user), do: GetComment.call(id, user)
+  defp get_comment(_session, _user), do: %Comment{}
 
   defp get_params(socket, params) do
     params

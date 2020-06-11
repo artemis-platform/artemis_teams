@@ -1,6 +1,8 @@
 defmodule ArtemisWeb.CommentCardComponent do
   use Phoenix.LiveComponent
 
+  alias Artemis.DeleteComment
+
   # LiveView Callbacks
 
   @impl true
@@ -19,5 +21,14 @@ defmodule ArtemisWeb.CommentCardComponent do
   @impl true
   def render(assigns) do
     Phoenix.View.render(ArtemisWeb.CommentView, "_card.html", assigns)
+  end
+
+  # Callbacks
+
+  @impl true
+  def handle_event("delete", %{"id" => id}, socket) do
+    {:ok, _} = DeleteComment.call(id, socket.assigns.user)
+
+    {:noreply, socket}
   end
 end

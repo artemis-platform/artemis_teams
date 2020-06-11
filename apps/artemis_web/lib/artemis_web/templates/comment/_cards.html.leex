@@ -4,7 +4,7 @@
 
 <% else %>
 
-  <%= for comment <- @comments.entries do %>
+  <%= for comment <- @comments do %>
     <%=
       live_component(
         @socket,

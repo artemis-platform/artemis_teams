@@ -10,12 +10,6 @@
   <% end %>
 
   <div class="field">
-    <%= label_with_errors f, :title %>
-    <%= text_input f, :title, placeholder: "Title" %>
-  </div>
-
-  <div class="field">
-    <%= label_with_errors f, :body %>
     <%= textarea f, :body, rows: 2, placeholder: "Comment" %>
   </div>
 
@@ -26,6 +20,6 @@
       <%= render_notification :error, body: "Error Submitting Form" %>
     <% end %>
 
-    <%= submit "Save Comment", class: "ui button primary" %>
+    <%= submit "Save Comment", class: "ui button basic primary" %>
   </div>
 <% end %>

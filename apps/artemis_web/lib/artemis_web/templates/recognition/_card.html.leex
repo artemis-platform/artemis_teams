@@ -34,7 +34,7 @@
           )
         %>
 
-        <a class="comments" href="<%= Routes.recognition_comment_path(@socket, :index_comment, @recognition) %>">
+        <a class="comments" href="<%= Routes.recognition_show_path(@socket, :show, @recognition) %>">
           <i class="icon comment outline"></i>
           <%= if @recognition_comments_status == :loading do %>
             Comments

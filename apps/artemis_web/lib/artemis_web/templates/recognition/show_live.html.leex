@@ -15,8 +15,9 @@
   <%=
     ArtemisWeb.CommentView.live_render_comment_cards(
       @socket,
-      resource_type: "Recognition",
+      path: @path,
       resource_id: @recognition.id,
+      resource_type: "Recognition",
       user: @user
     )
   %>
