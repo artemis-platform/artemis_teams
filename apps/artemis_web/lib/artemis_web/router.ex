@@ -116,18 +116,11 @@ defmodule ArtemisWeb.Router do
 
       # Recognitions
 
-      live "/recognitions-live/:id", RecognitionShowLive, :show
-      live "/recognitions-live/:id/edit", RecognitionShowLive, :edit
-      live "/recognitions-live/:id/comments/:comment_id/edit", RecognitionShowLive, :edit_comment
+      resources "/recognitions", RecognitionController, except: [:show, :create, :update]
 
-      resources "/recognitions", RecognitionController, except: [:create, :update] do
-        get "/comments", RecognitionController, :index_comment, as: :comment
-        post "/comments", RecognitionController, :create_comment, as: :comment
-        get "/comments/:id/edit", RecognitionController, :edit_comment, as: :comment
-        patch "/comments/:id", RecognitionController, :update_comment, as: :comment
-        put "/comments/:id", RecognitionController, :update_comment, as: :comment
-        delete "/comments/:id", RecognitionController, :delete_comment, as: :comment
-      end
+      live "/recognitions/:id", RecognitionShowLive, :show
+      live "/recognitions/:id/edit", RecognitionShowLive, :edit
+      live "/recognitions/:id/comments/:comment_id/edit", RecognitionShowLive, :edit_comment
 
       # Roles
 

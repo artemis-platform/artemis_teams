@@ -14,6 +14,8 @@ defmodule ArtemisWeb.RecognitionShowLive do
     # IO.inspect Guardian.resource_from_token(ArtemisWeb.Guardian, session["guardian_default_token"])
     # IO.inspect session
 
+    # TODO: add show page authorization check
+
     user = current_user(session)
     recognition_id = Map.get(params, "recognition_id") || Map.get(params, "id")
     recognition = Artemis.GetRecognition.call(recognition_id, user)
@@ -42,6 +44,6 @@ defmodule ArtemisWeb.RecognitionShowLive do
 
   @impl true
   def render(assigns) do
-    Phoenix.View.render(ArtemisWeb.RecognitionView, "#{assigns.live_action}_live.html", assigns)
+    Phoenix.View.render(ArtemisWeb.RecognitionView, "#{assigns.live_action}.html", assigns)
   end
 end
