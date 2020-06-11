@@ -7,34 +7,9 @@ defmodule ArtemisWeb.RecognitionShowLive do
 
   @impl true
   def mount(params, session, socket) do
-    # IO.inspect socket
-    # IO.inspect socket.private
-    # IO.inspect socket.endpoint
-    # IO.inspect session
-    # IO.inspect Guardian.resource_from_token(ArtemisWeb.Guardian, session["guardian_default_token"])
-    # IO.inspect session
-
-    # TODO: add show page authorization check
-
-    user = current_user(session)
-    recognition_id = Map.get(params, "recognition_id") || Map.get(params, "id")
-    recognition = Artemis.GetRecognition.call(recognition_id, user)
-
-    # broadcast_topic = Artemis.Event.get_broadcast_topic()
-
-    assigns =
-      socket
-      |> assign(:data, nil)
-      |> assign(:params, params)
-      |> assign(:recognition, recognition)
-      |> assign(:status, :loading)
-      |> assign(:user, user)
-
-    # if connected?(socket), do: Process.send_after(self(), :async_load_data, 10)
-
-    # :ok = ArtemisPubSub.subscribe(broadcast_topic)
-
-    {:ok, assigns}
+    socket
+    |> default_assigns(params, session)
+    |> call_controller_action()
   end
 
   @impl true
@@ -45,5 +20,40 @@ defmodule ArtemisWeb.RecognitionShowLive do
   @impl true
   def render(assigns) do
     Phoenix.View.render(ArtemisWeb.RecognitionView, "#{assigns.live_action}.html", assigns)
+  end
+
+  defp default_assigns(socket, params, session) do
+    user = current_user(session)
+
+    socket
+    |> assign(:live_params, params)
+    |> assign(:live_session, session)
+    |> assign(:user, user)
+  end
+
+  defp call_controller_action(socket) do
+    action(socket.assigns.live_action, socket, socket.assigns.live_params)
+  end
+
+  # LiveView Controller Actions
+
+  def action(:show, socket, params) do
+    user = socket.assigns.user
+    recognition_id = Map.get(params, "recognition_id") || Map.get(params, "id")
+    recognition = Artemis.GetRecognition.call(recognition_id, user)
+
+    # broadcast_topic = Artemis.Event.get_broadcast_topic()
+
+    socket =
+      socket
+      |> assign(:data, nil)
+      |> assign(:recognition, recognition)
+      |> assign(:status, :loading)
+
+    # if connected?(socket), do: Process.send_after(self(), :async_load_data, 10)
+
+    # :ok = ArtemisPubSub.subscribe(broadcast_topic)
+
+    {:ok, socket}
   end
 end
