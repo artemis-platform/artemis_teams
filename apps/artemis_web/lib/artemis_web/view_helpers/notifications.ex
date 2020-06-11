@@ -35,6 +35,7 @@ defmodule ArtemisWeb.ViewHelper.Notifications do
     Phoenix.LiveView.Helpers.live_render(
       conn,
       ArtemisWeb.EventLogNotificationsLive,
+      id: "event-log-notifications-#{type}-#{id}",
       session: %{
         "current_user" => user,
         "resource_id" => id,

@@ -6,8 +6,7 @@
 </div>
 
 <div id="content">
-  <%# <%= render_flash_notifications @socket %1> %>
-  <%# <%= render_event_log_notifications @socket, "Recognition", @recognition.id %1> %>
+  <%= render_event_log_notifications @socket, "Recognition", @recognition.id %>
 
   <%= live_render_recognition_cards @socket, recognitions: paginate(@recognition), user: @user %>
 

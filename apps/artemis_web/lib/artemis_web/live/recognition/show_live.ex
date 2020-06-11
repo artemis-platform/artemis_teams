@@ -1,4 +1,4 @@
-defmodule ArtemisWeb.RecognitionControllerLive do
+defmodule ArtemisWeb.RecognitionShowLive do
   use ArtemisWeb.LiveView
   use ArtemisWeb.LiveController
 
