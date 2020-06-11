@@ -4,6 +4,9 @@ defmodule ArtemisWeb.RecognitionControllerLive do
 
   import ArtemisWeb.Guardian.Helpers
 
+  alias Artemis.DeleteRecognition
+  alias Artemis.GetRecognition
+
   # LiveView Controller
 
   def live_action(:show, socket, params) do
@@ -16,8 +19,6 @@ defmodule ArtemisWeb.RecognitionControllerLive do
         recognition: recognition,
         status: :loading
       ]
-
-      # if connected?(socket), do: Process.send_after(self(), :async_load_data, 10)
 
       {:ok, assign(socket, assigns)}
     end)
@@ -34,8 +35,6 @@ defmodule ArtemisWeb.RecognitionControllerLive do
         status: :loading
       ]
 
-      # if connected?(socket), do: Process.send_after(self(), :async_load_data, 10)
-
       {:ok, assign(socket, assigns)}
     end)
   end
@@ -51,9 +50,23 @@ defmodule ArtemisWeb.RecognitionControllerLive do
         status: :loading
       ]
 
-      # if connected?(socket), do: Process.send_after(self(), :async_load_data, 10)
-
       {:ok, assign(socket, assigns)}
+    end)
+  end
+
+  def live_action(:delete, socket, params) do
+    live_authorize(socket, "recognitions:delete", fn ->
+      user = socket.assigns.user
+      id = Map.get(params, "id")
+
+      {:ok, _recognition} = DeleteRecognition.call(id, user)
+
+      socket =
+        socket
+        |> put_flash(:info, "Recognition deleted successfully.")
+        |> redirect(to: Routes.recognition_path(socket, :index))
+
+      {:ok, socket}
     end)
   end
 
@@ -62,6 +75,6 @@ defmodule ArtemisWeb.RecognitionControllerLive do
   defp get_recognition(params, user) do
     recognition_id = Map.get(params, "recognition_id") || Map.get(params, "id")
 
-    Artemis.GetRecognition.call(recognition_id, user)
+    GetRecognition.call(recognition_id, user)
   end
 end

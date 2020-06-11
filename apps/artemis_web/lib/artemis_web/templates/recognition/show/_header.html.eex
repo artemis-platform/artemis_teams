@@ -6,7 +6,7 @@
 
     <div class="actions">
       <%= if can_delete_recognition?(@user, @recognition) do %>
-        <%= delete_confirmation "Delete", Routes.recognition_path(@socket, :delete, @recognition) %>
+        <%= delete_confirmation "Delete", Routes.recognition_show_path(@socket, :delete, @recognition), method: :get %>
       <% end %>
       <%= if can_update_recognition?(@user, @recognition) do %>
         <%= action "Edit", to: Routes.recognition_show_path(@socket, :edit, @recognition), color: "green" %>

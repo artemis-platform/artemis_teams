@@ -33,16 +33,6 @@ defmodule ArtemisWeb.RecognitionController do
     end)
   end
 
-  def delete(conn, %{"id" => id} = params) do
-    authorize(conn, "recognitions:delete", fn ->
-      {:ok, _recognition} = DeleteRecognition.call(id, params, current_user(conn))
-
-      conn
-      |> put_flash(:info, "Recognition deleted successfully.")
-      |> redirect(to: Routes.recognition_path(conn, :index))
-    end)
-  end
-
   # Helpers
 
   defp get_recognitions(params, user) do

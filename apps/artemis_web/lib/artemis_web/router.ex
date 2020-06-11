@@ -116,13 +116,12 @@ defmodule ArtemisWeb.Router do
 
       # Recognitions
 
-      resources "/recognitions", RecognitionController, except: [:show, :create, :edit, :update]
+      resources "/recognitions", RecognitionController, only: [:index, :new]
 
-      live "/recognitions/:id", RecognitionControllerLive, :show, as: :recognition_show
-      live "/recognitions/:id/edit", RecognitionControllerLive, :edit, as: :recognition_show
-
-      live "/recognitions/:id/comments/:comment_id/edit", RecognitionControllerLive, :edit_comment,
-        as: :recognition_show
+      live "/recognitions/:id", RecognitionShowLive, :show
+      live "/recognitions/:id/comments/:comment_id/edit", RecognitionShowLive, :edit_comment
+      live "/recognitions/:id/delete", RecognitionShowLive, :delete
+      live "/recognitions/:id/edit", RecognitionShowLive, :edit
 
       # Roles
 

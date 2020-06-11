@@ -9,6 +9,8 @@ defmodule ArtemisWeb.LiveController do
       import ArtemisWeb.Guardian.Helpers
       import ArtemisWeb.UserAccess
 
+      alias ArtemisWeb.Router.Helpers, as: Routes
+
       @impl true
       def mount(params, session, socket) do
         socket
