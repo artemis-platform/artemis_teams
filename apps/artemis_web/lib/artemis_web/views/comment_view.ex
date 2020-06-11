@@ -49,7 +49,8 @@ defmodule ArtemisWeb.CommentView do
   Render comment form with Phoenix LiveView
   """
   def live_render_comment_form(conn, assigns \\ []) do
-    id = "comment-form"
+    action = if Keyword.get(assigns, :id), do: "update", else: "create"
+    id = "comment-form-#{action}"
 
     session =
       assigns

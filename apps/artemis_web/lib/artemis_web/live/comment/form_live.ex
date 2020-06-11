@@ -98,7 +98,7 @@ defmodule ArtemisWeb.CommentFormLive do
           redirect_to ->
             socket
             |> put_flash(:info, "Successfully updated Comment")
-            |> redirect(to: redirect_to)
+            |> Phoenix.LiveView.push_redirect(to: redirect_to)
         end
 
       {:error, %Ecto.Changeset{} = changeset} ->

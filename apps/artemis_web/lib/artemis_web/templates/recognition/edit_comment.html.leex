@@ -14,7 +14,7 @@
     <%=
       ArtemisWeb.CommentView.live_render_comment_form(
         @socket,
-        id: Map.get(@params, "comment_id"),
+        id: Map.get(@live_params, "comment_id"),
         redirect_to: Routes.recognition_show_path(@socket, :show, @recognition),
         resource_type: "Recognition",
         resource_id: @recognition.id,

@@ -9,12 +9,18 @@ defmodule ArtemisWeb.RecognitionShowLive do
   def mount(params, session, socket) do
     socket
     |> default_assigns(params, session)
-    |> call_controller_action()
+    |> call_controller_mount_live_action()
   end
 
   @impl true
-  def handle_params(_params, url, socket) do
-    {:noreply, assign(socket, path: URI.parse(url).path, url: url)}
+  def handle_params(params, url, socket) do
+    assigns = [
+      live_params: params,
+      path: URI.parse(url).path,
+      url: url
+    ]
+
+    {:noreply, assign(socket, assigns)}
   end
 
   @impl true
@@ -31,18 +37,16 @@ defmodule ArtemisWeb.RecognitionShowLive do
     |> assign(:user, user)
   end
 
-  defp call_controller_action(socket) do
-    action(socket.assigns.live_action, socket, socket.assigns.live_params)
+  defp call_controller_mount_live_action(socket) do
+    live_action(socket.assigns.live_action, socket, socket.assigns.live_params)
   end
 
-  # LiveView Controller Actions
+  # LiveView Controller Mount Actions
 
-  def action(:show, socket, params) do
+  def live_action(:show, socket, params) do
     user = socket.assigns.user
     recognition_id = Map.get(params, "recognition_id") || Map.get(params, "id")
     recognition = Artemis.GetRecognition.call(recognition_id, user)
-
-    # broadcast_topic = Artemis.Event.get_broadcast_topic()
 
     socket =
       socket
@@ -52,7 +56,21 @@ defmodule ArtemisWeb.RecognitionShowLive do
 
     # if connected?(socket), do: Process.send_after(self(), :async_load_data, 10)
 
-    # :ok = ArtemisPubSub.subscribe(broadcast_topic)
+    {:ok, socket}
+  end
+
+  def live_action(:edit_comment, socket, params) do
+    user = socket.assigns.user
+    recognition_id = Map.get(params, "recognition_id") || Map.get(params, "id")
+    recognition = Artemis.GetRecognition.call(recognition_id, user)
+
+    socket =
+      socket
+      |> assign(:data, nil)
+      |> assign(:recognition, recognition)
+      |> assign(:status, :loading)
+
+    # if connected?(socket), do: Process.send_after(self(), :async_load_data, 10)
 
     {:ok, socket}
   end

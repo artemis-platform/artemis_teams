@@ -34,7 +34,7 @@
 
       <div class="links">
         <%= if can_update_comment?(@user, @comment) do %>
-          <%= live_redirect "Edit", to: "#{@path}/comments/#{@comment.id}/edit" %>
+          <%= live_patch "Edit", to: "#{@path}/comments/#{@comment.id}/edit" %>
         <% end %>
         <%= if can_delete_comment?(@user, @comment) do %>
           <%=
