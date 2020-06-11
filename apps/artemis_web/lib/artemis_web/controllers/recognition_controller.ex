@@ -33,22 +33,6 @@ defmodule ArtemisWeb.RecognitionController do
     end)
   end
 
-  def show(conn, %{"id" => id}) do
-    authorize(conn, "recognitions:show", fn ->
-      recognition = GetRecognition.call!(id, current_user(conn), preload: [:created_by, :users])
-
-      render(conn, "show.html", recognition: recognition)
-    end)
-  end
-
-  def edit(conn, %{"id" => id}) do
-    authorize(conn, "recognitions:update", fn ->
-      recognition = GetRecognition.call!(id, current_user(conn), preload: [:users])
-
-      render(conn, "edit.html", recognition: recognition)
-    end)
-  end
-
   def delete(conn, %{"id" => id} = params) do
     authorize(conn, "recognitions:delete", fn ->
       {:ok, _recognition} = DeleteRecognition.call(id, params, current_user(conn))

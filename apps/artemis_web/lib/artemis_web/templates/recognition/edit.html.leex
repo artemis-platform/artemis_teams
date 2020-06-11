@@ -5,22 +5,23 @@
 </div>
 
 <div id="content-navigation">
-  <%= render_breadcrumbs @conn %>
-  <%= render_presence @conn %>
+  <%= render_breadcrumbs @url %>
+  <%= render_presence @socket, url: @url, user: @user %>
 </div>
 
 <div id="content">
-  <%= render_flash_notifications @conn %>
-  <%= render_event_log_notifications @conn, "Recognition", @recognition.id %>
+  <%# <%= render_flash_notifications @socket %1> %>
+  <%# <%= render_event_log_notifications @socket, "Recognition", @recognition.id %1> %>
 
   <section>
     <%=
       live_render(
-        @conn,
+        @socket,
         ArtemisWeb.RecognitionFormLive,
+        id: "recognition-form-edit",
         session: %{
           "recognition" => @recognition,
-          "user" => current_user(@conn)
+          "user" => @user
         }
       )
     %>

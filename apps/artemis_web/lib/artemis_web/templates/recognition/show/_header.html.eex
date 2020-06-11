@@ -9,7 +9,7 @@
         <%= delete_confirmation "Delete", Routes.recognition_path(@socket, :delete, @recognition) %>
       <% end %>
       <%= if can_update_recognition?(@user, @recognition) do %>
-        <%= action "Edit", to: Routes.recognition_path(@socket, :edit, @recognition), color: "green" %>
+        <%= action "Edit", to: Routes.recognition_show_path(@socket, :edit, @recognition), color: "green" %>
       <% end %>
     </div>
   </header>
