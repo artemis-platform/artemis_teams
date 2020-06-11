@@ -9,6 +9,12 @@ defmodule ArtemisWeb.RecognitionShowLive do
 
   # LiveView Controller
 
+  def live_action(:new, socket, _params) do
+    live_authorize(socket, "recognitions:create", fn ->
+      {:ok, socket}
+    end)
+  end
+
   def live_action(:show, socket, params) do
     live_authorize(socket, "recognitions:show", fn ->
       user = socket.assigns.user

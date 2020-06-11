@@ -4,7 +4,7 @@
 
     <div class="actions">
       <%= if has?(@conn, "recognitions:create") do %>
-        <%= action "New Recognition", to: Routes.recognition_path(@conn, :new), color: "blue" %>
+        <%= action "New Recognition", to: Routes.recognition_show_path(@conn, :new), color: "blue" %>
       <% end %>
     </div>
   </header>
