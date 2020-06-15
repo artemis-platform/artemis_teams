@@ -22,4 +22,9 @@ defmodule ArtemisWeb.ConnHelpers do
   Enable a feature by slug. Will update an existing feature or create a new one.
   """
   def enable_feature(slug), do: Artemis.DataCase.enable_feature(slug)
+
+  @doc """
+  Return the path of a LiveView redirect
+  """
+  def live_redirected_to({_, {:redirect, %{to: to}}}), do: to
 end

@@ -2,8 +2,6 @@ defmodule ArtemisWeb.RecognitionShowLive do
   use ArtemisWeb.LiveView
   use ArtemisWeb.LiveController
 
-  import ArtemisWeb.Guardian.Helpers
-
   alias Artemis.DeleteRecognition
   alias Artemis.GetRecognition
 
@@ -81,6 +79,6 @@ defmodule ArtemisWeb.RecognitionShowLive do
   defp get_recognition(params, user) do
     recognition_id = Map.get(params, "recognition_id") || Map.get(params, "id")
 
-    GetRecognition.call(recognition_id, user)
+    GetRecognition.call!(recognition_id, user)
   end
 end

@@ -78,12 +78,21 @@ defmodule ArtemisWeb.LiveController do
       # Helpers
 
       defp default_assigns(socket, params, session) do
-        user = current_user(session)
+        user = get_current_user(session)
 
         socket
         |> assign(:live_params, params)
         |> assign(:live_session, session)
         |> assign(:user, user)
+      end
+
+      defp get_current_user(session) do
+        config = Application.get_env(:artemis_web, ArtemisWeb.LiveController, [])
+
+        case Keyword.get(config, :get_system_user) do
+          true -> Artemis.GetSystemUser.call!()
+          _ -> current_user(session)
+        end
       end
 
       defp call_controller_mount_live_action(socket) do

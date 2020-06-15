@@ -9,7 +9,7 @@ defmodule ArtemisWeb.ViewHelper.Presence do
   def render_presence(conn, options \\ []) do
     user = Keyword.get(options, :user) || current_user(conn)
     request_path = ArtemisWeb.ViewHelper.Path.get_request_path(conn, options)
-    id = "presence-#{request_path}"
+    id = "presence-#{String.replace(request_path, "/", "-")}"
 
     content_tag(:div, class: "presence") do
       Phoenix.LiveView.Helpers.live_render(

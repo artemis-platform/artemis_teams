@@ -18,12 +18,6 @@ defmodule ArtemisWeb.RecognitionController do
     end)
   end
 
-  def new(conn, _params) do
-    authorize(conn, "recognitions:create", fn ->
-      render(conn, "new.html")
-    end)
-  end
-
   # Helpers
 
   defp get_recognitions(params, user) do

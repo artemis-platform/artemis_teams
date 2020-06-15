@@ -87,7 +87,7 @@ defmodule ArtemisWeb.EventInstancePageTest do
       event_instance = insert(:event_instance)
       url = get_url(event_instance.event_template)
 
-      Artemis.ListEventInstances.reset_cache()
+      Artemis.ListEventAnswers.reset_cache()
 
       browser_sign_in()
       navigate_to(url)
@@ -107,7 +107,7 @@ defmodule ArtemisWeb.EventInstancePageTest do
       event_instance = insert(:event_instance)
       url = get_url(event_instance.event_template)
 
-      Artemis.ListEventInstances.reset_cache()
+      Artemis.ListEventAnswers.reset_cache()
 
       browser_sign_in()
       navigate_to(url)
