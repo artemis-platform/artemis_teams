@@ -1,22 +1,21 @@
 <%
   chart_id = "amchart-#{Artemis.Helpers.UUID.call()}"
 
+  event_question_data =
+    @event_reports
+    |> Map.get(:event_questions_percent_by_date)
+    |> Map.get(@event_question.id)
+    |> Kernel.||(%{})
+
   project_titles =
-    @projects
-    |> Enum.map(& &1.title)
-    |> Enum.sort()
-    |> List.insert_at(-1, Artemis.EventAnswer.default_project_name())
+    event_question_data
+    |> Enum.flat_map(fn {_date, data} -> Map.keys(data) end)
+    |> Enum.uniq()
 
   default_entry =
     project_titles
     |> Enum.map(&{&1, 0.0})
     |> Enum.into(%{})
-
-  event_question_data = 
-    @event_reports
-    |> Map.get(:event_questions_percent_by_date)
-    |> Map.get(@event_question.id)
-    |> Kernel.||(%{})
 
   chart_data =
     Enum.map(event_question_data, fn {date, entries} ->

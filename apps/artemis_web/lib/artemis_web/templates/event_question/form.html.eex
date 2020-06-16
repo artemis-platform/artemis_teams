@@ -13,7 +13,7 @@
     <div class="field" style="min-width: 150px;">
       <%= label_with_errors f, :type %>
       <% selected_type = Artemis.Helpers.deep_get(f, [:data, :type]) || "text" %>
-      <%= select f, :type, Artemis.EventQuestion.allowed_types(), class: "enhanced clearable", placeholder: "", selected: selected_type %>
+      <%= select f, :type, Artemis.EventQuestion.allowed_types(), class: "enhanced", placeholder: "", selected: selected_type %>
     </div>
 
     <div class="field">
