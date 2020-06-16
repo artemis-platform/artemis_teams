@@ -1,38 +1,45 @@
 <%
   chart_id = "amchart-#{Artemis.Helpers.UUID.call()}"
 
-  chart_data =
+  project_titles =
+    @projects
+    |> Enum.map(& &1.title)
+    |> Enum.sort()
+    |> List.insert_at(-1, Artemis.EventAnswer.default_project_name())
+
+  default_entry =
+    project_titles
+    |> Enum.map(&{&1, 0.0})
+    |> Enum.into(%{})
+
+  event_question_data = 
     @event_reports
     |> Map.get(:event_questions_percent_by_date)
     |> Map.get(@event_question.id)
     |> Kernel.||(%{})
-    |> Enum.map(fn {date, entries} ->
+
+  chart_data =
+    Enum.map(event_question_data, fn {date, entries} ->
       total =
         entries
         |> Map.values()
         |> Enum.sum()
 
       entry_percentages =
-        entries
-        |> Enum.map(fn {key, value} ->
+        Enum.reduce(entries, default_entry, fn {key, value}, acc ->
           ratio =
             case total && total > 0 do
               true -> value / total
               false -> 0.0
             end
 
-          {key, Float.round(ratio, 3) * 100}
+          percent = Float.round(ratio, 3) * 100
+
+          Map.put(acc, key, percent)
         end)
-        |> Enum.into(%{})
 
       Map.put(entry_percentages, :date, Date.to_iso8601(date))
     end)
-
-  project_titles =
-    @projects
-    |> Enum.map(& &1.title)
-    |> Enum.sort()
-    |> List.insert_at(-1, Artemis.EventAnswer.default_project_name())
 %>
 
 <script>
@@ -100,6 +107,7 @@
     // Add a legend
     chart.legend = new am4charts.Legend();
     chart.legend.position = "right";
+    chart.legend.scrollable = true;
 
     // Register instance
     window.AmChartHelpers.register_instance("<%= chart_id %>", {chart: chart, data: data})
