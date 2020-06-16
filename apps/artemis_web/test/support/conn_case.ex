@@ -20,6 +20,7 @@ defmodule ArtemisWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
 
+      import ArtemisWeb.ConnCase
       import ArtemisWeb.ConnHelpers
 
       alias ArtemisWeb.Mock

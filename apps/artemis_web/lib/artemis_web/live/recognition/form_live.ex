@@ -12,7 +12,7 @@ defmodule ArtemisWeb.RecognitionFormLive do
 
   @impl true
   def mount(_params, session, socket) do
-    user = Map.get(session, "user")
+    user = Map.fetch!(session, "user")
     recognition = get_recognition(session)
     changeset = Recognition.changeset(recognition)
     action = if recognition.id, do: :update, else: :create
@@ -40,7 +40,7 @@ defmodule ArtemisWeb.RecognitionFormLive do
 
   @impl true
   def handle_event("reset", _params, socket) do
-    recognition = get_recognition(:new)
+    recognition = get_recognition(%{})
     changeset = Recognition.changeset(recognition)
 
     assigns =
@@ -67,15 +67,21 @@ defmodule ArtemisWeb.RecognitionFormLive do
   defp create(socket, params) do
     redirect? = socket.assigns.redirect?
     user = socket.assigns.user
-    params = get_params(params, user)
 
-    case CreateRecognition.call(params, user) do
+    create_params =
+      params
+      |> get_params()
+      |> Map.put("created_by_id", user.id)
+
+    case CreateRecognition.call(create_params, user) do
       {:ok, recognition} ->
         case redirect? do
           true ->
             socket
             |> put_flash(:info, "Recognition created successfully.")
-            |> redirect(to: ArtemisWeb.Router.Helpers.recognition_path(socket, :show, recognition))
+            |> Phoenix.LiveView.push_redirect(
+              to: ArtemisWeb.Router.Helpers.recognition_show_path(socket, :show, recognition)
+            )
 
           _ ->
             socket
@@ -96,16 +102,18 @@ defmodule ArtemisWeb.RecognitionFormLive do
   defp update(socket, params) do
     redirect? = socket.assigns.redirect?
     user = socket.assigns.user
-    params = get_params(params, user)
+    update_params = get_params(params)
     id = Map.get(params, "id")
 
-    case UpdateRecognition.call(id, params, user) do
+    case UpdateRecognition.call(id, update_params, user) do
       {:ok, recognition} ->
         case redirect? do
           true ->
             socket
             |> put_flash(:info, "Recognition updated successfully.")
-            |> redirect(to: ArtemisWeb.Router.Helpers.recognition_path(socket, :show, recognition))
+            |> Phoenix.LiveView.push_redirect(
+              to: ArtemisWeb.Router.Helpers.recognition_show_path(socket, :show, recognition)
+            )
 
           _ ->
             socket
@@ -134,11 +142,9 @@ defmodule ArtemisWeb.RecognitionFormLive do
     |> Enum.map(&{&1.name, &1.id})
   end
 
-  defp get_params(params, user) do
+  defp get_params(params) do
     params
     |> Artemis.Helpers.keys_to_strings()
-    |> Map.put("created_by", user)
-    |> Map.put("created_by_id", user.id)
     |> Map.put_new("user_recognitions", [])
     |> maybe_add_user_recognitions()
   end

@@ -1,0 +1,37 @@
+<%= render "show/_header.html", assigns %>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @url %>
+  <%= render_presence @socket, url: @url, user: @user %>
+</div>
+
+<div id="content">
+  <%= render_event_log_notifications @socket, "Recognition", @recognition.id %>
+
+  <%= live_render_recognition_cards @socket, recognitions: paginate(@recognition), user: @user %>
+
+  <h3>Comments</h3>
+
+  <%=
+    ArtemisWeb.CommentView.live_render_comment_cards(
+      @socket,
+      path: @path,
+      resource_id: @recognition.id,
+      resource_type: "Recognition",
+      user: @user
+    )
+  %>
+
+  <section>
+    <%= h3 "New Comment" %>
+
+    <%=
+      ArtemisWeb.CommentView.live_render_comment_form(
+        @socket,
+        resource_type: "Recognition",
+        resource_id: @recognition.id,
+        user: @user
+      )
+    %>
+  </section>
+</div>

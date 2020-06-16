@@ -1,0 +1,25 @@
+<div id="content-header">
+  <header>
+    <h1>New Recognition</h1>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @url %>
+  <%= render_presence @socket, url: @url, user: @user %>
+</div>
+
+<div id="content">
+  <section>
+    <%=
+      live_render(
+        @socket,
+        ArtemisWeb.RecognitionFormLive,
+        id: "recognition-form-new",
+        session: %{
+          "user" => @user
+        }
+      )
+    %>
+  </section>
+</div>

@@ -49,7 +49,7 @@ defmodule ArtemisWeb do
 
       defp render_format_headers(conn, _), do: conn
 
-      # User Permissions
+      # Authorization - Permissions
 
       defp authorize(conn, permission, render_controller) do
         case has?(conn, permission) do
@@ -72,7 +72,7 @@ defmodule ArtemisWeb do
         end
       end
 
-      # User Permissions
+      # Authorization - Teams
 
       defp authorize_in_team(conn, team_id, render_controller) do
         case in_team?(conn, team_id) do
@@ -156,6 +156,7 @@ defmodule ArtemisWeb do
       import ArtemisWeb.ViewHelper.Notifications
       import ArtemisWeb.ViewHelper.Numbers
       import ArtemisWeb.ViewHelper.Pagination
+      import ArtemisWeb.ViewHelper.Path
       import ArtemisWeb.ViewHelper.Presence
       import ArtemisWeb.ViewHelper.Print
       import ArtemisWeb.ViewHelper.QueryParams

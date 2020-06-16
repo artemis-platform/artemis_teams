@@ -95,18 +95,15 @@ defmodule ArtemisWeb.ViewHelper.Navigation do
   @doc """
   Lists all secondary navigation
   """
-  def render_secondary_navigation(conn, user, items) do
+  def render_secondary_navigation(conn, user, items, options \\ []) do
+    request_path = ArtemisWeb.ViewHelper.Path.get_request_path(conn, options)
+
     verified_items =
       Enum.filter(items, fn item ->
         verify = Keyword.get(item, :verify)
 
         verify.(user)
       end)
-
-    request_path =
-      conn.request_path
-      |> String.trim()
-      |> String.trim_trailing("/")
 
     entries =
       Enum.map(verified_items, fn item ->
@@ -145,13 +142,16 @@ defmodule ArtemisWeb.ViewHelper.Navigation do
   @doc """
   Render secondary navigation comment label
   """
-  def render_secondary_navigation_live_comment_count_label(conn, resource_type, resource_id) do
+  def render_secondary_navigation_live_comment_count_label(conn, resource_type, resource_id, options \\ []) do
+    id = "secondary-navigation-comment-count-label-#{resource_type}-#{resource_id}"
+    user = Keyword.get(options, :user) || current_user(conn)
+
     session = %{
       "resource_id" => resource_id,
       "resource_type" => resource_type,
-      "user" => current_user(conn)
+      "user" => user
     }
 
-    Phoenix.LiveView.Helpers.live_render(conn, ArtemisWeb.CommentCountLabelLive, session: session)
+    Phoenix.LiveView.Helpers.live_render(conn, ArtemisWeb.CommentCountLabelLive, id: id, session: session)
   end
 end

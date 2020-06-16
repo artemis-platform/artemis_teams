@@ -14,7 +14,7 @@
           No recognitions yet!
         </div>
         <%= if has?(@user, "recognitions:create") do %>
-          <a class="ui basic button blue" href="<%= Routes.recognition_path(@socket, :new) %>">Recognize Someone</a>
+          <a class="ui basic button blue" href="<%= Routes.recognition_show_path(@socket, :new) %>">Recognize Someone</a>
         <% end %>
       </div>
 

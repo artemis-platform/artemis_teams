@@ -15,7 +15,7 @@ defmodule Artemis.ListComments do
   alias Artemis.Comment
   alias Artemis.Repo
 
-  @default_order "-inserted_at"
+  @default_order "inserted_at"
   @default_page_size 25
   @default_preload [:user]
 

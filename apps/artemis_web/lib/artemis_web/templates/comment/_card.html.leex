@@ -5,8 +5,9 @@
 
   <content>
     <div class="heading">
-      <div class="title">
-        <%= @comment.title %>
+      <div>
+        <span class="created-by"><%= render_user_name_html(@socket, @comment.user, @user) %></span>
+        commented
       </div>
 
       <div class="relative-date" data-tooltip="<%= render_date_time(@comment.inserted_at) %>" data-position="left center">
@@ -33,10 +34,19 @@
 
       <div class="links">
         <%= if can_update_comment?(@user, @comment) do %>
-          <%= link "Edit", to:  "#{@path}/#{@comment.id}/edit" %>
+          <%= live_patch "Edit", to: "#{@path}/comments/#{@comment.id}/edit" %>
         <% end %>
         <%= if can_delete_comment?(@user, @comment) do %>
-          <%= link "Delete", method: "delete", to: "#{@path}/#{@comment.id}", data: [confirm: "Delete Comment?"] %>
+          <%=
+            link(
+              "Delete",
+              to: "#delete-comment",
+              data_confirm: "Delete Comment?",
+              phx_click: "delete",
+              phx_target: @myself,
+              phx_value_id: @comment.id
+            )
+          %>
         <% end %>
       </div>
     </footer>

@@ -25,7 +25,7 @@ defmodule Artemis.CreateCommentTest do
     test "returns error when params are empty" do
       {:error, changeset} = CreateComment.call(%{}, Mock.system_user())
 
-      assert errors_on(changeset).title == ["can't be blank"]
+      assert errors_on(changeset).body == ["can't be blank"]
     end
 
     test "creates a comment when passed valid params" do

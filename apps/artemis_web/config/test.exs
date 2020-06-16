@@ -15,6 +15,8 @@ config :artemis_web, ArtemisWeb.Endpoint,
   # Enable for use in browser testing with hound
   server: true
 
+config :artemis_web, ArtemisWeb.LiveController, get_system_user: true
+
 config :hound,
   browser: "chrome_headless",
   driver: "chrome_driver"

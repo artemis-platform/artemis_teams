@@ -34,8 +34,6 @@ defmodule Artemis.Comment do
       :body_html,
       :resource_id,
       :resource_type,
-      :title,
-      :topic,
       :user_id
     ]
 

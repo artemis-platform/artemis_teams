@@ -305,4 +305,18 @@ defmodule ArtemisWeb.UserView do
       role_id == match
     end)
   end
+
+  @doc """
+  Render the name and link of the user
+  """
+  def render_user_name(conn, record, current_user \\ nil)
+
+  def render_user_name(conn, %Artemis.User{} = record, current_user) do
+    case has?(current_user || conn, "users:show") do
+      true -> link(record.name, to: Routes.user_path(conn, :show, record))
+      false -> record.name
+    end
+  end
+
+  def render_user_name(_, _, _), do: "Unknown"
 end

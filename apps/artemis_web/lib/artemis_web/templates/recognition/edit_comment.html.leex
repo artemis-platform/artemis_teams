@@ -1,0 +1,23 @@
+<%= render "show/_header.html", assigns %>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @url %>
+  <%= render_presence @socket, url: @url, user: @user %>
+</div>
+
+<div id="content">
+  <section>
+    <%= h3 "Edit Comment" %>
+
+    <%=
+      ArtemisWeb.CommentView.live_render_comment_form(
+        @socket,
+        id: Map.get(@live_params, "comment_id"),
+        redirect_to: Routes.recognition_show_path(@socket, :show, @recognition),
+        resource_type: "Recognition",
+        resource_id: @recognition.id,
+        user: @user
+      )
+    %>
+  </section>
+</div>

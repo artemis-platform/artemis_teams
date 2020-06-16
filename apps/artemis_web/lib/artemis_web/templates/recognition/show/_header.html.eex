@@ -5,35 +5,12 @@
     </h1>
 
     <div class="actions">
-      <%= if can_delete_recognition?(@conn, @recognition) do %>
-        <%= delete_confirmation "Delete", Routes.recognition_path(@conn, :delete, @recognition) %>
+      <%= if can_delete_recognition?(@user, @recognition) do %>
+        <%= delete_confirmation "Delete", Routes.recognition_show_path(@socket, :delete, @recognition), method: :get %>
       <% end %>
-      <%= if can_update_recognition?(@conn, @recognition) do %>
-        <%= action "Edit", to: Routes.recognition_path(@conn, :edit, @recognition), color: "green" %>
+      <%= if can_update_recognition?(@user, @recognition) do %>
+        <%= action "Edit", to: Routes.recognition_show_path(@socket, :edit, @recognition), color: "green" %>
       <% end %>
     </div>
   </header>
-
-  <%=
-    secondary_navigation_items = [
-      [
-        label: "Overview",
-        path: &Routes.recognition_path(&1, :show, @recognition),
-        path_match_type: :exact,
-        verify: &has?(&1, "recognitions:show")
-      ],
-      [
-        label: render_secondary_navigation_live_comment_count_label(@conn, "Recognition", @recognition.id),
-        path: &Routes.recognition_comment_path(&1, :index_comment, @recognition),
-        path_match_type: :starts_with,
-        verify: &has?(&1, "recognitions:show")
-      ]
-    ]
-
-    render_secondary_navigation(
-      @conn,
-      current_user(@conn),
-      secondary_navigation_items
-    )
-  %>
 </div>
