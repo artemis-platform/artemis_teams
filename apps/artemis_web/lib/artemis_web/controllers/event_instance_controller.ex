@@ -70,7 +70,7 @@ defmodule ArtemisWeb.EventInstanceController do
       event_template = get_event_template!(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
       event_answers = get_event_answers_for_update(event_template_id, date, user)
-      projects = get_projects(event_template.team_id, user)
+      projects = get_active_projects(event_template.team_id, user)
 
       assigns = [
         csrf_token: Phoenix.Controller.get_csrf_token(),
@@ -102,7 +102,7 @@ defmodule ArtemisWeb.EventInstanceController do
             |> redirect(to: Routes.event_instance_path(conn, :show, event_template_id, date))
 
           {:error, event_answers} ->
-            projects = get_projects(event_template.team_id, user)
+            projects = get_active_projects(event_template.team_id, user)
 
             assigns = [
               csrf_token: Phoenix.Controller.get_csrf_token(),
@@ -282,6 +282,18 @@ defmodule ArtemisWeb.EventInstanceController do
     }
 
     ListEventQuestions.call(params, user)
+  end
+
+  defp get_active_projects(team_id, user) do
+    params = %{
+      filters: %{
+        active: true,
+        team_id: team_id
+      },
+      preload: [:team]
+    }
+
+    ListProjects.call(params, user)
   end
 
   defp get_projects(team_id, user) do
