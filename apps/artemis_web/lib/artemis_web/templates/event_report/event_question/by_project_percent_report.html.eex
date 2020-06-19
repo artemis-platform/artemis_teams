@@ -70,19 +70,21 @@
 
     // Create series
     <%= Enum.map project_titles, fn project_title -> %>
-      var series = chart.series.push(new am4charts.LineSeries());
+      var series = chart.series.push(new am4charts.ColumnSeries());
+      series.columns.template.width = am4core.percent(80);
       series.name = "<%= project_title %>";
       series.dataFields.dateX = "date";
       series.dataFields.valueY = "<%= project_title %>";
+      series.stacked = true;
+
       series.tooltipHTML = "<span style='font-size:14px; color:#000000;'><b><%= project_title %></b> - {valueY.value}%</span>";
       series.tooltipText = "<%= project_title %> - [#000]{valueY.value}%[/]";
-      series.tooltip.background.fill = am4core.color("#FFF");
-      series.tooltip.getStrokeFromObject = true;
-      series.tooltip.background.strokeWidth = 3;
-      series.tooltip.getFillFromObject = false;
-      series.fillOpacity = 0.6;
-      series.strokeWidth = 2;
-      series.stacked = true;
+      // series.tooltip.background.fill = am4core.color("#FFF");
+      // series.tooltip.getStrokeFromObject = true;
+      // series.tooltip.background.strokeWidth = 3;
+      // series.tooltip.getFillFromObject = false;
+      // series.fillOpacity = 0.6;
+      // series.strokeWidth = 2;
 
       // Legend - Static
       series.legendSettings.labelText = "<%= project_title %>";
@@ -95,7 +97,7 @@
 
       // Show relative percent
       series.dataFields.valueYShow = "totalPercent";
-      series.calculatePercent = true;
+      // series.calculatePercent = true;
 
     <% end %>
 

@@ -58,6 +58,7 @@
     // Add a legend
     chart.legend = new am4charts.Legend();
     chart.legend.position = "right";
+    chart.legend.scrollable = true;
 
     // Register instance
     window.AmChartHelpers.register_instance("<%= chart_id %>", {chart: chart, data: data})
