@@ -48,7 +48,7 @@ defmodule ArtemisWeb.RecognitionView do
       ],
       [
         verify: can_update_recognition?(conn, row),
-        link: link("Edit", to: Routes.recognition_show_path(conn, :edit, row))
+        link: link("Edit", to: Routes.recognition_path(conn, :edit, row))
       ]
     ]
 

@@ -101,7 +101,7 @@ defmodule ArtemisWeb.Config.Navigation do
         ],
         [
           label: "Create New Recognition",
-          path: &Routes.recognition_show_path(&1, :new),
+          path: &Routes.recognition_path(&1, :new),
           verify: &has?(&1, "recognitions:create")
         ]
       ],

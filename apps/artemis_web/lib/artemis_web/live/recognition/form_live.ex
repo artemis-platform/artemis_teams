@@ -79,9 +79,7 @@ defmodule ArtemisWeb.RecognitionFormLive do
           true ->
             socket
             |> put_flash(:info, "Recognition created successfully.")
-            |> Phoenix.LiveView.push_redirect(
-              to: ArtemisWeb.Router.Helpers.recognition_show_path(socket, :show, recognition)
-            )
+            |> redirect(to: ArtemisWeb.Router.Helpers.recognition_path(socket, :show, recognition))
 
           _ ->
             socket
@@ -111,9 +109,7 @@ defmodule ArtemisWeb.RecognitionFormLive do
           true ->
             socket
             |> put_flash(:info, "Recognition updated successfully.")
-            |> Phoenix.LiveView.push_redirect(
-              to: ArtemisWeb.Router.Helpers.recognition_show_path(socket, :show, recognition)
-            )
+            |> redirect(to: ArtemisWeb.Router.Helpers.recognition_path(socket, :show, recognition))
 
           _ ->
             socket
