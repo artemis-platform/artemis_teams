@@ -1,0 +1,12 @@
+<%= render "show/_header.html", assigns %>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <%= live_render_recognition_cards @conn, recognitions: paginate(@recognition) %>
+</div>
