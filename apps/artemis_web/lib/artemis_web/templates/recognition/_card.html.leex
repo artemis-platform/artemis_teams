@@ -1,6 +1,6 @@
 <section class="recognition card recognition-card">
   <aside class="centered">
-    <a href="<%= Routes.recognition_show_path(@socket, :show, @recognition) %>">
+    <a href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
       <i class="icon trophy primary"></i>
     </a>
   </aside>
@@ -34,7 +34,7 @@
           )
         %>
 
-        <a class="comments" href="<%= Routes.recognition_show_path(@socket, :show, @recognition) %>">
+        <a class="comments" href="<%= Routes.recognition_comment_path(@socket, :index_comment, @recognition) %>">
           <i class="icon comment outline"></i>
           <%= if @recognition_comments_status == :loading do %>
             Comments
@@ -55,11 +55,11 @@
 
       <div class="links">
         <%= if can_update_recognition?(@user, @recognition) do %>
-          <a class="edit" href="<%= Routes.recognition_show_path(@socket, :edit, @recognition) %>">
+          <a class="edit" href="<%= Routes.recognition_path(@socket, :edit, @recognition) %>">
             <i class="icon pencil alternate"></i>Edit
           </a>
         <% end %>
-        <a class="permalink" href="<%= Routes.recognition_show_path(@socket, :show, @recognition) %>">
+        <a class="permalink" href="<%= Routes.recognition_path(@socket, :show, @recognition) %>">
           <i class="icon linkify"></i>Link
         </a>
       </div>
