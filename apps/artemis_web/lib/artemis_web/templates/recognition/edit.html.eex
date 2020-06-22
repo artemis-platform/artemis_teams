@@ -1,0 +1,28 @@
+<div id="content-header">
+  <header>
+    <h1>Edit Recognition</h1>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+  <%= render_event_log_notifications @conn, "Recognition", @recognition.id %>
+
+  <section>
+    <%=
+      live_render(
+        @conn,
+        ArtemisWeb.RecognitionFormLive,
+        session: %{
+          "recognition" => @recognition,
+          "user" => current_user(@conn)
+        }
+      )
+    %>
+  </section>
+</div>
