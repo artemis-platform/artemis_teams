@@ -7,39 +7,6 @@ defmodule Artemis.ListUsersTest do
   alias Artemis.Repo
   alias Artemis.User
 
-  describe "access permissions" do
-    setup do
-      insert_list(3, :user)
-
-      {:ok, []}
-    end
-
-    test "returns empty list with no permissions" do
-      user = Mock.user_without_permissions()
-
-      result = ListUsers.call(user)
-
-      assert length(result) == 0
-    end
-
-    test "requires access:self permission to return own record" do
-      user = Mock.user_with_permission("users:access:self")
-
-      result = ListUsers.call(user)
-
-      assert length(result) == 1
-    end
-
-    test "requires access:all permission to return other records" do
-      user = Mock.user_with_permission("users:access:all")
-
-      result = ListUsers.call(user)
-      total = Repo.all(User)
-
-      assert length(result) == length(total)
-    end
-  end
-
   describe "call" do
     test "returns empty list when no users exist" do
       Repo.delete_all(User)
