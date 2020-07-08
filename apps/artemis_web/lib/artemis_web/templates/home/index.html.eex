@@ -20,7 +20,7 @@
           <%= ArtemisWeb.RecognitionView.live_render_recognition_totals @conn %>
         </section>
 
-        <%= ArtemisWeb.RecognitionView.live_render_recognition_cards(@conn, params: @conn.query_params) %>
+        <%= ArtemisWeb.RecognitionView.live_render_recognition_cards(@conn, params: @conn.query_params, recognitions: @recognitions) %>
       <% end %>
     </content>
 
