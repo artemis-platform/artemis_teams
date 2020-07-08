@@ -15,6 +15,7 @@
         ["Title", @event_template.title],
         ["Active", @event_template.active],
         ["Team", ArtemisWeb.TeamView.render_show_link(@conn, @event_template.team)],
+        ["Schedule", Artemis.Helpers.Schedule.humanize(@event_template.schedule)],
         ["Description", raw @event_template.description_html]
       ])
     %>

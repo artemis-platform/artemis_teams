@@ -7,10 +7,10 @@
 
     <div class="actions">
       <%= if has?(@conn, "event-answers:update") do %>
-        <%= action "Update My Answers", to: Routes.event_instance_path(@conn, :edit, @event_template, @today), color: "green" %>
+        <%= action "Update My Answers", to: Routes.event_instance_path(@conn, :edit, @event_template, get_current_instance_date(@event_template)), color: "green" %>
       <% end %>
       <%= if has?(@conn, "event-answers:show") do %>
-        <%= action "View My Answers", to: Routes.event_instance_path(@conn, :show, @event_template, @today), color: "blue" %>
+        <%= action "View My Answers", to: Routes.event_instance_path(@conn, :show, @event_template, get_current_instance_date(@event_template)), color: "blue" %>
       <% end %>
     </div>
   </header>

@@ -156,6 +156,15 @@ defmodule ArtemisWeb.EventInstanceView do
   end
 
   @doc """
+  Return the current event instance date
+  """
+  def get_current_instance_date(event) do
+    DateTime.utc_now()
+    |> Artemis.Helpers.Schedule.current(event.schedule)
+    |> Date.to_iso8601()
+  end
+
+  @doc """
   Filter event answers for event question
   """
   def get_event_answers_for_event_question(event_answers, event_question) do

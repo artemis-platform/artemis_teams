@@ -7,6 +7,7 @@ defmodule Artemis.EventTemplate do
     field :active, :boolean, default: true
     field :description, :string
     field :description_html, :string
+    field :schedule, :string
     field :title, :string
 
     belongs_to :team, Artemis.Team, on_replace: :delete
@@ -26,12 +27,14 @@ defmodule Artemis.EventTemplate do
       :active,
       :description,
       :description_html,
+      :schedule,
       :team_id,
       :title
     ]
 
   def required_fields,
     do: [
+      :schedule,
       :team_id,
       :title
     ]
@@ -45,6 +48,7 @@ defmodule Artemis.EventTemplate do
     do: [
       :id,
       :description,
+      :schedule,
       :title
     ]
 

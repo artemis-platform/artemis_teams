@@ -14,6 +14,20 @@
   </div>
 
   <div class="field">
+    <%= label_with_errors f, :schedule %>
+    <%=
+      schedule_options = [
+        [key: "Daily - Monday to Friday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR"],
+        [key: "Daily - Every Day", value: "DTSTART:20200101T000000\nRRULE:FREQ=DAILY"],
+        [key: "Weekly - Every Monday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO"],
+        [key: "Weekly - Every Friday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=FR"]
+      ]
+
+      select f, :schedule, schedule_options, class: "enhanced", placeholder: "Schedule"
+    %>
+  </div>
+
+  <div class="field">
     <%= label_with_errors f, :description %>
     <%= textarea f, :description, rows: 3 %>
   </div>
