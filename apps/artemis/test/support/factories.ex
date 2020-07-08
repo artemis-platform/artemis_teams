@@ -63,6 +63,7 @@ defmodule Artemis.Factories do
       required: true,
       title: sequence(:title, &"#{Faker.Name.name()}-#{&1}"),
       type: "text",
+      visibility: "team_viewer",
       event_template: build(:event_template)
     }
   end

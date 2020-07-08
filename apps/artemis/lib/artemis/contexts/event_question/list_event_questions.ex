@@ -58,6 +58,8 @@ defmodule Artemis.ListEventQuestions do
     |> where([..., user_teams], user_teams.user_id in ^split(value))
   end
 
+  defp filter(query, "visibility", value), do: where(query, [i], i.visibility in ^split(value))
+
   defp get_records(query, %{"paginate" => true} = params), do: Repo.paginate(query, pagination_params(params))
   defp get_records(query, _params), do: Repo.all(query)
 end

@@ -58,11 +58,7 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
   end
 
   defp create_summary_by_project_notification(conn, event_template, date, url, user) do
-    event_answers =
-      event_template
-      |> Map.get(:id)
-      |> get_event_answers(date, user)
-
+    event_answers = get_event_answers(event_template, date, user)
     respondents = get_respondents(event_template.team_id, event_answers, user)
 
     # Summary Overview Section
@@ -104,11 +100,18 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
     {:ok, true}
   end
 
-  defp get_event_answers(event_template_id, date, user) do
+  defp get_event_answers(event_template, date, user) do
+    event_question_visibility_filter =
+      ArtemisWeb.EventQuestionView.get_event_question_visibility(
+        event_template.team_id,
+        user
+      )
+
     params = %{
       filters: %{
         date: Date.from_iso8601!(date),
-        event_template_id: event_template_id
+        event_question_visibility: event_question_visibility_filter,
+        event_template_id: event_template.id
       },
       preload: [:event_question, :project, :user]
     }

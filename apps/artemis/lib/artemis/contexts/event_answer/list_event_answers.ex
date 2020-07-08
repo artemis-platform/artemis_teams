@@ -51,6 +51,12 @@ defmodule Artemis.ListEventAnswers do
   defp filter(query, "event_question_id", value), do: where(query, [i], i.event_question_id in ^split(value))
   defp filter(query, "project_id", value), do: where(query, [i], i.project_id in ^split(value))
 
+  defp filter(query, "event_question_visibility", value) do
+    query
+    |> join(:left, [event_answer], event_question in assoc(event_answer, :event_question))
+    |> where([..., event_question], event_question.visibility in ^split(value))
+  end
+
   defp filter(query, "event_template_id", value) do
     query
     |> join(:left, [event_answer], event_question in assoc(event_answer, :event_question))

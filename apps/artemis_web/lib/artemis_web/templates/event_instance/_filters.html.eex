@@ -44,7 +44,6 @@
       <div>
         <i class="calendar icon"></i>
         <%=
-          # TODO: generate this value correctly
           options =
             %{distinct: :date}
             |> Artemis.ListEventAnswers.call(current_user(@conn))
