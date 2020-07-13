@@ -21,35 +21,50 @@ defmodule Artemis.ListEventReports do
     |> search_filter(params)
   end
 
-  defp filter_query(query, %{"filters" => filters}, _user) when is_map(filters) do
+  defp filter_query(query, %{"filters" => filters}, user) when is_map(filters) do
     Enum.reduce(filters, query, fn {key, value}, acc ->
-      filter(acc, key, value)
+      filter(acc, key, value, user)
     end)
   end
 
   defp filter_query(query, _params, _user), do: query
 
-  defp filter(query, _key, nil), do: query
-  defp filter(query, _key, ""), do: query
+  defp filter(query, _key, nil, _user), do: query
+  defp filter(query, _key, "", _user), do: query
 
-  defp filter(query, "date", value), do: where(query, [i], i.date in ^split(value))
-  defp filter(query, "date_gt", value), do: where(query, [i], i.date > ^value)
-  defp filter(query, "date_gte", value), do: where(query, [i], i.date >= ^value)
-  defp filter(query, "date_lt", value), do: where(query, [i], i.date < ^value)
-  defp filter(query, "date_lte", value), do: where(query, [i], i.date <= ^value)
+  defp filter(query, "date", value, _user), do: where(query, [i], i.date in ^split(value))
+  defp filter(query, "date_gt", value, _user), do: where(query, [i], i.date > ^value)
+  defp filter(query, "date_gte", value, _user), do: where(query, [i], i.date >= ^value)
+  defp filter(query, "date_lt", value, _user), do: where(query, [i], i.date < ^value)
+  defp filter(query, "date_lte", value, _user), do: where(query, [i], i.date <= ^value)
 
-  defp filter(query, "event_question_id", value), do: where(query, [i], i.event_question_id in ^split(value))
+  defp filter(query, "event_question_id", value, _user), do: where(query, [i], i.event_question_id in ^split(value))
 
-  defp filter(query, "event_template_id", value) do
+  defp filter(query, "event_question_visibility", value, _user) do
+    query
+    |> join(:left, [event_answer], event_question in assoc(event_answer, :event_question))
+    |> where([..., event_question], event_question.visibility in ^split(value))
+  end
+
+  defp filter(query, "event_question_visibility_or_user_id", value, user) do
+    query
+    |> join(:left, [event_answer], event_question in assoc(event_answer, :event_question))
+    |> where(
+      [event_answer, event_question],
+      event_question.visibility in ^split(value) or event_answer.user_id == ^user.id
+    )
+  end
+
+  defp filter(query, "event_template_id", value, _user) do
     query
     |> join(:left, [event_answer], event_question in assoc(event_answer, :event_question))
     |> where([..., event_question], event_question.event_template_id in ^split(value))
   end
 
-  defp filter(query, "project_id", value), do: where(query, [i], i.project_id in ^split(value))
-  defp filter(query, "user_id", value), do: where(query, [i], i.user_id in ^split(value))
+  defp filter(query, "project_id", value, _user), do: where(query, [i], i.project_id in ^split(value))
+  defp filter(query, "user_id", value, _user), do: where(query, [i], i.user_id in ^split(value))
 
-  defp filter(query, _key, _value), do: query
+  defp filter(query, _key, _value, _user), do: query
 
   # Helpers - Data Processing
 

@@ -60,7 +60,10 @@ defmodule Artemis.ListEventAnswers do
   defp filter(query, "event_question_visibility_or_user_id", value, user) do
     query
     |> join(:left, [event_answer], event_question in assoc(event_answer, :event_question))
-    |> where([event_answer, event_question], event_question.visibility in ^split(value) or event_answer.user_id == ^user.id)
+    |> where(
+      [event_answer, event_question],
+      event_question.visibility in ^split(value) or event_answer.user_id == ^user.id
+    )
   end
 
   defp filter(query, "event_template_id", value, _user) do

@@ -12,7 +12,7 @@ defmodule ArtemisWeb.EventReportController do
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
-      event_reports = get_event_reports(params, event_questions, user)
+      event_reports = get_event_reports(params, event_template, event_questions, user)
       projects = get_projects(event_template.team_id, user)
       filter_data = get_filter_data(event_template, user)
 
@@ -32,7 +32,7 @@ defmodule ArtemisWeb.EventReportController do
 
   # Helpers
 
-  defp get_event_reports(params, event_questions, user) do
+  defp get_event_reports(params, event_template, event_questions, user) do
     params = Artemis.Helpers.keys_to_strings(params)
 
     # Event Instance Reports
@@ -49,6 +49,9 @@ defmodule ArtemisWeb.EventReportController do
       :event_questions_percent_by_date
     ]
 
+    team_id = event_template.team_id
+    event_question_visibility = ArtemisWeb.EventQuestionView.get_event_question_visibility(team_id, user)
+
     numeric_event_question_ids =
       event_questions
       |> Enum.filter(&(&1.type == "number"))
@@ -56,7 +59,8 @@ defmodule ArtemisWeb.EventReportController do
 
     required_params = %{
       "filters" => %{
-        "event_question_id" => numeric_event_question_ids
+        "event_question_id" => numeric_event_question_ids,
+        "event_question_visibility_or_user_id" => event_question_visibility
       }
     }
 
