@@ -124,6 +124,7 @@ defmodule ArtemisWeb.EventQuestionView do
       team_admin?(user, team_id) -> ["team_viewer", "team_member", "team_admin"]
       team_member?(user, team_id) -> ["team_viewer", "team_member"]
       team_viewer?(user, team_id) -> ["team_viewer"]
+      true -> []
     end
   end
 end

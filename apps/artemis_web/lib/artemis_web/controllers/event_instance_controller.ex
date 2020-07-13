@@ -166,7 +166,7 @@ defmodule ArtemisWeb.EventInstanceController do
     required_params =
       %{
         filters: %{
-          event_question_visibility: event_question_visibility_filter,
+          event_question_visibility_or_user_id: event_question_visibility_filter,
           event_template_id: event_template.id
         },
         page_size: 50,
@@ -230,7 +230,7 @@ defmodule ArtemisWeb.EventInstanceController do
       %{
         filters: %{
           date: Date.from_iso8601!(date),
-          event_question_visibility: event_question_visibility_filter,
+          event_question_visibility_or_user_id: event_question_visibility_filter,
           event_template_id: event_template.id
         },
         preload: [:project, :user]
