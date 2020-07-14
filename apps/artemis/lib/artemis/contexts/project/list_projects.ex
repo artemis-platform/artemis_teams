@@ -15,7 +15,7 @@ defmodule Artemis.ListProjects do
   alias Artemis.Project
   alias Artemis.Repo
 
-  @default_order "title"
+  @default_order "-active,title"
   @default_page_size 25
   @default_preload []
 
