@@ -31,6 +31,7 @@ defmodule ArtemisWeb.EventView do
       {"Actions", "actions"},
       {"Active", "active"},
       {"Instances", "instances"},
+      {"Schedule", "schedule"},
       {"Team", "team"},
       {"Title", "title"},
       {"Update Current Instance", "actions_update_current_event_instance"},
@@ -75,6 +76,10 @@ defmodule ArtemisWeb.EventView do
           end
         end
       ],
+      "schedule" => [
+        label: fn _conn -> "Schedule" end,
+        value: fn _conn, row -> Artemis.Helpers.Schedule.humanize(row.schedule) end
+      ],
       "team" => [
         label: fn _conn -> "Team" end,
         value: fn _conn, row -> row.team.name end,
@@ -108,7 +113,7 @@ defmodule ArtemisWeb.EventView do
         link: link("Show", to: Routes.event_path(conn, :show, row))
       ],
       [
-        verify: has?(conn, "event-templates:update") && team_admin?(conn, row.team),
+        verify: has?(conn, "event-templates:update") && (team_admin?(conn, row.team) || team_editor?(conn, row.team)),
         link: link("Edit", to: Routes.event_path(conn, :edit, row))
       ]
     ]
@@ -124,7 +129,7 @@ defmodule ArtemisWeb.EventView do
   end
 
   defp data_table_actions_update_current_event_instance_column_html(conn, row) do
-    date = get_current_instance_date(row)
+    date = ArtemisWeb.EventInstanceView.get_current_instance_date(row)
 
     if has?(conn, "event-answers:update") do
       content_tag(:div, class: "actions-current-event-instance") do
@@ -134,18 +139,13 @@ defmodule ArtemisWeb.EventView do
   end
 
   defp data_table_actions_view_current_event_instance_column_html(conn, row) do
-    date = get_current_instance_date(row)
+    date = ArtemisWeb.EventInstanceView.get_current_instance_date(row)
 
     if has?(conn, "event-answers:show") do
       content_tag(:div, class: "actions-current-event-instance") do
         action("View", to: Routes.event_instance_path(conn, :show, row, date), color: "blue", size: "tiny")
       end
     end
-  end
-
-  # TODO: generate the current instance date based on record
-  defp get_current_instance_date(_event) do
-    Date.to_iso8601(Date.utc_today())
   end
 
   # Helpers

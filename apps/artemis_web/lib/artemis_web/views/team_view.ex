@@ -63,7 +63,7 @@ defmodule ArtemisWeb.TeamView do
         link: link("Show", to: Routes.team_path(conn, :show, row))
       ],
       [
-        verify: has?(conn, "teams:update") && team_admin?(conn, row.id),
+        verify: has?(conn, "teams:update") && (team_admin?(conn, row.id) || team_editor?(conn, row.id)),
         link: link("Edit", to: Routes.team_path(conn, :edit, row))
       ]
     ]

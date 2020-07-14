@@ -29,7 +29,7 @@ defmodule ArtemisWeb.TeamMemberController do
         user_team: user_team
       ]
 
-      authorize_in_team(conn, team.id, fn ->
+      authorize_team_admin(conn, team.id, fn ->
         render(conn, "new.html", assigns)
       end)
     end)
@@ -40,7 +40,7 @@ defmodule ArtemisWeb.TeamMemberController do
       user = current_user(conn)
       team = GetTeam.call!(team_id, user)
 
-      authorize_in_team(conn, team.id, fn ->
+      authorize_team_admin(conn, team.id, fn ->
         case CreateOrUpdateUserTeam.call(params, user) do
           {:ok, _team_user} ->
             conn
@@ -75,7 +75,7 @@ defmodule ArtemisWeb.TeamMemberController do
       team = GetTeam.call!(team_id, user)
       user_team = GetUserTeam.call!(id, user)
 
-      authorize_in_team(conn, team.id, fn ->
+      authorize_team_admin(conn, team.id, fn ->
         render(conn, "show.html", user_team: user_team)
       end)
     end)
@@ -96,7 +96,7 @@ defmodule ArtemisWeb.TeamMemberController do
         user_team: user_team
       ]
 
-      authorize_in_team(conn, team.id, fn ->
+      authorize_team_admin(conn, team.id, fn ->
         render(conn, "edit.html", assigns)
       end)
     end)
@@ -108,7 +108,7 @@ defmodule ArtemisWeb.TeamMemberController do
       team = GetTeam.call!(team_id, user)
       params = Map.put(params, "id", id)
 
-      authorize_in_team(conn, team.id, fn ->
+      authorize_team_admin(conn, team.id, fn ->
         case CreateOrUpdateUserTeam.call(params, user) do
           {:ok, _team_user} ->
             conn
@@ -142,7 +142,7 @@ defmodule ArtemisWeb.TeamMemberController do
       user = current_user(conn)
       team = GetTeam.call!(team_id, user)
 
-      authorize_in_team(conn, team.id, fn ->
+      authorize_team_admin(conn, team.id, fn ->
         {:ok, _team_user} = DeleteUserTeam.call(id, params, current_user(conn))
 
         conn

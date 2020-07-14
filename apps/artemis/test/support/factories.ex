@@ -63,6 +63,7 @@ defmodule Artemis.Factories do
       required: true,
       title: sequence(:title, &"#{Faker.Name.name()}-#{&1}"),
       type: "text",
+      visibility: "team_viewer",
       event_template: build(:event_template)
     }
   end
@@ -74,6 +75,7 @@ defmodule Artemis.Factories do
       active: true,
       description: description,
       description_html: description,
+      schedule: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR",
       title: sequence(:title, &"#{Faker.Name.name()}-#{&1}"),
       team: build(:team)
     }

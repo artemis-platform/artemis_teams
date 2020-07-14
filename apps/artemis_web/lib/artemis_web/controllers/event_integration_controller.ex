@@ -22,7 +22,7 @@ defmodule ArtemisWeb.EventIntegrationController do
         event_template: event_template
       ]
 
-      authorize_team_admin(conn, event_template.team_id, fn ->
+      authorize_team_editor(conn, event_template.team_id, fn ->
         render_format(conn, "index", assigns)
       end)
     end)
@@ -41,7 +41,7 @@ defmodule ArtemisWeb.EventIntegrationController do
         event_template: event_template
       ]
 
-      authorize_team_admin(conn, event_template.team_id, fn ->
+      authorize_team_editor(conn, event_template.team_id, fn ->
         render(conn, "new.html", assigns)
       end)
     end)
@@ -52,7 +52,7 @@ defmodule ArtemisWeb.EventIntegrationController do
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
 
-      authorize_team_admin(conn, event_template.team_id, fn ->
+      authorize_team_editor(conn, event_template.team_id, fn ->
         case CreateEventIntegration.call(params, user) do
           {:ok, _event_integration} ->
             conn
@@ -85,7 +85,7 @@ defmodule ArtemisWeb.EventIntegrationController do
         event_template: event_template
       ]
 
-      authorize_team_admin(conn, event_template.team_id, fn ->
+      authorize_team_editor(conn, event_template.team_id, fn ->
         render(conn, "show.html", assigns)
       end)
     end)
@@ -104,7 +104,7 @@ defmodule ArtemisWeb.EventIntegrationController do
         event_template: event_template
       ]
 
-      authorize_team_admin(conn, event_template.team_id, fn ->
+      authorize_team_editor(conn, event_template.team_id, fn ->
         render(conn, "edit.html", assigns)
       end)
     end)
@@ -115,7 +115,7 @@ defmodule ArtemisWeb.EventIntegrationController do
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
 
-      authorize_team_admin(conn, event_template.team_id, fn ->
+      authorize_team_editor(conn, event_template.team_id, fn ->
         case UpdateEventIntegration.call(id, params, user) do
           {:ok, _event_integration} ->
             conn
@@ -142,7 +142,7 @@ defmodule ArtemisWeb.EventIntegrationController do
       user = current_user(conn)
       event_template = GetEventTemplate.call!(event_template_id, user)
 
-      authorize_team_admin(conn, event_template.team_id, fn ->
+      authorize_team_editor(conn, event_template.team_id, fn ->
         {:ok, _event_integration} = DeleteEventIntegration.call(id, params, user)
 
         conn

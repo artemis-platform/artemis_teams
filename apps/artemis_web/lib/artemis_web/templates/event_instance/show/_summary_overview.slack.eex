@@ -40,6 +40,30 @@
       ]
     },
     {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Update Answers",
+            "emoji": true
+          },
+          "style": "primary",
+          "url": "<%= Routes.event_instance_url(@conn, :edit, @event_template, @date) %>"
+        },
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "View Answers",
+            "emoji": true
+          },
+          "url": "<%= Routes.event_instance_url(@conn, :show, @event_template, @date) %>"
+        }
+      ]
+    },
+    {
       "type": "divider"
     }
   ]

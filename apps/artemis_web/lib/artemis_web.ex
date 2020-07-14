@@ -88,6 +88,13 @@ defmodule ArtemisWeb do
         end
       end
 
+      defp authorize_team_editor(conn, team_id, render_controller) do
+        case team_admin?(conn, team_id) || team_editor?(conn, team_id) do
+          true -> render_controller.()
+          false -> render_forbidden(conn)
+        end
+      end
+
       # Features
 
       defp feature_active?(conn, feature, render_controller) do

@@ -56,6 +56,7 @@ defmodule Artemis.EventIntegration do
   def allowed_notification_types,
     do: [
       "Reminder",
+      "Summary - Overview",
       "Summary - By Project"
     ]
 

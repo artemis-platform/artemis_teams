@@ -42,6 +42,8 @@ defmodule Artemis.UserAccess do
 
   def team_admin?(user, team), do: has_team_type?(user, team, "admin")
 
+  def team_editor?(user, team), do: has_team_type?(user, team, "editor")
+
   def team_member?(user, team), do: has_team_type?(user, team, "member")
 
   def team_viewer?(user, team), do: has_team_type?(user, team, "viewer")

@@ -17,7 +17,7 @@ defmodule ArtemisWeb.EventInstanceController do
       today = Date.to_iso8601(Date.utc_today())
       event_template = get_event_template!(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
-      event_answers = get_event_answers_for_index(event_template_id, params, user)
+      event_answers = get_event_answers_for_index(event_template, params, user)
       event_answers_by_date = get_event_answers_by_date(event_answers)
       event_instance_layout = Map.get(conn.query_params, "layout", "date")
       filter_data = get_filter_data(event_template, user)
@@ -42,7 +42,7 @@ defmodule ArtemisWeb.EventInstanceController do
     authorize(conn, "event-answers:show", fn ->
       user = current_user(conn)
       event_template = get_event_template!(event_template_id, user)
-      event_answers = get_event_answers_for_show(event_template_id, date, params, user)
+      event_answers = get_event_answers_for_show(event_template, date, params, user)
       event_integrations = get_event_integrations(event_template_id, user)
       event_questions = get_event_questions(event_template_id, user)
       event_instance_layout = Map.get(conn.query_params, "layout", "date")
@@ -156,11 +156,18 @@ defmodule ArtemisWeb.EventInstanceController do
     GetEventTemplate.call!(event_template_id, user, options)
   end
 
-  defp get_event_answers_for_index(event_template_id, params, user) do
+  defp get_event_answers_for_index(event_template, params, user) do
+    event_question_visibility_filter =
+      ArtemisWeb.EventQuestionView.get_event_question_visibility(
+        event_template.team_id,
+        user
+      )
+
     required_params =
       %{
         filters: %{
-          event_template_id: event_template_id
+          event_question_visibility_or_user_id: event_question_visibility_filter,
+          event_template_id: event_template.id
         },
         page_size: 50,
         paginate: true,
@@ -212,12 +219,19 @@ defmodule ArtemisWeb.EventInstanceController do
     }
   end
 
-  defp get_event_answers_for_show(event_template_id, date, params, user) do
+  defp get_event_answers_for_show(event_template, date, params, user) do
+    event_question_visibility_filter =
+      ArtemisWeb.EventQuestionView.get_event_question_visibility(
+        event_template.team_id,
+        user
+      )
+
     required_params =
       %{
         filters: %{
           date: Date.from_iso8601!(date),
-          event_template_id: event_template_id
+          event_question_visibility_or_user_id: event_question_visibility_filter,
+          event_template_id: event_template.id
         },
         preload: [:project, :user]
       }

@@ -115,4 +115,17 @@ defmodule ArtemisWeb.EventQuestionView do
   def render_show_link(conn, record) do
     link(record.title, to: Routes.event_question_path(conn, :show, record.event_template, record))
   end
+
+  @doc """
+  Return event question visibility for a given team and user
+  """
+  def get_event_question_visibility(team_id, user) do
+    cond do
+      team_admin?(user, team_id) -> ["team_viewer", "team_member", "team_editor", "team_admin"]
+      team_editor?(user, team_id) -> ["team_viewer", "team_member", "team_editor"]
+      team_member?(user, team_id) -> ["team_viewer", "team_member"]
+      team_viewer?(user, team_id) -> ["team_viewer"]
+      true -> []
+    end
+  end
 end

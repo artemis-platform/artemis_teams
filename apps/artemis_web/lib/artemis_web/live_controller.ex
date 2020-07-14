@@ -69,7 +69,18 @@ defmodule ArtemisWeb.LiveController do
       end
 
       defp live_authorize_team_admin(socket, team_id, render_controller) do
-        case team_admin?(socket.assigns.user, team_id) do
+        user = socket.assigns.user
+
+        case team_admin?(user, team_id) do
+          true -> render_controller.()
+          false -> {:ok, assign(socket, render_error: 403)}
+        end
+      end
+
+      defp live_authorize_team_editor(socket, team_id, render_controller) do
+        user = socket.assigns.user
+
+        case team_admin?(user, team_id) || team_editor?(user, team_id) do
           true -> render_controller.()
           false -> {:ok, assign(socket, render_error: 403)}
         end

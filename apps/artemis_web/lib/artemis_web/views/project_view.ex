@@ -21,6 +21,9 @@ defmodule ArtemisWeb.ProjectView do
       ],
       "active" => [
         label: fn _conn -> "Active?" end,
+        label_html: fn conn ->
+          sortable_table_header(conn, "active", "Active?")
+        end,
         value: fn _conn, row -> row.active end
       ],
       "team" => [

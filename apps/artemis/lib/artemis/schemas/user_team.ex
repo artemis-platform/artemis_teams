@@ -40,6 +40,7 @@ defmodule Artemis.UserTeam do
   def allowed_types,
     do: [
       "admin",
+      "editor",
       "member",
       "viewer"
     ]

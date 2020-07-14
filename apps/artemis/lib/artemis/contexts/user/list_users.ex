@@ -18,7 +18,7 @@ defmodule Artemis.ListUsers do
   @default_page_size 25
   @default_preload []
 
-  def call(params \\ %{}, user) do
+  def call(params \\ %{}, _user) do
     params = default_params(params)
 
     User

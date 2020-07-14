@@ -37,6 +37,7 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
     case event_integration.notification_type do
       "Reminder" -> create_reminder_notification(conn, event_template, date, url, user)
+      "Summary - Overview" -> create_summary_overview(conn, event_template, date, url, user)
       "Summary - By Project" -> create_summary_by_project_notification(conn, event_template, date, url, user)
     end
   end
@@ -57,12 +58,31 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
     CreateEventNotification.call(%{payload: payload, url: url}, user)
   end
 
-  defp create_summary_by_project_notification(conn, event_template, date, url, user) do
-    event_answers =
-      event_template
-      |> Map.get(:id)
-      |> get_event_answers(date, user)
+  defp create_summary_overview(conn, event_template, date, url, user) do
+    event_answers = get_event_answers(event_template, date, user)
+    respondents = get_respondents(event_template.team_id, event_answers, user)
 
+    # Summary Overview Section
+
+    module = ArtemisWeb.EventInstanceView
+    template = "show/_summary_overview.slack"
+
+    assigns = [
+      conn: conn,
+      date: date,
+      event_template: event_template,
+      event_answers: event_answers,
+      respondents: respondents,
+      user: user
+    ]
+
+    payload = Phoenix.View.render_to_string(module, template, assigns)
+
+    CreateEventNotification.call(%{payload: payload, url: url}, user)
+  end
+
+  defp create_summary_by_project_notification(conn, event_template, date, url, user) do
+    event_answers = get_event_answers(event_template, date, user)
     respondents = get_respondents(event_template.team_id, event_answers, user)
 
     # Summary Overview Section
@@ -104,11 +124,18 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
     {:ok, true}
   end
 
-  defp get_event_answers(event_template_id, date, user) do
+  defp get_event_answers(event_template, date, user) do
+    event_question_visibility_filter =
+      ArtemisWeb.EventQuestionView.get_event_question_visibility(
+        event_template.team_id,
+        user
+      )
+
     params = %{
       filters: %{
         date: Date.from_iso8601!(date),
-        event_template_id: event_template_id
+        event_question_visibility: event_question_visibility_filter,
+        event_template_id: event_template.id
       },
       preload: [:event_question, :project, :user]
     }
@@ -138,7 +165,7 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
     params = %{
       filters: %{
         team_id: team_id,
-        type: ["admin", "member"]
+        type: ["admin", "editor", "member"]
       },
       preload: [:user]
     }

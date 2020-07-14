@@ -43,16 +43,18 @@
             <input type="hidden" name="event_instance[<%= event_question.id %>][<%= index %>][user_id]" value="<%= get_changeset_value(event_answer, :user_id) %>">
 
             <div class="inline-fields">
-              <div class="field project-field">
-                <select
-                  class="enhanced clearable"
-                  name="event_instance[<%= event_question.id %>][<%= index %>][project_id]"
-                  placeholder="Project"
-                >
-                  <option value=""></option>
-                  <%= get_options_for_project_field(@projects, event_answer) %>
-                </select>
-              </div>
+              <%= if is_list(@projects) && length(@projects) > 0 do %>
+                <div class="field project-field">
+                  <select
+                    class="enhanced clearable"
+                    name="event_instance[<%= event_question.id %>][<%= index %>][project_id]"
+                    placeholder="Project"
+                  >
+                    <option value=""></option>
+                    <%= get_options_for_project_field(@projects, event_answer) %>
+                  </select>
+                </div>
+              <% end %>
 
               <div class="field answer-field">
                 <%= if get_changeset_value(event_answer, :type) == "text" do %>

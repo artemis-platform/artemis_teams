@@ -23,7 +23,7 @@
         @conn,
         @event_templates.entries,
         allowed_columns: data_table_allowed_columns(),
-        default_columns: ["event_instances", "team", "active", "actions", "actions_update_current_event_instance", "actions_view_current_event_instance"]
+        default_columns: ["event_instances", "team", "schedule", "active", "actions", "actions_update_current_event_instance", "actions_view_current_event_instance"]
       )
     %>
 

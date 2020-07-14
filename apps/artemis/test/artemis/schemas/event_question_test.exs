@@ -34,6 +34,19 @@ defmodule Artemis.EventQuestionTest do
 
       assert errors_on(changeset) == %{type: ["is invalid"]}
     end
+
+    test "visibility must in allowed visibilities" do
+      event_template = insert(:event_template)
+
+      params = params_for(:event_question, event_template: event_template, visibility: "test-invalid-visibility")
+
+      {:error, changeset} =
+        %EventQuestion{}
+        |> EventQuestion.changeset(params)
+        |> Repo.insert()
+
+      assert errors_on(changeset) == %{visibility: ["is invalid"]}
+    end
   end
 
   describe "associations - event_template" do
