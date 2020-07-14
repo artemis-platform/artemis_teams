@@ -33,6 +33,10 @@ defmodule ArtemisWeb.UserAccess do
   def team_admin?(%Conn{} = conn, team), do: Artemis.UserAccess.team_admin?(current_user(conn), team)
   def team_admin?(user, team), do: Artemis.UserAccess.team_admin?(user, team)
 
+  def team_editor?(%Socket{} = socket, team), do: Artemis.UserAccess.team_editor?(socket.assigns.user, team)
+  def team_editor?(%Conn{} = conn, team), do: Artemis.UserAccess.team_editor?(current_user(conn), team)
+  def team_editor?(user, team), do: Artemis.UserAccess.team_editor?(user, team)
+
   def team_member?(%Socket{} = socket, team), do: Artemis.UserAccess.team_member?(socket.assigns.user, team)
   def team_member?(%Conn{} = conn, team), do: Artemis.UserAccess.team_member?(current_user(conn), team)
   def team_member?(user, team), do: Artemis.UserAccess.team_member?(user, team)

@@ -141,7 +141,7 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
     params = %{
       filters: %{
         team_id: team_id,
-        type: ["admin", "member"]
+        type: ["admin", "editor", "member"]
       },
       preload: [:user]
     }

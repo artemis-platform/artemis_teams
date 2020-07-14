@@ -67,6 +67,7 @@ defmodule Artemis.EventQuestion do
   def allowed_visibilities,
     do: [
       "team_admin",
+      "team_editor",
       "team_member",
       "team_viewer"
     ]

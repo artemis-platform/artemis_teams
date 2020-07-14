@@ -16,13 +16,13 @@
       label: "Questions",
       path: &Routes.event_question_path(&1, :index, @event_template),
       path_match_type: :starts_with,
-      verify: &(has?(&1, "event-questions:list") && team_admin?(&1, @event_template.team_id))
+      verify: &(has?(&1, "event-questions:list") && (team_admin?(&1, @event_template.team_id) || team_editor?(&1, @event_template.team_id)))
     ],
     [
       label: "Integrations",
       path: &Routes.event_integration_path(&1, :index, @event_template),
       path_match_type: :starts_with,
-      verify: &(has?(&1, "event-integrations:list") && team_admin?(&1, @event_template.team_id))
+      verify: &(has?(&1, "event-integrations:list") && (team_admin?(&1, @event_template.team_id) || team_editor?(&1, @event_template.team_id)))
     ],
     [
       label: "Reports",

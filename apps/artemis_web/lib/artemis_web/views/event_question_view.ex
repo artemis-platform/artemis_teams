@@ -121,7 +121,8 @@ defmodule ArtemisWeb.EventQuestionView do
   """
   def get_event_question_visibility(team_id, user) do
     cond do
-      team_admin?(user, team_id) -> ["team_viewer", "team_member", "team_admin"]
+      team_admin?(user, team_id) -> ["team_viewer", "team_member", "team_editor", "team_admin"]
+      team_editor?(user, team_id) -> ["team_viewer", "team_member", "team_editor"]
       team_member?(user, team_id) -> ["team_viewer", "team_member"]
       team_viewer?(user, team_id) -> ["team_viewer"]
       true -> []

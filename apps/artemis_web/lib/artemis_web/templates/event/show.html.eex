@@ -21,7 +21,7 @@
     %>
   </section>
 
-  <%= if team_admin?(@conn, @event_template.team_id) do %>
+  <%= if team_admin?(@conn, @team_id) || team_editor?(@conn, @team_id) do %>
     <section class="related-resources">
       <%= h3 "Active Event Questions" %>
 
@@ -35,7 +35,7 @@
         )
       %>
 
-      <%= if has?(@conn, "event-questions:create") && team_admin?(@conn, @event_template.team_id) do %>
+      <%= if has?(@conn, "event-questions:create") && (team_admin?(@conn, @team_id) || team_editor?(@conn, @team_id)) do %>
         <%= action "New Question", to: Routes.event_question_path(@conn, :new, @event_template), color: "blue" %>
       <% end %>
       <%= if has?(@conn, "event-questions:show") do %>
@@ -44,7 +44,7 @@
     </section>
   <% end %>
 
-  <%= if team_admin?(@conn, @event_template.team_id) do %>
+  <%= if team_admin?(@conn, @team_id) || team_editor?(@conn, @team_id) do %>
     <section class="related-resources">
       <%= h3 "Active Event Integrations" %>
 
@@ -58,7 +58,7 @@
         )
       %>
 
-      <%= if has?(@conn, "event-integrations:create") && team_admin?(@conn, @event_template.team_id) do %>
+      <%= if has?(@conn, "event-integrations:create") && (team_admin?(@conn, @team_id) || team_editor?(@conn, @team_id)) do %>
         <%= action "New Integration", to: Routes.event_integration_path(@conn, :new, @event_template), color: "blue" %>
       <% end %>
       <%= if has?(@conn, "event-integrations:show") do %>

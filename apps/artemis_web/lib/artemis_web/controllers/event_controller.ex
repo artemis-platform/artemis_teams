@@ -82,7 +82,8 @@ defmodule ArtemisWeb.EventController do
       assigns = [
         event_integrations: event_integrations,
         event_questions: event_questions,
-        event_template: event_template
+        event_template: event_template,
+        team_id: event_template.team_id
       ]
 
       authorize_in_team(conn, event_template.team_id, fn ->
@@ -104,7 +105,7 @@ defmodule ArtemisWeb.EventController do
         team_options: team_options
       ]
 
-      authorize_team_admin(conn, event_template.team_id, fn ->
+      authorize_team_editor(conn, event_template.team_id, fn ->
         render(conn, "edit.html", assigns)
       end)
     end)
@@ -115,7 +116,7 @@ defmodule ArtemisWeb.EventController do
       user = current_user(conn)
       event_template = GetEventTemplate.call(id, user, preload: @preload)
 
-      authorize_team_admin(conn, event_template.team_id, fn ->
+      authorize_team_editor(conn, event_template.team_id, fn ->
         case UpdateEventTemplate.call(id, params, user) do
           {:ok, event_template} ->
             conn
@@ -142,7 +143,7 @@ defmodule ArtemisWeb.EventController do
       user = current_user(conn)
       event_template = GetEventTemplate.call(id, user)
 
-      authorize_team_admin(conn, event_template.team_id, fn ->
+      authorize_team_editor(conn, event_template.team_id, fn ->
         {:ok, _event_template} = DeleteEventTemplate.call(id, params, user)
 
         conn
@@ -169,10 +170,15 @@ defmodule ArtemisWeb.EventController do
   end
 
   defp get_related_team_options(user) do
+    types = [
+      "admin",
+      "editor"
+    ]
+
     team_ids =
       user
       |> Map.get(:user_teams)
-      |> Enum.filter(&(&1.type == "admin"))
+      |> Enum.filter(&Enum.member?(types, &1.type))
       |> Enum.map(& &1.team_id)
 
     params = %{

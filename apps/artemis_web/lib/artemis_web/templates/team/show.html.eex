@@ -32,7 +32,7 @@
       )
     %>
 
-    <%= if has?(@conn, "event-templates:create") && team_admin?(@conn, @team.id) do %>
+    <%= if has?(@conn, "event-templates:create") && (team_admin?(@conn, @team.id) || team_editor?(@conn, @team.id))do %>
       <%= action "New Event", to: Routes.event_path(@conn, :new, team_id: @team.id), color: "blue" %>
     <% end %>
 
@@ -54,7 +54,7 @@
       )
     %>
 
-    <%= if has?(@conn, "projects:create") && team_admin?(@conn, @team.id) do %>
+    <%= if has?(@conn, "projects:create") && (team_admin?(@conn, @team.id) || team_editor?(@conn, @team.id)) do %>
       <%= action "New Project", to: Routes.project_path(@conn, :new, team_id: @team.id), color: "blue" %>
     <% end %>
 

@@ -113,7 +113,7 @@ defmodule ArtemisWeb.EventView do
         link: link("Show", to: Routes.event_path(conn, :show, row))
       ],
       [
-        verify: has?(conn, "event-templates:update") && team_admin?(conn, row.team),
+        verify: has?(conn, "event-templates:update") && (team_admin?(conn, row.team) || team_editor?(conn, row.team)),
         link: link("Edit", to: Routes.event_path(conn, :edit, row))
       ]
     ]

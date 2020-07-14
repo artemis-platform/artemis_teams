@@ -168,10 +168,15 @@ defmodule ArtemisWeb.ProjectController do
   end
 
   defp get_related_team_options(user) do
+    types = [
+      "admin",
+      "editor"
+    ]
+
     team_ids =
       user
       |> Map.get(:user_teams)
-      |> Enum.filter(&(&1.type == "admin"))
+      |> Enum.filter(&Enum.member?(types, &1.type))
       |> Enum.map(& &1.team_id)
 
     params = %{
