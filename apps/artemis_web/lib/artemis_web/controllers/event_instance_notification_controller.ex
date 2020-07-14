@@ -37,6 +37,7 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
 
     case event_integration.notification_type do
       "Reminder" -> create_reminder_notification(conn, event_template, date, url, user)
+      "Summary - Overview" -> create_summary_overview(conn, event_template, date, url, user)
       "Summary - By Project" -> create_summary_by_project_notification(conn, event_template, date, url, user)
     end
   end
@@ -49,6 +50,29 @@ defmodule ArtemisWeb.EventInstanceNotificationController do
       conn: conn,
       date: date,
       event_template: event_template,
+      user: user
+    ]
+
+    payload = Phoenix.View.render_to_string(module, template, assigns)
+
+    CreateEventNotification.call(%{payload: payload, url: url}, user)
+  end
+
+  defp create_summary_overview(conn, event_template, date, url, user) do
+    event_answers = get_event_answers(event_template, date, user)
+    respondents = get_respondents(event_template.team_id, event_answers, user)
+
+    # Summary Overview Section
+
+    module = ArtemisWeb.EventInstanceView
+    template = "show/_summary_overview.slack"
+
+    assigns = [
+      conn: conn,
+      date: date,
+      event_template: event_template,
+      event_answers: event_answers,
+      respondents: respondents,
       user: user
     ]
 
