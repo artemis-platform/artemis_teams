@@ -29,6 +29,10 @@ config :artemis, :users,
     email: System.get_env("ARTEMIS_SYSTEM_EMAIL")
   }
 
+config :artemis, :github,
+  token: System.get_env("ARTEMIS_GITHUB_TOKEN"),
+  url: System.get_env("ARTEMIS_GITHUB_URL")
+
 config :artemis, :ibm_cloud,
   iam_api_url: System.get_env("ARTEMIS_IBM_CLOUD_IAM_API_URL"),
   iam_api_keys: [
