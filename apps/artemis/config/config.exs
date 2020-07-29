@@ -41,6 +41,10 @@ config :artemis, :ibm_cloud,
 
 config :artemis, :interval_worker, default_log_limit: System.get_env("ARTEMIS_INTERVAL_WORKER_DEFAULT_LOG_LIMIT")
 
+config :artemis, :zenhub,
+  token: System.get_env("ARTEMIS_ZENHUB_TOKEN"),
+  url: System.get_env("ARTEMIS_ZENHUB_URL")
+
 config :config_tuples, distillery: false
 
 config :slugger, separator_char: ?-

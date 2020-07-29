@@ -2,6 +2,7 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
   use Artemis.ContextCache
 
   alias Artemis.Drivers.Github
+  alias Artemis.Drivers.Zenhub
 
   @default_page_size 100
 
@@ -34,14 +35,9 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
   # Helpers
 
   defp get_issues_for_repository(repository) do
-    headers = [
-      "Authorization": "Basic #{get_github_token()}"
-    ]
-
-    domain = get_github_url()
     organization = Keyword.get(repository, :organization)
     repository = Keyword.get(repository, :repository)
-    url = "#{domain}/repos/#{organization}/#{repository}/issues"
+    path = "/repos/#{organization}/#{repository}"
 
     query_params = %{
       state: "open",
@@ -49,16 +45,16 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
     }
 
     request = %{
-      headers: headers,
       query_params: query_params,
       organization: organization,
-      repository: repository,
-      url: url
+      path: path,
+      repository: repository
     }
 
     request
     |> get_pages()
     |> process_issues(request)
+    |> add_zenhub_pipelines(request)
   end
 
   defp get_pages(request, acc \\ [], page \\ 1) do
@@ -68,8 +64,8 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
       |> Plug.Conn.Query.encode()
 
     {:ok, response} =
-      "#{request.url}?#{encoded_query_params}"
-      |> Github.Request.get(request.headers)
+      "#{request.path}/issues?#{encoded_query_params}"
+      |> Github.Request.get()
       |> parse_response()
 
     acc = response.body ++ acc
@@ -91,16 +87,61 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
   defp parse_status_code(%{status_code: status_code}) when status_code in 200..399, do: :ok
   defp parse_status_code(_error), do: :error
 
-  defp get_github_token() do
-    :artemis
-    |> Application.fetch_env!(:github)
-    |> Keyword.fetch!(:token)
+  defp add_zenhub_pipelines(data, request) do
+    repository_id = get_repository_id(request)
+
+    zenhub_pipeline_data =
+      "/p1/repositories/#{repository_id}/board"
+      |> Zenhub.Request.get()
+      |> parse_response()
+      |> parse_pipeline_data()
+
+    merge_zenhub_pipeline_data(data, zenhub_pipeline_data)
   end
 
-  defp get_github_url() do
-    :artemis
-    |> Application.fetch_env!(:github)
-    |> Keyword.fetch!(:url)
+  defp parse_pipeline_data({:ok, response}) do
+    pipelines =
+      response.body
+      |> Map.get("pipelines", [])
+      |> Enum.with_index()
+
+    Enum.reduce(pipelines, %{}, fn {pipeline, pipeline_index}, acc ->
+      pipeline_id = Map.get(pipeline, "id")
+      pipeline_name = Map.get(pipeline, "name")
+      pipeline_issues = Map.get(pipeline, "issues")
+
+      Enum.reduce(pipeline_issues, acc, fn issue, acc ->
+        key = Map.get(issue, "issue_number")
+
+        value = %{
+          "zenhub_epic" => Map.get(issue, "is_epic"),
+          "zenhub_pipeline" => pipeline_name,
+          "zenhub_pipeline_id" => pipeline_id,
+          "zenhub_pipeline_index" => pipeline_index,
+          "zenhub_position" => Map.get(issue, "position")
+        }
+
+        Map.put(acc, key, value)
+      end)
+    end)
+  end
+
+  defp merge_zenhub_pipeline_data(data, zenhub_pipeline_data) do
+    Enum.map(data, fn item ->
+      key = Map.get(item, "number")
+      additional_attributes = Map.get(zenhub_pipeline_data, key, %{})
+
+      Map.merge(additional_attributes, item)
+    end)
+  end
+
+  defp get_repository_id(request) do
+    {:ok, response} =
+      request.path
+      |> Github.Request.get()
+      |> parse_response()
+
+    Map.get(response.body, "id")
   end
 
   defp process_issues(data, request) do

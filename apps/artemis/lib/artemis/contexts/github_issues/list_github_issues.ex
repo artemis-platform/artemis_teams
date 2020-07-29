@@ -9,9 +9,8 @@ defmodule Artemis.ListGithubIssues do
   end
 
   def call(_params \\ %{}, _user) do
-    repositories = [
-    ]
+    repositories = []
 
-    result = Artemis.Drivers.Github.ListRepoIssues.call_with_cache(repositories)
+    Artemis.Drivers.Github.ListRepoIssues.call_with_cache(repositories)
   end
 end
