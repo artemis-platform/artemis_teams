@@ -8,7 +8,9 @@ use Mix.Config
 #   :info
 #   :warn
 #
-config :logger, level: :info
+config :logger,
+  level: :info,
+  truncate: :infinity
 
 config :artemis, Artemis.Repo,
   username: System.get_env("ARTEMIS_POSTGRES_USER"),

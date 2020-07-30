@@ -19,13 +19,9 @@ defmodule Artemis.ListGithubIssues do
   end
 
   defp get_records(_user) do
-    repositories = [
-    ]
+    result = Artemis.Drivers.Github.ListRepoIssues.call_with_cache()
 
-
-    repositories
-    |> Artemis.Drivers.Github.ListRepoIssues.call_with_cache()
-    |> Map.get(:data)
+    Map.get(result, :data)
   end
 
   defp filter_query(records, %{"filters" => filters}, _user) when is_map(filters) do
@@ -47,8 +43,27 @@ defmodule Artemis.ListGithubIssues do
     end)
   end
 
+  defp filter(records, "labels", value) do
+    Enum.filter(records, fn record ->
+      labels =
+        record
+        |> Map.get("labels")
+        |> Enum.map(&Map.get(&1, "name"))
+
+      Enum.all?(split(value), &Enum.member?(labels, &1))
+    end)
+  end
+
   defp filter(records, "number", value) do
     Enum.filter(records, &Enum.member?(split(value), Map.get(&1, "number")))
+  end
+
+  defp filter(records, "organization", value) do
+    Enum.filter(records, &Enum.member?(split(value), Map.get(&1, "organization")))
+  end
+
+  defp filter(records, "repository", value) do
+    Enum.filter(records, &Enum.member?(split(value), Map.get(&1, "repository")))
   end
 
   defp filter(records, "user", value) do

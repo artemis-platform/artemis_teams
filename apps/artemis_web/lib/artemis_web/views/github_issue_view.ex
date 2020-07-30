@@ -35,7 +35,12 @@ defmodule ArtemisWeb.GithubIssueView do
             color = label["color"]
 
             content_tag(:div) do
-              content_tag(:a, label["name"], href: href, style: "background: ##{color}; color: #fff; display: inline-block; margin: 0 2px 3px 0; padding: 2px 8px; border-radius: 3px;", target: "_blank")
+              content_tag(:a, label["name"],
+                href: href,
+                style:
+                  "background: ##{color}; color: #fff; display: inline-block; margin: 0 2px 3px 0; padding: 2px 8px; border-radius: 3px;",
+                target: "_blank"
+              )
             end
           end)
         end

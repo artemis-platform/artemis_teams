@@ -13,6 +13,82 @@
   <%= render_flash_notifications @conn %>
 
   <section>
+    <h3>Presets</h3>
+
+    <div class="presets" style="display: flex; justify-content: space-between;">
+      <div class="columns">
+        <h5>General</h5>
+        <ul>
+          <li>
+            <%= link "All", to: Routes.github_issue_path(@conn, :index) %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h3>Filters</h3>
+
+    <div class="filters" style="display: flex; justify-content: space-between;">
+      <%=
+        repository_options =
+          @github_issues
+          |> Enum.map(&Map.get(&1, "repository"))
+          |> Enum.uniq()
+          |> Enum.filter(&Artemis.Helpers.present?(&1))
+          |> Enum.sort_by(&String.downcase(&1))
+          |> select_options()
+
+        filter_multi_select(@conn, "Repository", :repository, repository_options)
+      %>
+
+      <%=
+        label_options =
+          @github_issues
+          |> Enum.flat_map(fn github_issue ->
+            github_issue
+            |> Map.get("labels")
+            |> Enum.map(&Map.get(&1, "name"))
+          end)
+          |> Enum.uniq()
+          |> Enum.filter(&Artemis.Helpers.present?(&1))
+          |> Enum.sort_by(&String.downcase(&1))
+          |> select_options()
+
+        filter_multi_select(@conn, "Labels", :labels, label_options)
+      %>
+
+      <%=
+        assignee_options =
+          @github_issues
+          |> Enum.flat_map(fn github_issue ->
+            github_issue
+            |> Map.get("assignees")
+            |> Enum.map(&Map.get(&1, "login"))
+          end)
+          |> Enum.uniq()
+          |> Enum.filter(&Artemis.Helpers.present?(&1))
+          |> Enum.sort_by(&String.downcase(&1))
+          |> select_options()
+
+        filter_multi_select(@conn, "Assignee", :assignee, assignee_options)
+      %>
+
+      <%=
+        pipeline_options =
+          @github_issues
+          |> Enum.map(&Map.get(&1, "zenhub_pipeline"))
+          |> Enum.uniq()
+          |> Enum.filter(&Artemis.Helpers.present?(&1))
+          |> select_options()
+
+        filter_multi_select(@conn, "Zenhub Pipeline", :zenhub_pipeline, pipeline_options)
+      %>
+    </div>
+  </section>
+
+  <div class="ui steps pipelines">
     <%
       by_pipeline =
         Enum.reduce(@github_issues, %{}, fn github_issue, acc ->
@@ -25,14 +101,16 @@
         end)
     %>
     <%= Enum.map by_pipeline, fn {pipeline, count} -> %>
-      <div>
-        <%= pipeline %>
-        <%= count %>
+      <div class="step">
+        <div class="title"><%= pipeline %></div>
+        <div class="description"><%= count %> Open Issues</div>
       </div>
     <% end %>
-  </section>
+  </div>
 
   <section>
+    <%= h2 "Assignees" %>
+
     <%
       by_assignee =
         @github_issues
@@ -64,12 +142,27 @@
     </div>
 
     <%=
+      data_table_page_size = 10
+
+      data_table_records =
+        case Map.get(@conn.query_params, "show_all") do
+          "true" -> @github_issues
+          _ -> Enum.slice(@github_issues, 0, data_table_page_size)
+        end
+
       render_data_table(
         @conn,
-        @github_issues,
+        data_table_records,
         allowed_columns: data_table_allowed_columns(),
         default_columns: @default_columns
       )
+    %>
+
+    <%=
+      case Map.get(@conn.query_params, "show_all") == "true" && length(@github_issues) > data_table_page_size do
+        true -> query_param_button(@conn, "Hide All", show_all: nil)
+        false -> query_param_button(@conn, "Show All", show_all: true)
+      end
     %>
   </section>
 </div>

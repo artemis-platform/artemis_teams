@@ -26,8 +26,8 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
     "user"
   ]
 
-  def call(repositories) do
-    Enum.reduce(repositories, [], fn repository, acc ->
+  def call() do
+    Enum.reduce(get_repositories(), [], fn repository, acc ->
       get_issues_for_repository(repository) ++ acc
     end)
   end
@@ -97,6 +97,8 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
       |> parse_pipeline_data()
 
     merge_zenhub_pipeline_data(data, zenhub_pipeline_data)
+  rescue
+    _ -> data
   end
 
   defp parse_pipeline_data({:ok, response}) do
@@ -153,5 +155,11 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
       |> Map.put("organization", request.organization)
       |> Map.put("repository", request.repository)
     end)
+  end
+
+  defp get_repositories() do
+    :artemis
+    |> Application.fetch_env!(:github)
+    |> Keyword.fetch!(:repositories)
   end
 end

@@ -5,6 +5,9 @@ config :artemis,
 
 config :artemis, :actions,
   # NOTE: When adding action entries, also update `config/test.exs`
+  github_issue_cache_warmer: [
+    enabled: System.get_env("ARTEMIS_ACTION_GITHUB_ISSUE_CACHE_WARMER_ENABLED")
+  ],
   ibm_cloud_iam_access_token: [
     enabled: System.get_env("ARTEMIS_ACTION_IBM_CLOUD_IAM_ACCESS_TOKEN_ENABLED")
   ],
@@ -30,6 +33,7 @@ config :artemis, :users,
   }
 
 config :artemis, :github,
+  repositories: [],
   token: System.get_env("ARTEMIS_GITHUB_TOKEN"),
   url: System.get_env("ARTEMIS_GITHUB_URL")
 
