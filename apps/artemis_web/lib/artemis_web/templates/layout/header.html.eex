@@ -34,11 +34,22 @@
             </a>
           </li>
         <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Projects"]) do %>
-          <li>
+        <%= if render_primary_nav_section?(nav_items, ["Projects", "Github Issues"]) do %>
+          <li class="with-dropdown">
             <a href="<%= Routes.project_path(@conn, :index) %>">
               Projects
+              <i class="angle down icon dropdown"></i>
             </a>
+            <div class="dropdown">
+              <content>
+                <header>
+                  <h3>Projects</h3>
+                  <p>Tools for managing projects</p>
+                </header>
+                <%= render_primary_nav_section(@conn, @user, nav_items, ["Projects", "Github Issues"]) %>
+              </content>
+              <footer></footer>
+            </div>
           </li>
         <% end %>
         <%= if render_primary_nav_section?(nav_items, ["Users", "Roles", "Permissions", "Features", "Event Logs", "HTTP Request Logs", "Sessions", "Tags", "Application"]) do %>

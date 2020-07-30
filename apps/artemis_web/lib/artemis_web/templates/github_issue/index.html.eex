@@ -1,0 +1,75 @@
+<div id="content-header">
+  <header>
+    <h1>Github Issues</h1>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <section>
+    <%
+      by_pipeline =
+        Enum.reduce(@github_issues, %{}, fn github_issue, acc ->
+          pipeline = github_issue["zenhub_pipeline"]
+
+          case pipeline do
+            nil -> acc
+            _ -> Map.update(acc, pipeline, 1, &(&1 + 1))
+          end
+        end)
+    %>
+    <%= Enum.map by_pipeline, fn {pipeline, count} -> %>
+      <div>
+        <%= pipeline %>
+        <%= count %>
+      </div>
+    <% end %>
+  </section>
+
+  <section>
+    <%
+      by_assignee =
+        @github_issues
+        |> Enum.reduce(%{}, fn github_issue, acc ->
+            Enum.reduce(github_issue["assignees"], acc, fn assignee, acc ->
+              Map.update(acc, assignee["login"], 1, &(&1 + 1))
+            end)
+          end)
+        |> Enum.sort_by(&[elem(&1, 1) * -1, String.downcase(elem(&1, 0))]) 
+    %>
+    <%= Enum.map by_assignee, fn {assignee, count} -> %>
+      <div>
+        <%= assignee %>
+        <%= count %>
+      </div>
+    <% end %>
+  </section>
+
+  <section>
+    <div class="table-header">
+      <div>
+
+      </div>
+
+      <div class="table-actions">
+        <%= render_data_table_column_selector(@conn, data_table_available_columns()) %>
+        <%= render_export_actions(@conn, available_columns: data_table_available_columns()) %>
+      </div>
+    </div>
+
+    <%=
+      render_data_table(
+        @conn,
+        @github_issues,
+        allowed_columns: data_table_allowed_columns(),
+        default_columns: @default_columns
+      )
+    %>
+  </section>
+</div>

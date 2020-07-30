@@ -20,8 +20,8 @@ defmodule Artemis.ListGithubIssues do
 
   defp get_records(_user) do
     repositories = [
-
     ]
+
 
     repositories
     |> Artemis.Drivers.Github.ListRepoIssues.call_with_cache()

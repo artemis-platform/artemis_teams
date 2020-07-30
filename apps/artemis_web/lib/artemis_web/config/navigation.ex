@@ -62,6 +62,13 @@ defmodule ArtemisWeb.Config.Navigation do
           verify: &has?(&1, "features:create")
         ]
       ],
+      "Github Issues": [
+        [
+          label: "List Github Issues",
+          path: &Routes.github_issue_path(&1, :index),
+          verify: &has?(&1, "github-issues:list")
+        ]
+      ],
       "HTTP Request Logs": [
         [
           label: "View HTTP Request Logs",
