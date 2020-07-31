@@ -30,15 +30,19 @@ defmodule ArtemisWeb.GithubIssueView do
       "labels" => [
         label: fn _conn -> "Labels" end,
         value: fn _conn, row ->
-          Enum.map(row["labels"], fn label ->
+          row
+          |> Map.get("labels")
+          |> Enum.sort_by(&String.downcase(&1["name"]))
+          |> Enum.map(fn label ->
             href = String.replace(label["url"], "/api/v3/repos", "")
-            color = label["color"]
+            label_color = label["color"]
+            text_color = get_text_color(label_color)
 
             content_tag(:div) do
               content_tag(:a, label["name"],
                 href: href,
-                style:
-                  "background: ##{color}; color: #fff; display: inline-block; margin: 0 2px 3px 0; padding: 2px 8px; border-radius: 3px;",
+                class: "github-issue-label",
+                style: "background: ##{label_color}; color: #{text_color}",
                 target: "_blank"
               )
             end

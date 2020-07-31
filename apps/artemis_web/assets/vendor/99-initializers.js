@@ -269,6 +269,34 @@ function initializeSelectTableRow() {
   })
 }
 
+function initializeTabs() {
+  $('.tabs').each(function() {
+    var tabs = $(this)
+    var keys = tabs.find('header .item')
+    var values = tabs.find('content .tab')
+
+    keys.each(function(index) {
+      var key = $(this)
+
+      key.on('click', function(event) {
+        event.preventDefault()
+
+        keys.each(function() {
+          $(this).removeClass('active')
+        })
+
+        key.addClass('active')
+
+        values.each(function() {
+          $(this).hide()
+        })
+
+        $(values[index]).show()
+      })
+    })
+  })
+}
+
 function initializeSidebars() {
   $('.open-sidebar-current-user').click(function(event) {
     if (event) {
@@ -391,6 +419,7 @@ $(document).ready(function() {
   initializeSidebars()
   initializeSearchSubmit()
   initializeSelectTableRow()
+  initializeTabs()
   initializeWikiSidenav()
 })
 
