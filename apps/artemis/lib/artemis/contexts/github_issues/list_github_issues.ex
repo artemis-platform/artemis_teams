@@ -15,6 +15,7 @@ defmodule Artemis.ListGithubIssues do
 
     user
     |> get_records()
+    |> search_query(params, user)
     |> filter_query(params, user)
   end
 
@@ -23,6 +24,20 @@ defmodule Artemis.ListGithubIssues do
 
     Map.get(result, :data)
   end
+
+  defp search_query(records, %{"query" => search}, _user) do
+    regex = Regex.compile!(search, [:caseless])
+
+    Enum.filter(records, fn record ->
+      title = Map.get(record, "title")
+
+      String.match?(title, regex)
+    end)
+  rescue
+    _e in Regex.CompileError -> records
+  end
+
+  defp search_query(records, _params, _user), do: records
 
   defp filter_query(records, %{"filters" => filters}, _user) when is_map(filters) do
     Enum.reduce(filters, records, fn {key, value}, acc ->
