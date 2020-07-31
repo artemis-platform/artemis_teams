@@ -1115,6 +1115,24 @@ a.summary-count:hover {
   }
 }
 
+.filters {
+  display: flex;
+
+  .filter {
+    display: flex;
+
+    label {
+      font-weight: 600;
+      white-space: nowrap;
+      min-width: 150px;
+    }
+
+    form {
+      max-width: 200px;
+    }
+  }
+}
+
 /* === Components - Card === */
 
 .card {

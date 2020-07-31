@@ -45,60 +45,72 @@
 
         <div class="tab">
           <div class="filters" style="display: flex; justify-content: space-between;">
-            <%=
-              repository_options =
-                @github_issues
-                |> Enum.map(&Map.get(&1, "repository"))
-                |> Enum.uniq()
-                |> Enum.filter(&Artemis.Helpers.present?(&1))
-                |> Enum.sort_by(&String.downcase(&1))
-                |> select_options()
+            <div class="filter">
+              <label>Repository</label>
+              <%=
+                repository_options =
+                  @github_issues
+                  |> Enum.map(&Map.get(&1, "repository"))
+                  |> Enum.uniq()
+                  |> Enum.filter(&Artemis.Helpers.present?(&1))
+                  |> Enum.sort_by(&String.downcase(&1))
+                  |> select_options()
 
-              filter_multi_select(@conn, "Repository", :repository, repository_options)
-            %>
+                filter_multi_select(@conn, "Repository", :repository, repository_options)
+              %>
+            </div>
 
-            <%=
-              label_options =
-                @github_issues
-                |> Enum.flat_map(fn github_issue ->
-                  github_issue
-                  |> Map.get("labels")
-                  |> Enum.map(&Map.get(&1, "name"))
-                end)
-                |> Enum.uniq()
-                |> Enum.filter(&Artemis.Helpers.present?(&1))
-                |> Enum.sort_by(&String.downcase(&1))
-                |> select_options()
+            <div class="filter">
+              <label>Labels</label>
+              <%=
+                label_options =
+                  @github_issues
+                  |> Enum.flat_map(fn github_issue ->
+                    github_issue
+                    |> Map.get("labels")
+                    |> Enum.map(&Map.get(&1, "name"))
+                  end)
+                  |> Enum.uniq()
+                  |> Enum.filter(&Artemis.Helpers.present?(&1))
+                  |> Enum.sort_by(&String.downcase(&1))
+                  |> select_options()
 
-              filter_multi_select(@conn, "Labels", :labels, label_options)
-            %>
+                filter_multi_select(@conn, "Labels", :labels, label_options)
+              %>
+            </div>
 
-            <%=
-              assignee_options =
-                @github_issues
-                |> Enum.flat_map(fn github_issue ->
-                  github_issue
-                  |> Map.get("assignees")
-                  |> Enum.map(&Map.get(&1, "login"))
-                end)
-                |> Enum.uniq()
-                |> Enum.filter(&Artemis.Helpers.present?(&1))
-                |> Enum.sort_by(&String.downcase(&1))
-                |> select_options()
+            <div class="filter">
+              <label>Assignee</label>
+              <%=
+                assignee_options =
+                  @github_issues
+                  |> Enum.flat_map(fn github_issue ->
+                    github_issue
+                    |> Map.get("assignees")
+                    |> Enum.map(&Map.get(&1, "login"))
+                  end)
+                  |> Enum.uniq()
+                  |> Enum.filter(&Artemis.Helpers.present?(&1))
+                  |> Enum.sort_by(&String.downcase(&1))
+                  |> select_options()
 
-              filter_multi_select(@conn, "Assignee", :assignee, assignee_options)
-            %>
+                filter_multi_select(@conn, "Assignee", :assignee, assignee_options)
+              %>
+            </div>
 
-            <%=
-              pipeline_options =
-                @github_issues
-                |> Enum.map(&Map.get(&1, "zenhub_pipeline"))
-                |> Enum.uniq()
-                |> Enum.filter(&Artemis.Helpers.present?(&1))
-                |> select_options()
+            <div class="filter">
+              <label>Zenhub Pipeline</label>
+              <%=
+                pipeline_options =
+                  @github_issues
+                  |> Enum.map(&Map.get(&1, "zenhub_pipeline"))
+                  |> Enum.uniq()
+                  |> Enum.filter(&Artemis.Helpers.present?(&1))
+                  |> select_options()
 
-              filter_multi_select(@conn, "Zenhub Pipeline", :zenhub_pipeline, pipeline_options)
-            %>
+                filter_multi_select(@conn, "Zenhub Pipeline", :zenhub_pipeline, pipeline_options)
+              %>
+            </div>
           </div>
         </div>
 
