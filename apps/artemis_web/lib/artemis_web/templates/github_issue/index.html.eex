@@ -109,7 +109,7 @@
   </div>
 
   <section>
-    <%= h2 "Assignees" %>
+    <%= h3 "Assignees" %>
 
     <%
       by_assignee =
@@ -120,13 +120,36 @@
             end)
           end)
         |> Enum.sort_by(&[elem(&1, 1) * -1, String.downcase(elem(&1, 0))]) 
+
+      by_assignee =
+        case show_all?(@conn, "assignees") do
+          true -> by_assignee
+          _ -> Enum.slice(by_assignee, 0, 10)
+        end
     %>
-    <%= Enum.map by_assignee, fn {assignee, count} -> %>
-      <div>
-        <%= assignee %>
-        <%= count %>
-      </div>
-    <% end %>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Assignee</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= Enum.map by_assignee, fn {assignee, count} -> %>
+          <tr>
+            <td>
+              <%= assignee %>
+            </td>
+            <td>
+              <%= count %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <%= show_all_button @conn, @github_issues, "assignees" %>
   </section>
 
   <section>
@@ -142,12 +165,10 @@
     </div>
 
     <%=
-      data_table_page_size = 10
-
       data_table_records =
-        case Map.get(@conn.query_params, "show_all") do
-          "true" -> @github_issues
-          _ -> Enum.slice(@github_issues, 0, data_table_page_size)
+        case show_all?(@conn, "github-issues") do
+          true -> @github_issues
+          _ -> Enum.slice(@github_issues, 0, 10)
         end
 
       render_data_table(
@@ -158,11 +179,6 @@
       )
     %>
 
-    <%=
-      case Map.get(@conn.query_params, "show_all") == "true" && length(@github_issues) > data_table_page_size do
-        true -> query_param_button(@conn, "Hide All", show_all: nil)
-        false -> query_param_button(@conn, "Show All", show_all: true)
-      end
-    %>
+    <%= show_all_button @conn, @github_issues, "github-issues" %>
   </section>
 </div>

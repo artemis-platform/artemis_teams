@@ -59,4 +59,28 @@ defmodule ArtemisWeb.GithubIssueView do
       ]
     }
   end
+
+  @doc """
+  Return true if there's more than the current page size
+  """
+  def more?(data, page_size \\ 10), do: length(data) > page_size
+
+  @doc """
+  Return true if `show_all` query param is set for specified key
+  """
+  def show_all?(conn, key) do
+    fields = Map.get(conn.query_params, "show_all", [])
+
+    Enum.member?(fields, key)
+  end
+
+  @doc """
+  Render a `Show All` or `Hide All` button
+  """
+  def show_all_button(conn, data, key, page_size \\ 10) do
+    case show_all?(conn, key) && more?(data, page_size) do
+      true -> query_param_button(conn, "Hide All", show_all: nil)
+      false -> query_param_button(conn, "Show All", show_all: [key])
+    end
+  end
 end
