@@ -7,9 +7,12 @@ defmodule ArtemisWeb.Router do
     plug :accepts, ["html", "csv"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :put_root_layout, {ArtemisWeb.LayoutView, :root}
+  end
+
+  pipeline :csrf do
+    plug :protect_from_forgery
   end
 
   pipeline :api do
@@ -32,6 +35,7 @@ defmodule ArtemisWeb.Router do
 
   scope "/", ArtemisWeb do
     pipe_through :browser
+    pipe_through :csrf
     pipe_through :read_auth
 
     scope "/auth" do
@@ -68,14 +72,10 @@ defmodule ArtemisWeb.Router do
 
       get "/docs/:id/:slug", WikiPageController, :show
 
-      # Event Logs
-
-      resources "/event-logs", EventLogController, only: [:index, :show]
-
       # Events
 
       resources "/events", EventController do
-        resources "/instances", EventInstanceController, as: :instance, except: [:new, :create] do
+        resources "/instances", EventInstanceController, as: :instance, except: [:new, :create, :update] do
           post "/notifications", EventInstanceNotificationController, :create, as: :notification
         end
 
@@ -83,6 +83,10 @@ defmodule ArtemisWeb.Router do
         resources "/questions", EventQuestionController, as: :question
         resources "/reports", EventReportController, as: :report, only: [:index]
       end
+
+      # Event Logs
+
+      resources "/event-logs", EventLogController, only: [:index, :show]
 
       # Features
 
@@ -197,6 +201,20 @@ defmodule ArtemisWeb.Router do
         get "/event-logs", UserController, :show_event_log_list, as: :event_log
         get "/event-logs/:id", UserController, :show_event_log_details, as: :event_log
       end
+    end
+  end
+
+  scope "/", ArtemisWeb do
+    pipe_through :browser
+    pipe_through :read_auth
+
+    scope "/" do
+      pipe_through :require_auth
+
+      # Event Instance Form
+
+      put "/events/:event_id/instances/:id", EventInstanceController, :update
+      patch "/events/:event_id/instances/:id", EventInstanceController, :update
     end
   end
 end
