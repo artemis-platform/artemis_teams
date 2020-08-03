@@ -1138,24 +1138,30 @@ a.summary-count:hover {
 }
 
 .tab-filters {
-  flex-wrap: wrap;
-  justify-content: flex-start !important;
 
-  .filter {
-    display: flex;
-    margin-bottom: 0.25rem;
-    min-width: 300px;
-    width: 33%;
+  form {
 
-    label {
-      margin-top: 0.625rem;
-      font-weight: 600;
-      min-width: 150px;
-      white-space: nowrap;
-    }
+    .filters {
+      flex-wrap: wrap;
+      justify-content: flex-start;
 
-    form {
-      max-width: 200px;
+      .filter {
+        display: flex;
+        margin-bottom: 0.25rem;
+        min-width: 300px;
+        width: 33%;
+
+        label {
+          margin-top: 0.625rem;
+          font-weight: 600;
+          min-width: 150px;
+          white-space: nowrap;
+        }
+
+        form {
+          max-width: 200px;
+        }
+      }
     }
   }
 }

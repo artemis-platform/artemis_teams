@@ -139,7 +139,7 @@ defmodule ArtemisWeb.ViewHelper.Filter do
   end
 
   @doc """
-  Render a multi select filter form element
+  Render a multi select filter form field inside a self-contained form tag
   """
   def filter_multi_select(conn, label, value, options) do
     filter_assigns = %{
@@ -150,5 +150,25 @@ defmodule ArtemisWeb.ViewHelper.Filter do
     }
 
     Phoenix.View.render(ArtemisWeb.LayoutView, "filter_multi_select.html", filter_assigns)
+  end
+
+  @doc """
+  Render a multi select filter form field
+  """
+  def filter_multi_select_field(conn, form, label, value, options) do
+    value = Artemis.Helpers.to_string(value)
+    selected = Artemis.Helpers.deep_get(conn, [:query_params, "filters", value]) || []
+    class = if length(selected) > 0, do: "active"
+
+    filter_assigns = %{
+      available: options,
+      class: class,
+      form: form,
+      label: label,
+      selected: selected,
+      value: value
+    }
+
+    Phoenix.View.render(ArtemisWeb.LayoutView, "filter_multi_select_field.html", filter_assigns)
   end
 end
