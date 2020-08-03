@@ -99,9 +99,13 @@ defmodule ArtemisWeb.GithubIssueView do
   Render a `Show All` or `Hide All` button
   """
   def show_all_button(conn, data, key, page_size \\ 10) do
-    case show_all?(conn, key) && more?(data, page_size) do
-      true -> query_param_button(conn, "Hide All", show_all: nil)
-      false -> query_param_button(conn, "Show All", show_all: [key])
+    current = Map.get(conn.query_params, "show_all", [])
+
+    content_tag(:div, class: "show-all-button") do
+      case show_all?(conn, key) && more?(data, page_size) do
+        true -> query_param_button(conn, "Hide All", show_all: List.delete(current, key))
+        false -> query_param_button(conn, "Show All", show_all: [key] ++ current)
+      end
     end
   end
 end
