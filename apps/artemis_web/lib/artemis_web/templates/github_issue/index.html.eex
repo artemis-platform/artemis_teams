@@ -114,6 +114,12 @@
           </div>
         </div>
 
+        <%=
+          @conn.query_params
+          |> Map.delete("filters")
+          |> hidden_fields()
+        %>
+
         <%= submit "Update Filters", class: "ui button primary" %>
       <% end %>
     </div>

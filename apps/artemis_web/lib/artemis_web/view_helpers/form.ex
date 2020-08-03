@@ -151,4 +151,55 @@ defmodule ArtemisWeb.ViewHelper.Form do
     {:safe, contents} = content_tag(:option, option_key, opts)
     contents
   end
+
+  @doc """
+  Render hidden fields for each value
+  """
+  def hidden_fields(items) do
+    Enum.map(items, fn item ->
+      hidden_field(item)
+    end)
+  end
+
+  @doc """
+  Render a hidden field
+  """
+  def hidden_field(key, values) when is_map(values) do
+    Enum.map(values, fn {next_key, value} ->
+      hidden_field("#{key}[#{next_key}]", value)
+    end)
+  end
+
+  def hidden_field(key, values) when is_list(values) do
+    Enum.map(values, fn value ->
+      hidden_field("#{key}[]", value)
+    end)
+  end
+
+  def hidden_field(key, value) do
+    tag(:input, name: key, type: :hidden, value: value)
+  end
+
+  @doc """
+  Render a hidden field
+  """
+  def hidden_field(values) when is_map(values) do
+    Enum.map(values, fn {key, value} ->
+      hidden_field(key, value)
+    end)
+  end
+
+  def hidden_field({key, values}) when is_map(values) do
+    Enum.map(values, fn {next_key, value} ->
+      hidden_field("#{key}[#{next_key}]", value)
+    end)
+  end
+
+  def hidden_field({key, values}) when is_list(values) do
+    Enum.map(values, fn value ->
+      hidden_field("#{key}[]", value)
+    end)
+  end
+
+  def hidden_field({key, value}), do: hidden_field(key, value)
 end
