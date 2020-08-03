@@ -33,6 +33,13 @@ defmodule ArtemisWeb.GithubIssueView do
           row
           |> Map.get("labels")
           |> Enum.sort_by(&String.downcase(&1["name"]))
+          |> Enum.map(&Map.get(&1, "name"))
+          |> Enum.join(", ")
+        end,
+        value_html: fn _conn, row ->
+          row
+          |> Map.get("labels")
+          |> Enum.sort_by(&String.downcase(&1["name"]))
           |> Enum.map(fn label ->
             href = String.replace(label["url"], "/api/v3/repos", "")
             label_color = label["color"]
@@ -51,11 +58,21 @@ defmodule ArtemisWeb.GithubIssueView do
       ],
       "number" => [
         label: fn _conn -> "Number" end,
-        value: fn _conn, row -> row["number"] end
+        value: fn _conn, row -> row["number"] end,
+        value_html: fn _conn, row ->
+          url = String.replace(row["url"], "/api/v3/repos", "")
+
+          link(row["number"], to: url, target: "_blank")
+        end
       ],
       "title" => [
         label: fn _conn -> "Title" end,
-        value: fn _conn, row -> row["title"] end
+        value: fn _conn, row -> row["title"] end,
+        value_html: fn _conn, row ->
+          url = String.replace(row["url"], "/api/v3/repos", "")
+
+          link(row["title"], to: url, target: "_blank")
+        end
       ],
       "zenhub_pipeline" => [
         label: fn _conn -> "Pipeline" end,

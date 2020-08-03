@@ -1026,17 +1026,6 @@ a.summary-count:hover {
 
 /* === Components - Github Issues Page === */
 
-.pipelines.steps {
-  max-width: 100%;
-  overflow-x: auto;
-  width: 100%;
-
-  .step {
-    display: flex;
-    padding-right: 0;
-  }
-}
-
 .github-issue-label {
   border-radius: 2px;
   box-shadow: inset 0 -1px 0 rgba(25, 25, 25, .15);
@@ -1056,9 +1045,21 @@ a.summary-count:hover {
 
 .ui.steps {
   border-color: #e2e2e2 !important;
+  display: flex;
 
   .step {
     border-color: #e2e2e2 !important;
+  }
+
+  &.full-width {
+    max-width: 100%;
+    overflow-x: auto;
+    width: 100%;
+
+    .step {
+      display: flex;
+      padding-right: 0;
+    }
   }
 }
 
@@ -1078,11 +1079,29 @@ a.summary-count:hover {
 
     .item {
       font-size: 13px;
+      height: 3rem;
       padding: 1rem 1.5rem !important;
-    }
 
-    .active {
-      border-bottom: 2px solid $blue_muted !important;
+      &.active {
+        border-bottom: 2px solid $blue_muted !important;
+      }
+
+      .count-label {
+        display: flex;
+        flex-direction: row;
+
+        .label {
+          align-self: center;
+          background: #2aa8e6;
+          border-radius: 4px;
+          color: #fff;
+          font-size: 12px;
+          font-weight: 500;
+          margin: 0 0 0 0.5rem;
+          padding: 2px 0.5rem;
+          text-align: center;
+        }
+      }
     }
   }
 

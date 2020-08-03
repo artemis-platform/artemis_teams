@@ -14,12 +14,13 @@ defmodule ArtemisWeb.GithubIssueController do
   def index(conn, params) do
     authorize(conn, "github-issues:list", fn ->
       user = current_user(conn)
-      github_issues = ListGithubIssues.call(params, user)
-      # filter_paths = ListGithubIssues.call(%{distinct: :path}, user)
+      github_issues_all = ListGithubIssues.call(user)
+      github_issues_filtered = ListGithubIssues.call(params, user)
 
       assigns = [
         default_columns: @default_columns,
-        github_issues: github_issues
+        github_issues_all: github_issues_all,
+        github_issues_filtered: github_issues_filtered
       ]
 
       render_format(conn, "index", assigns)

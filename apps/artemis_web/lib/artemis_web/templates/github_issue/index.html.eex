@@ -22,10 +22,32 @@
         <a class="item">
           <i class="ui icon filter"></i>
           Filters
+          <%
+            filter_count =
+              @conn
+              |> Map.get(:query_params)
+              |> Map.get("filters", %{})
+              |> Map.keys()
+              |> length()
+          %>
+          <%= if filter_count > 0 do %>
+            <span class="count-label">
+              <span class="label">
+                <%= filter_count %>
+              </span>
+            </span>
+          <% end %>
         </a>
         <a class="item">
           <i class="ui icon search"></i>
           Search
+          <%= if Artemis.Helpers.present?(@conn.query_params["query"]) do %>
+            <span class="count-label">
+              <span class="label">
+                1
+              </span>
+            </span>
+          <% end %>
         </a>
       </header>
 
@@ -49,7 +71,7 @@
               <label>Repository</label>
               <%=
                 repository_options =
-                  @github_issues
+                  @github_issues_all
                   |> Enum.map(&Map.get(&1, "repository"))
                   |> Enum.uniq()
                   |> Enum.filter(&Artemis.Helpers.present?(&1))
@@ -64,7 +86,7 @@
               <label>Labels</label>
               <%=
                 label_options =
-                  @github_issues
+                  @github_issues_all
                   |> Enum.flat_map(fn github_issue ->
                     github_issue
                     |> Map.get("labels")
@@ -80,10 +102,29 @@
             </div>
 
             <div class="filter">
+              <label>Not Labels</label>
+              <%=
+                label_options =
+                  @github_issues_all
+                  |> Enum.flat_map(fn github_issue ->
+                    github_issue
+                    |> Map.get("labels")
+                    |> Enum.map(&Map.get(&1, "name"))
+                  end)
+                  |> Enum.uniq()
+                  |> Enum.filter(&Artemis.Helpers.present?(&1))
+                  |> Enum.sort_by(&String.downcase(&1))
+                  |> select_options()
+
+                filter_multi_select(@conn, "Not Labels", :labels_not, label_options)
+              %>
+            </div>
+
+            <div class="filter">
               <label>Assignee</label>
               <%=
                 assignee_options =
-                  @github_issues
+                  @github_issues_all
                   |> Enum.flat_map(fn github_issue ->
                     github_issue
                     |> Map.get("assignees")
@@ -102,7 +143,7 @@
               <label>Zenhub Pipeline</label>
               <%=
                 pipeline_options =
-                  @github_issues
+                  @github_issues_all
                   |> Enum.map(&Map.get(&1, "zenhub_pipeline"))
                   |> Enum.uniq()
                   |> Enum.filter(&Artemis.Helpers.present?(&1))
@@ -121,12 +162,47 @@
     </div>
   </div>
 
-  <h3 style="margin: 1.5rem 0 0rem 0;">Github Issues by Pipeline</h3>
+  <%
+    repositories =
+      @github_issues_all
+      |> Enum.map(&Map.get(&1, "repository"))
+      |> Enum.uniq()
+      |> Enum.sort()
+  %>
 
-  <div class="ui steps pipelines">
+  <%= if length(repositories) > 1 do %>
+
+    <h3 style="margin-bottom: 0;">Github Issues by Repository</h3>
+
+    <div class="ui steps full-width repositories">
+      <%
+        repository_totals =
+          Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
+            repository = github_issue["repository"]
+
+            case repository do
+              nil -> acc
+              _ -> Map.update(acc, repository, 1, &(&1 + 1))
+            end
+          end)
+      %>
+      <%= Enum.map repositories, fn name -> %>
+        <% {repository, total} = Enum.find(repository_totals, &(elem(&1, 0) == name)) || {name, 0} %>
+        <div class="step">
+          <div class="title"><%= repository %></div>
+          <div class="description"><%= total %> Open Issues</div>
+        </div>
+      <% end %>
+    </div>
+
+  <% end %>
+
+  <h3 style="margin-bottom: 0;">Github Issues by Pipeline</h3>
+
+  <div class="ui steps full-width pipelines">
     <%
-      by_pipeline =
-        Enum.reduce(@github_issues, %{}, fn github_issue, acc ->
+      pipeline_totals =
+        Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
           pipeline = github_issue["zenhub_pipeline"]
 
           case pipeline do
@@ -134,11 +210,19 @@
             _ -> Map.update(acc, pipeline, 1, &(&1 + 1))
           end
         end)
+
+      pipeline_order =
+        @github_issues_filtered
+        |> Enum.map(&{Map.get(&1, "zenhub_pipeline"), Map.get(&1, "zenhub_pipeline_index")})
+        |> Enum.uniq_by(&elem(&1, 0))
+        |> Enum.sort_by(&elem(&1, 1))
+        |> Enum.filter(&Artemis.Helpers.present?(elem(&1, 0)))
     %>
-    <%= Enum.map by_pipeline, fn {pipeline, count} -> %>
+    <%= Enum.map pipeline_order, fn {name, _index} -> %>
+      <% {pipeline, total} = Enum.find(pipeline_totals, &(elem(&1, 0) == name)) %>
       <div class="step">
         <div class="title"><%= pipeline %></div>
-        <div class="description"><%= count %> Open Issues</div>
+        <div class="description"><%= total %> Open Issues</div>
       </div>
     <% end %>
   </div>
@@ -148,13 +232,13 @@
 
     <%
       by_assignee =
-        @github_issues
+        @github_issues_filtered
         |> Enum.reduce(%{}, fn github_issue, acc ->
             Enum.reduce(github_issue["assignees"], acc, fn assignee, acc ->
               Map.update(acc, assignee["login"], 1, &(&1 + 1))
             end)
           end)
-        |> Enum.sort_by(&[elem(&1, 1) * -1, String.downcase(elem(&1, 0))]) 
+        |> Enum.sort_by(&[elem(&1, 1) * -1, String.downcase(elem(&1, 0))])
 
       by_assignee =
         case show_all?(@conn, "assignees") do
@@ -184,7 +268,7 @@
       </tbody>
     </table>
 
-    <%= show_all_button @conn, @github_issues, "assignees" %>
+    <%= show_all_button @conn, @github_issues_filtered, "assignees" %>
   </section>
 
   <section>
@@ -193,8 +277,8 @@
     <%=
       data_table_records =
         case show_all?(@conn, "github-issues") do
-          true -> @github_issues
-          _ -> Enum.slice(@github_issues, 0, 10)
+          true -> @github_issues_filtered
+          _ -> Enum.slice(@github_issues_filtered, 0, 10)
         end
 
       render_data_table(
@@ -205,6 +289,6 @@
       )
     %>
 
-    <%= show_all_button @conn, @github_issues, "github-issues" %>
+    <%= show_all_button @conn, @github_issues_filtered, "github-issues" %>
   </section>
 </div>

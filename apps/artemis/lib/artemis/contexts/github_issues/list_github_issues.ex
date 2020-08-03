@@ -69,6 +69,17 @@ defmodule Artemis.ListGithubIssues do
     end)
   end
 
+  defp filter(records, "labels_not", value) do
+    Enum.reject(records, fn record ->
+      labels =
+        record
+        |> Map.get("labels")
+        |> Enum.map(&Map.get(&1, "name"))
+
+      Enum.any?(split(value), &Enum.member?(labels, &1))
+    end)
+  end
+
   defp filter(records, "number", value) do
     Enum.filter(records, &Enum.member?(split(value), Map.get(&1, "number")))
   end
