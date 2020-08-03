@@ -1,0 +1,50 @@
+<div class="data-tabs">
+  <header class="ui secondary pointing menu">
+    <%= if Enum.member?(@tabs, :presets) do %>
+      <a class="item active">
+        <i class="ui icon table"></i>
+        Presets
+      </a>
+    <% end %>
+
+    <%= if Enum.member?(@tabs, :filters) do %>
+      <a class="item">
+        <i class="ui icon filter"></i>
+        Filters
+        <%
+          filter_count =
+            @conn
+            |> Map.get(:query_params)
+            |> Map.get("filters", %{})
+            |> Map.keys()
+            |> length()
+        %>
+        <%= if filter_count > 0 do %>
+          <span class="count-label">
+            <span class="label">
+              <%= filter_count %>
+            </span>
+          </span>
+        <% end %>
+      </a>
+    <% end %>
+
+    <%= if Enum.member?(@tabs, :search) do %>
+      <a class="item">
+        <i class="ui icon search"></i>
+        Search
+        <%= if Artemis.Helpers.present?(@conn.query_params["query"]) do %>
+          <span class="count-label">
+            <span class="label">
+              1
+            </span>
+          </span>
+        <% end %>
+      </a>
+    <% end %>
+  </header>
+
+  <content>
+    <%= @content %>
+  </content>
+</div>

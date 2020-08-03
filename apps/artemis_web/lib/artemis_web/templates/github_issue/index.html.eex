@@ -12,155 +12,110 @@
 <div id="content">
   <%= render_flash_notifications @conn %>
 
-  <div class="data-table-actions">
-    <div class="tabs">
-      <header class="ui secondary pointing menu">
-        <a class="item active">
-          <i class="ui icon table"></i>
-          Presets
-        </a>
-        <a class="item">
-          <i class="ui icon filter"></i>
-          Filters
-          <%
-            filter_count =
-              @conn
-              |> Map.get(:query_params)
-              |> Map.get("filters", %{})
-              |> Map.keys()
-              |> length()
-          %>
-          <%= if filter_count > 0 do %>
-            <span class="count-label">
-              <span class="label">
-                <%= filter_count %>
-              </span>
-            </span>
-          <% end %>
-        </a>
-        <a class="item">
-          <i class="ui icon search"></i>
-          Search
-          <%= if Artemis.Helpers.present?(@conn.query_params["query"]) do %>
-            <span class="count-label">
-              <span class="label">
-                1
-              </span>
-            </span>
-          <% end %>
-        </a>
-      </header>
-
-      <content>
-        <div class="tab">
-          <div class="presets" style="display: flex; justify-content: space-between;">
-            <div class="columns">
-              <h5>General</h5>
-              <ul>
-                <li>
-                  <%= link "All", to: Routes.github_issue_path(@conn, :index) %>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="tab">
-          <div class="filters" style="display: flex; justify-content: space-between;">
-            <div class="filter">
-              <label>Repository</label>
-              <%=
-                repository_options =
-                  @github_issues_all
-                  |> Enum.map(&Map.get(&1, "repository"))
-                  |> Enum.uniq()
-                  |> Enum.filter(&Artemis.Helpers.present?(&1))
-                  |> Enum.sort_by(&String.downcase(&1))
-                  |> select_options()
-
-                filter_multi_select(@conn, "Repository", :repository, repository_options)
-              %>
-            </div>
-
-            <div class="filter">
-              <label>Labels</label>
-              <%=
-                label_options =
-                  @github_issues_all
-                  |> Enum.flat_map(fn github_issue ->
-                    github_issue
-                    |> Map.get("labels")
-                    |> Enum.map(&Map.get(&1, "name"))
-                  end)
-                  |> Enum.uniq()
-                  |> Enum.filter(&Artemis.Helpers.present?(&1))
-                  |> Enum.sort_by(&String.downcase(&1))
-                  |> select_options()
-
-                filter_multi_select(@conn, "Labels", :labels, label_options)
-              %>
-            </div>
-
-            <div class="filter">
-              <label>Not Labels</label>
-              <%=
-                label_options =
-                  @github_issues_all
-                  |> Enum.flat_map(fn github_issue ->
-                    github_issue
-                    |> Map.get("labels")
-                    |> Enum.map(&Map.get(&1, "name"))
-                  end)
-                  |> Enum.uniq()
-                  |> Enum.filter(&Artemis.Helpers.present?(&1))
-                  |> Enum.sort_by(&String.downcase(&1))
-                  |> select_options()
-
-                filter_multi_select(@conn, "Not Labels", :labels_not, label_options)
-              %>
-            </div>
-
-            <div class="filter">
-              <label>Assignee</label>
-              <%=
-                assignee_options =
-                  @github_issues_all
-                  |> Enum.flat_map(fn github_issue ->
-                    github_issue
-                    |> Map.get("assignees")
-                    |> Enum.map(&Map.get(&1, "login"))
-                  end)
-                  |> Enum.uniq()
-                  |> Enum.filter(&Artemis.Helpers.present?(&1))
-                  |> Enum.sort_by(&String.downcase(&1))
-                  |> select_options()
-
-                filter_multi_select(@conn, "Assignee", :assignee, assignee_options)
-              %>
-            </div>
-
-            <div class="filter">
-              <label>Zenhub Pipeline</label>
-              <%=
-                pipeline_options =
-                  @github_issues_all
-                  |> Enum.map(&Map.get(&1, "zenhub_pipeline"))
-                  |> Enum.uniq()
-                  |> Enum.filter(&Artemis.Helpers.present?(&1))
-                  |> select_options()
-
-                filter_multi_select(@conn, "Zenhub Pipeline", :zenhub_pipeline, pipeline_options)
-              %>
-            </div>
-          </div>
-        </div>
-
-        <div class="tab">
-          <%= render_search @conn %>
-        </div>
-      </content>
+  <%= render_data_tabs(@conn, [:presets, :filters, :search]) do %>
+    <div class="tab tab-presets">
+      <div class="columns">
+        <h5>General</h5>
+        <ul>
+          <li>
+            <%= link "All", to: Routes.github_issue_path(@conn, :index) %>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
+
+    <div class="tab tab-filters">
+      <div class="filter">
+        <label>Repository</label>
+        <%=
+          repository_options =
+            @github_issues_all
+            |> Enum.map(&Map.get(&1, "repository"))
+            |> Enum.uniq()
+            |> Enum.filter(&Artemis.Helpers.present?(&1))
+            |> Enum.sort_by(&String.downcase(&1))
+            |> select_options()
+
+          filter_multi_select(@conn, "Repository", :repository, repository_options)
+        %>
+      </div>
+
+      <div class="filter">
+        <label>Labels</label>
+        <%=
+          label_options =
+            @github_issues_all
+            |> Enum.flat_map(fn github_issue ->
+              github_issue
+              |> Map.get("labels")
+              |> Enum.map(&Map.get(&1, "name"))
+            end)
+            |> Enum.uniq()
+            |> Enum.filter(&Artemis.Helpers.present?(&1))
+            |> Enum.sort_by(&String.downcase(&1))
+            |> select_options()
+
+          filter_multi_select(@conn, "Labels", :labels, label_options)
+        %>
+      </div>
+
+      <div class="filter">
+        <label>Not Labels</label>
+        <%=
+          label_options =
+            @github_issues_all
+            |> Enum.flat_map(fn github_issue ->
+              github_issue
+              |> Map.get("labels")
+              |> Enum.map(&Map.get(&1, "name"))
+            end)
+            |> Enum.uniq()
+            |> Enum.filter(&Artemis.Helpers.present?(&1))
+            |> Enum.sort_by(&String.downcase(&1))
+            |> select_options()
+
+          filter_multi_select(@conn, "Not Labels", :labels_not, label_options)
+        %>
+      </div>
+
+      <div class="filter">
+        <label>Assignee</label>
+        <%=
+          assignee_options =
+            @github_issues_all
+            |> Enum.flat_map(fn github_issue ->
+              github_issue
+              |> Map.get("assignees")
+              |> Enum.map(&Map.get(&1, "login"))
+            end)
+            |> Enum.uniq()
+            |> Enum.filter(&Artemis.Helpers.present?(&1))
+            |> Enum.sort_by(&String.downcase(&1))
+            |> select_options()
+
+          filter_multi_select(@conn, "Assignee", :assignee, assignee_options)
+        %>
+      </div>
+
+      <div class="filter">
+        <label>Zenhub Pipeline</label>
+        <%=
+          pipeline_options =
+            @github_issues_all
+            |> Enum.map(&Map.get(&1, "zenhub_pipeline"))
+            |> Enum.uniq()
+            |> Enum.filter(&Artemis.Helpers.present?(&1))
+            |> select_options()
+
+          filter_multi_select(@conn, "Zenhub Pipeline", :zenhub_pipeline, pipeline_options)
+        %>
+      </div>
+    </div>
+
+    <div class="tab tab-search">
+      <%= render_search @conn %>
+    </div>
+  <% end %>
 
   <%
     repositories =
