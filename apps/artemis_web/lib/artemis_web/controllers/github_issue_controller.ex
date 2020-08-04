@@ -8,7 +8,9 @@ defmodule ArtemisWeb.GithubIssueController do
     "assignee",
     "zenhub_pipeline",
     "title",
-    "labels"
+    "labels",
+    "comments",
+    "created_at"
   ]
 
   def index(conn, params) do

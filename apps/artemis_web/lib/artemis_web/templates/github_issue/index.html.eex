@@ -25,7 +25,7 @@
     </div>
 
     <div class="tab tab-filters">
-      <%= form_for :filters, "", [method: :get], fn f -> %>
+      <%= form_for :filters, "", [class: "ui form", method: :get], fn f -> %>
         <div class="filters">
           <div class="filter">
             <label>Repository</label>
@@ -112,6 +112,35 @@
               filter_multi_select_field(@conn, f, "Zenhub Pipeline", :zenhub_pipeline, pipeline_options)
             %>
           </div>
+
+          <div class="filter">
+            <label>Created Before</label>
+            <%= text_input f, :created_at_lt, placeholder: "YYYY-MM-DD", value: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "created_at_lt"]) %>
+          </div>
+
+          <div class="filter">
+            <label>Created After</label>
+            <%= text_input f, :created_at_gte, placeholder: "YYYY-MM-DD", value: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "created_at_gte"]) %>
+          </div>
+
+          <div class="filter">
+            <label>Comments?</label>
+            <%=
+              comment_options = [
+                [key: "", value: ""],
+                [key: "Has Comments", value: "true"],
+                [key: "No Comments", value: "false"]
+              ]
+
+              select(
+                f,
+                :has_comments,
+                comment_options,
+                class: "enhanced clearable",
+                selected: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "has_comments"])
+              )
+            %>
+          </div>
         </div>
 
         <%=
@@ -156,8 +185,10 @@
       <%= Enum.map repositories, fn name -> %>
         <% {repository, total} = Enum.find(repository_totals, &(elem(&1, 0) == name)) || {name, 0} %>
         <div class="step">
-          <div class="title"><%= repository %></div>
-          <div class="description"><%= total %> Open Issues</div>
+          <div class="content">
+            <div class="title"><%= repository %></div>
+            <div class="description"><%= total %> Open Issues</div>
+          </div>
         </div>
       <% end %>
     </div>
@@ -188,8 +219,10 @@
     <%= Enum.map pipeline_order, fn {name, _index} -> %>
       <% {pipeline, total} = Enum.find(pipeline_totals, &(elem(&1, 0) == name)) %>
       <div class="step">
-        <div class="title"><%= pipeline %></div>
-        <div class="description"><%= total %> Open Issues</div>
+        <div class="content">
+          <div class="title"><%= pipeline %></div>
+          <div class="description"><%= total %> Open Issues</div>
+        </div>
       </div>
     <% end %>
   </div>
@@ -237,6 +270,48 @@
 
     <%= show_all_button @conn, @github_issues_filtered, "assignees" %>
   </section>
+
+  <h3 style="margin-bottom: 0;">Github Issues by Age</h3>
+
+  <div class="ui steps full-width created-at">
+    <%
+      created_at_ranges = [
+        "Last 7 Days": Timex.shift(Timex.now(), days: -7) |> DateTime.to_unix(),
+        "7-30 Days": Timex.shift(Timex.now(), days: -30) |> DateTime.to_unix(),
+        "30-90 Days": Timex.shift(Timex.now(), days: -90) |> DateTime.to_unix(),
+        "90-180 Days": Timex.shift(Timex.now(), days: -180) |> DateTime.to_unix(),
+        "+180 Days": Timex.shift(Timex.now(), days: -180) |> DateTime.to_unix()
+      ]
+
+      created_at_totals =
+        Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
+          created_at =
+            github_issue
+            |> Map.get("created_at")
+            |> DateTime.from_iso8601()
+            |> elem(1)
+            |> DateTime.to_unix()
+
+          cond do
+            created_at >= Keyword.get(created_at_ranges, :"Last 7 Days") -> Map.update(acc, :"Last 7 Days", 1, &(&1 + 1))
+            created_at >= Keyword.get(created_at_ranges, :"7-30 Days") -> Map.update(acc, :"7-30 Days", 1, &(&1 + 1))
+            created_at >= Keyword.get(created_at_ranges, :"30-90 Days") -> Map.update(acc, :"30-90 Days", 1, &(&1 + 1))
+            created_at >= Keyword.get(created_at_ranges, :"90-180 Days") -> Map.update(acc, :"90-180 Days", 1, &(&1 + 1))
+            true -> Map.update(acc, :"+180 Days", 1, &(&1 + 1))
+          end
+        end)
+    %>
+    <%= Enum.map created_at_ranges, fn {range, _date} -> %>
+      <%= if item = Enum.find(created_at_totals, &(elem(&1, 0) == range)) do %>
+        <div class="step">
+          <div class="content">
+            <div class="title"><%= elem(item, 0) %></div>
+            <div class="description"><%= elem(item, 1) %> Open Issues</div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
 
   <section>
     <%= h3 "Github Issues" %>

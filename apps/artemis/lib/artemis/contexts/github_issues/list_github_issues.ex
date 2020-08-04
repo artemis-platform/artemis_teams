@@ -27,11 +27,13 @@ defmodule Artemis.ListGithubIssues do
 
   defp search_query(records, %{"query" => search}, _user) do
     regex = Regex.compile!(search, [:caseless])
+    as_integer = Artemis.Helpers.to_integer(search)
 
     Enum.filter(records, fn record ->
       title = Map.get(record, "title")
+      issue_number = Map.get(record, "number")
 
-      String.match?(title, regex)
+      String.match?(title, regex) || issue_number == as_integer
     end)
   rescue
     _e in Regex.CompileError -> records
@@ -56,6 +58,56 @@ defmodule Artemis.ListGithubIssues do
 
       Enum.any?(split(value), &Enum.member?(assignees, &1))
     end)
+  end
+
+  defp filter(records, "created_at_gte", ""), do: records
+
+  defp filter(records, "created_at_gte", value) do
+    timestamp =
+      value
+      |> Timex.parse!("{YYYY}-{0M}-{0D}")
+      |> Timex.to_unix()
+
+    Enum.filter(records, fn record ->
+      created_at =
+        record
+        |> Map.get("created_at")
+        |> Timex.parse!("{ISO:Extended:Z}")
+        |> Timex.to_unix()
+
+      created_at >= timestamp
+    end)
+  rescue
+    _ -> records
+  end
+
+  defp filter(records, "created_at_lt", ""), do: records
+
+  defp filter(records, "created_at_lt", value) do
+    timestamp =
+      value
+      |> Timex.parse!("{YYYY}-{0M}-{0D}")
+      |> Timex.to_unix()
+
+    Enum.filter(records, fn record ->
+      created_at =
+        record
+        |> Map.get("created_at")
+        |> Timex.parse!("{ISO:Extended:Z}")
+        |> Timex.to_unix()
+
+      created_at < timestamp
+    end)
+  rescue
+    _ -> records
+  end
+
+  defp filter(records, "has_comments", value) do
+    case value do
+      "true" -> Enum.filter(records, &(Map.get(&1, "comments") > 0))
+      "false" -> Enum.filter(records, &(Map.get(&1, "comments") == 0))
+      _ -> records
+    end
   end
 
   defp filter(records, "labels", value) do

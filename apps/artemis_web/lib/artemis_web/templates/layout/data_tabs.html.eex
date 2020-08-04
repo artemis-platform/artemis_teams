@@ -16,6 +16,11 @@
             @conn
             |> Map.get(:query_params)
             |> Map.get("filters", %{})
+            |> Enum.filter(fn
+              {_key, values} when is_list(values) -> Enum.any?(values, &Artemis.Helpers.present?(&1))
+              {_key, value} -> Artemis.Helpers.present?(value)
+            end)
+            |> Enum.into(%{})
             |> Map.keys()
             |> length()
         %>

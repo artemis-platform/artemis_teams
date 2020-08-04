@@ -4,6 +4,8 @@ defmodule ArtemisWeb.GithubIssueView do
   def data_table_available_columns() do
     [
       {"Assignee", "assignee"},
+      {"Comments", "comments"},
+      {"Created At", "created_at"},
       {"Labels", "labels"},
       {"Number", "number"},
       {"Title", "title"},
@@ -25,6 +27,26 @@ defmodule ArtemisWeb.GithubIssueView do
             false ->
               content_tag(:div, "-")
           end
+        end
+      ],
+      "comments" => [
+        label: fn _conn -> "Comments" end,
+        value: fn _conn, row -> row["comments"] end,
+        value_html: fn _conn, row ->
+          url = String.replace(row["url"], "/api/v3/repos", "")
+
+          link(row["comments"], to: url, target: "_blank")
+        end
+      ],
+      "created_at" => [
+        label: fn _conn -> "Created At" end,
+        value: fn _conn, row -> row["created_at"] end,
+        value_html: fn _conn, row ->
+          row
+          |> Map.get("created_at")
+          |> DateTime.from_iso8601()
+          |> elem(1)
+          |> render_date_time()
         end
       ],
       "labels" => [
