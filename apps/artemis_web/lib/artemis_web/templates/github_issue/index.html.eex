@@ -154,7 +154,7 @@
     </div>
 
     <div class="tab tab-search">
-      <%= render_search @conn %>
+      <%= render_search @conn, include_query_params: true %>
     </div>
   <% end %>
 
@@ -168,7 +168,7 @@
 
   <%= if length(repositories) > 1 do %>
 
-    <h3 style="margin-bottom: 0;">Github Issues by Repository</h3>
+    <h3 style="margin-bottom: 0;">By Repository</h3>
 
     <div class="ui steps full-width repositories">
       <%
@@ -195,7 +195,7 @@
 
   <% end %>
 
-  <h3 style="margin-bottom: 0;">Github Issues by Pipeline</h3>
+  <h3 style="margin-bottom: 0;">By Pipeline</h3>
 
   <div class="ui steps full-width pipelines">
     <%
@@ -227,51 +227,7 @@
     <% end %>
   </div>
 
-  <section>
-    <%= h3 "Github Issue Totals by Assignee" %>
-
-    <%
-      by_assignee =
-        @github_issues_filtered
-        |> Enum.reduce(%{}, fn github_issue, acc ->
-            Enum.reduce(github_issue["assignees"], acc, fn assignee, acc ->
-              Map.update(acc, assignee["login"], 1, &(&1 + 1))
-            end)
-          end)
-        |> Enum.sort_by(&[elem(&1, 1) * -1, String.downcase(elem(&1, 0))])
-
-      by_assignee =
-        case show_all?(@conn, "assignees") do
-          true -> by_assignee
-          _ -> Enum.slice(by_assignee, 0, 10)
-        end
-    %>
-
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Assignee</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%= Enum.map by_assignee, fn {assignee, total} -> %>
-          <tr>
-            <td>
-              <%= assignee %>
-            </td>
-            <td>
-              <%= total %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-
-    <%= show_all_button @conn, @github_issues_filtered, "assignees" %>
-  </section>
-
-  <h3 style="margin-bottom: 0;">Github Issues by Age</h3>
+  <h3 style="margin-bottom: 0;">By Age</h3>
 
   <div class="ui steps full-width created-at">
     <%
@@ -313,9 +269,53 @@
     <% end %>
   </div>
 
-  <section>
-    <%= h3 "Github Issues" %>
+  <h3 style="margin-bottom: 1rem;">By Assignee</h3>
 
+  <section>
+    <%
+      by_assignee =
+        @github_issues_filtered
+        |> Enum.reduce(%{}, fn github_issue, acc ->
+            Enum.reduce(github_issue["assignees"], acc, fn assignee, acc ->
+              Map.update(acc, assignee["login"], 1, &(&1 + 1))
+            end)
+          end)
+        |> Enum.sort_by(&[elem(&1, 1) * -1, String.downcase(elem(&1, 0))])
+
+      by_assignee =
+        case show_all?(@conn, "assignees") do
+          true -> by_assignee
+          _ -> Enum.slice(by_assignee, 0, 10)
+        end
+    %>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Assignee</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= Enum.map by_assignee, fn {assignee, count} -> %>
+          <tr>
+            <td>
+              <%= assignee %>
+            </td>
+            <td>
+              <%= count %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <%= show_all_button @conn, @github_issues_filtered, "assignees" %>
+  </section>
+
+  <h3 style="margin-bottom: 1rem;">Github Issues</h3>
+
+  <section>
     <%=
       data_table_records =
         case show_all?(@conn, "github-issues") do

@@ -27,13 +27,16 @@ defmodule Artemis.ListGithubIssues do
 
   defp search_query(records, %{"query" => search}, _user) do
     regex = Regex.compile!(search, [:caseless])
-    as_integer = Artemis.Helpers.to_integer(search)
 
     Enum.filter(records, fn record ->
       title = Map.get(record, "title")
-      issue_number = Map.get(record, "number")
 
-      String.match?(title, regex) || issue_number == as_integer
+      issue_number =
+        record
+        |> Map.get("number")
+        |> Integer.to_string()
+
+      String.match?(title, regex) || search == issue_number
     end)
   rescue
     _e in Regex.CompileError -> records

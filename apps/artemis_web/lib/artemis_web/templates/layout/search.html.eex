@@ -1,4 +1,13 @@
 <form class="ui form search search-resource <%= Keyword.get(@options, :size) %>" action="<%= @conn.request_path %>" method="get">
+  <%=
+    if Keyword.get(@options, :include_query_params) do
+      @conn.query_params
+      |> Map.delete("page")
+      |> Map.delete("query")
+      |> hidden_fields()
+    end
+  %>
+
   <div class="ui icon input">
     <i class="search link icon"></i>
     <input name="query" id="query" type="text" placeholder="<%= Keyword.get(@options, :placeholder, "Search") %>" value="<%= Map.get(@conn.query_params, "query") %>" />
