@@ -12,7 +12,7 @@
 <div id="content">
   <%= render_flash_notifications @conn %>
 
-  <%= render_data_tabs(@conn, [:presets, :filters, :search]) do %>
+  <%= render_data_tabs(@conn, [:presets, :filters, :search, :export]) do %>
     <div class="tab tab-presets">
       <div class="columns">
         <h5>General</h5>
@@ -155,6 +155,10 @@
 
     <div class="tab tab-search">
       <%= render_search @conn, include_query_params: true %>
+    </div>
+
+    <div class="tab tab-export">
+      <%= render_export_actions(@conn, available_columns: data_table_available_columns()) %>
     </div>
   <% end %>
 

@@ -47,6 +47,13 @@
         <% end %>
       </a>
     <% end %>
+
+    <%= if Enum.member?(@tabs, :export) do %>
+      <a class="item">
+        <i class="ui icon download"></i>
+        Export
+      </a>
+    <% end %>
   </header>
 
   <content>

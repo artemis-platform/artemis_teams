@@ -18,6 +18,13 @@ defmodule ArtemisWeb.GithubIssueView do
       "assignee" => [
         label: fn _conn -> "Assignees" end,
         value: fn _conn, row ->
+          row
+          |> Map.get("assignees")
+          |> Enum.map(&Map.get(&1, "login"))
+          |> List.flatten()
+          |> Enum.join(", ")
+        end,
+        value_html: fn _conn, row ->
           case length(row["assignees"]) > 0 do
             true ->
               Enum.map(row["assignees"], fn assignee ->
