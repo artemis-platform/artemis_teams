@@ -12,6 +12,7 @@ defmodule Artemis.IntervalSupervisor do
   @impl true
   def init(:ok) do
     children = [
+      {Artemis.Worker.GithubIssueCacheWarmer, []},
       {Artemis.Worker.IBMCloudIAMAccessToken, []},
       {Artemis.Worker.RepoResetOnInterval, []}
     ]

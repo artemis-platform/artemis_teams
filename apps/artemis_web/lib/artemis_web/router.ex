@@ -99,6 +99,10 @@ defmodule ArtemisWeb.Router do
         get "/event-logs/:id", FeatureController, :show_event_log_details, as: :event_log
       end
 
+      # Github Issues
+
+      resources "/github-issues", GithubIssueController, only: [:index]
+
       # HTTP Requests
 
       resources "/http-request-logs", HttpRequestLogController, only: [:index, :show]

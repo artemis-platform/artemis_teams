@@ -150,6 +150,7 @@ defmodule ArtemisWeb do
       import ArtemisWeb.ViewHelper.Breadcrumbs
       import ArtemisWeb.ViewHelper.BulkActions
       import ArtemisWeb.ViewHelper.Cache
+      import ArtemisWeb.ViewHelper.Colors
       import ArtemisWeb.ViewHelper.Conditionals
       import ArtemisWeb.ViewHelper.Emoji
       import ArtemisWeb.ViewHelper.Errors
@@ -170,6 +171,7 @@ defmodule ArtemisWeb do
       import ArtemisWeb.ViewHelper.Search
       import ArtemisWeb.ViewHelper.Slack
       import ArtemisWeb.ViewHelper.Tables
+      import ArtemisWeb.ViewHelper.Tabs
       import ArtemisWeb.ViewHelper.User
       import ArtemisWeb.ViewHelper.Values
 
