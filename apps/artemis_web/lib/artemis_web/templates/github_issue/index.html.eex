@@ -12,398 +12,412 @@
 <div id="content">
   <%= render_flash_notifications @conn %>
 
-  <%= render_data_tabs(@conn, [:presets, :filters, :search, :export]) do %>
-    <div class="tab tab-presets">
-      <div class="columns">
-        <h5>General</h5>
-        <ul>
-          <li>
-            <%= link "All", to: Routes.github_issue_path(@conn, :index) %>
-          </li>
-        </ul>
+  <%= if length(@github_repositories) == 0 do %>
+
+    <div class="ui placeholder segment tiny">
+      <div class="ui icon header">
+        <i class="github icon"></i>
+        Github Issues
       </div>
+      <p style="font-size: 14px; text-align: center;">To use this feature, first configure Github Repositories in the application configuration</p>
     </div>
 
-    <div class="tab tab-filters">
-      <%= form_for :filters, "", [class: "ui form", method: :get], fn f -> %>
-        <div class="filters">
-          <div class="filter">
-            <label>Repository</label>
-            <%=
-              repository_options =
-                @github_issues_all
-                |> Enum.map(&Map.get(&1, "repository"))
-                |> Enum.uniq()
-                |> Enum.filter(&Artemis.Helpers.present?(&1))
-                |> Enum.sort_by(&String.downcase(&1))
-                |> select_options()
+  <% else %>
 
-              filter_multi_select_field(@conn, f, "Repository", :repository, repository_options)
-            %>
-          </div>
-
-          <div class="filter">
-            <label>Labels</label>
-            <%=
-              label_options =
-                @github_issues_all
-                |> Enum.flat_map(fn github_issue ->
-                  github_issue
-                  |> Map.get("labels")
-                  |> Enum.map(&Map.get(&1, "name"))
-                end)
-                |> Enum.uniq()
-                |> Enum.filter(&Artemis.Helpers.present?(&1))
-                |> Enum.sort_by(&String.downcase(&1))
-                |> select_options()
-
-              filter_multi_select_field(@conn, f, "Labels", :labels, label_options)
-            %>
-          </div>
-
-          <div class="filter">
-            <label>Not Labels</label>
-            <%=
-              label_options =
-                @github_issues_all
-                |> Enum.flat_map(fn github_issue ->
-                  github_issue
-                  |> Map.get("labels")
-                  |> Enum.map(&Map.get(&1, "name"))
-                end)
-                |> Enum.uniq()
-                |> Enum.filter(&Artemis.Helpers.present?(&1))
-                |> Enum.sort_by(&String.downcase(&1))
-                |> select_options()
-
-              filter_multi_select_field(@conn, f, "Not Labels", :labels_not, label_options)
-            %>
-          </div>
-
-          <div class="filter">
-            <label>Assignee</label>
-            <%=
-              assignee_options =
-                @github_issues_all
-                |> Enum.flat_map(fn github_issue ->
-                  github_issue
-                  |> Map.get("assignees")
-                  |> Enum.map(&Map.get(&1, "login"))
-                end)
-                |> Enum.uniq()
-                |> Enum.filter(&Artemis.Helpers.present?(&1))
-                |> Enum.sort_by(&String.downcase(&1))
-                |> select_options()
-
-              filter_multi_select_field(@conn, f, "Assignee", :assignee, assignee_options)
-            %>
-          </div>
-
-          <div class="filter">
-            <label>Zenhub Pipeline</label>
-            <%=
-              pipeline_options =
-                @github_issues_all
-                |> Enum.map(&Map.get(&1, "zenhub_pipeline"))
-                |> Enum.uniq()
-                |> Enum.filter(&Artemis.Helpers.present?(&1))
-                |> select_options()
-
-              filter_multi_select_field(@conn, f, "Zenhub Pipeline", :zenhub_pipeline, pipeline_options)
-            %>
-          </div>
-
-          <div class="filter">
-            <label>Created Before</label>
-            <%= text_input f, :created_at_lt, placeholder: "YYYY-MM-DD", value: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "created_at_lt"]) %>
-          </div>
-
-          <div class="filter">
-            <label>Created After</label>
-            <%= text_input f, :created_at_gte, placeholder: "YYYY-MM-DD", value: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "created_at_gte"]) %>
-          </div>
-
-          <div class="filter">
-            <label>Milestone</label>
-            <%=
-              milestone_options =
-                @github_issues_all
-                |> Enum.map(&Artemis.Helpers.deep_get(&1, ["milestone", "title"]))
-                |> Enum.uniq()
-                |> Enum.filter(&Artemis.Helpers.present?(&1))
-                |> Enum.sort_by(&String.downcase(&1))
-                |> select_options()
-
-              filter_multi_select_field(@conn, f, "Milestone", :milestone, milestone_options)
-            %>
-          </div>
-
-          <div class="filter">
-            <label>Comments?</label>
-            <%=
-              comment_options = [
-                [key: "", value: ""],
-                [key: "Has Comments", value: "true"],
-                [key: "No Comments", value: "false"]
-              ]
-
-              select(
-                f,
-                :has_comments,
-                comment_options,
-                class: "enhanced clearable",
-                selected: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "has_comments"])
-              )
-            %>
-          </div>
-
-          <div class="filter">
-            <label>Zenhub Epic?</label>
-            <%=
-              zenhub_epic_options = [
-                [key: "", value: ""],
-                [key: "Epics Only", value: "true"],
-                [key: "No Epics", value: "false"]
-              ]
-
-              select(
-                f,
-                :is_epic,
-                zenhub_epic_options,
-                class: "enhanced clearable",
-                selected: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "is_epic"])
-              )
-            %>
-          </div>
+    <%= render_data_tabs(@conn, [:presets, :filters, :search, :export]) do %>
+      <div class="tab tab-presets">
+        <div class="columns">
+          <h5>General</h5>
+          <ul>
+            <li>
+              <%= link "All", to: Routes.github_issue_path(@conn, :index) %>
+            </li>
+          </ul>
         </div>
+      </div>
 
-        <%=
-          @conn.query_params
-          |> Map.delete("filters")
-          |> hidden_fields()
+      <div class="tab tab-filters">
+        <%= form_for :filters, "", [class: "ui form", method: :get], fn f -> %>
+          <div class="filters">
+            <div class="filter">
+              <label>Repository</label>
+              <%=
+                repository_options =
+                  @github_issues_all
+                  |> Enum.map(&Map.get(&1, "repository"))
+                  |> Enum.uniq()
+                  |> Enum.filter(&Artemis.Helpers.present?(&1))
+                  |> Enum.sort_by(&String.downcase(&1))
+                  |> select_options()
+
+                filter_multi_select_field(@conn, f, "Repository", :repository, repository_options)
+              %>
+            </div>
+
+            <div class="filter">
+              <label>Labels</label>
+              <%=
+                label_options =
+                  @github_issues_all
+                  |> Enum.flat_map(fn github_issue ->
+                    github_issue
+                    |> Map.get("labels")
+                    |> Enum.map(&Map.get(&1, "name"))
+                  end)
+                  |> Enum.uniq()
+                  |> Enum.filter(&Artemis.Helpers.present?(&1))
+                  |> Enum.sort_by(&String.downcase(&1))
+                  |> select_options()
+
+                filter_multi_select_field(@conn, f, "Labels", :labels, label_options)
+              %>
+            </div>
+
+            <div class="filter">
+              <label>Not Labels</label>
+              <%=
+                label_options =
+                  @github_issues_all
+                  |> Enum.flat_map(fn github_issue ->
+                    github_issue
+                    |> Map.get("labels")
+                    |> Enum.map(&Map.get(&1, "name"))
+                  end)
+                  |> Enum.uniq()
+                  |> Enum.filter(&Artemis.Helpers.present?(&1))
+                  |> Enum.sort_by(&String.downcase(&1))
+                  |> select_options()
+
+                filter_multi_select_field(@conn, f, "Not Labels", :labels_not, label_options)
+              %>
+            </div>
+
+            <div class="filter">
+              <label>Assignee</label>
+              <%=
+                assignee_options =
+                  @github_issues_all
+                  |> Enum.flat_map(fn github_issue ->
+                    github_issue
+                    |> Map.get("assignees")
+                    |> Enum.map(&Map.get(&1, "login"))
+                  end)
+                  |> Enum.uniq()
+                  |> Enum.filter(&Artemis.Helpers.present?(&1))
+                  |> Enum.sort_by(&String.downcase(&1))
+                  |> select_options()
+
+                filter_multi_select_field(@conn, f, "Assignee", :assignee, assignee_options)
+              %>
+            </div>
+
+            <div class="filter">
+              <label>Zenhub Pipeline</label>
+              <%=
+                pipeline_options =
+                  @github_issues_all
+                  |> Enum.map(&Map.get(&1, "zenhub_pipeline"))
+                  |> Enum.uniq()
+                  |> Enum.filter(&Artemis.Helpers.present?(&1))
+                  |> select_options()
+
+                filter_multi_select_field(@conn, f, "Zenhub Pipeline", :zenhub_pipeline, pipeline_options)
+              %>
+            </div>
+
+            <div class="filter">
+              <label>Created Before</label>
+              <%= text_input f, :created_at_lt, placeholder: "YYYY-MM-DD", value: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "created_at_lt"]) %>
+            </div>
+
+            <div class="filter">
+              <label>Created After</label>
+              <%= text_input f, :created_at_gte, placeholder: "YYYY-MM-DD", value: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "created_at_gte"]) %>
+            </div>
+
+            <div class="filter">
+              <label>Milestone</label>
+              <%=
+                milestone_options =
+                  @github_issues_all
+                  |> Enum.map(&Artemis.Helpers.deep_get(&1, ["milestone", "title"]))
+                  |> Enum.uniq()
+                  |> Enum.filter(&Artemis.Helpers.present?(&1))
+                  |> Enum.sort_by(&String.downcase(&1))
+                  |> select_options()
+
+                filter_multi_select_field(@conn, f, "Milestone", :milestone, milestone_options)
+              %>
+            </div>
+
+            <div class="filter">
+              <label>Comments?</label>
+              <%=
+                comment_options = [
+                  [key: "", value: ""],
+                  [key: "Has Comments", value: "true"],
+                  [key: "No Comments", value: "false"]
+                ]
+
+                select(
+                  f,
+                  :has_comments,
+                  comment_options,
+                  class: "enhanced clearable",
+                  selected: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "has_comments"])
+                )
+              %>
+            </div>
+
+            <div class="filter">
+              <label>Zenhub Epic?</label>
+              <%=
+                zenhub_epic_options = [
+                  [key: "", value: ""],
+                  [key: "Epics Only", value: "true"],
+                  [key: "No Epics", value: "false"]
+                ]
+
+                select(
+                  f,
+                  :is_epic,
+                  zenhub_epic_options,
+                  class: "enhanced clearable",
+                  selected: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "is_epic"])
+                )
+              %>
+            </div>
+          </div>
+
+          <%=
+            @conn.query_params
+            |> Map.delete("filters")
+            |> hidden_fields()
+          %>
+
+          <%= submit "Update Filters", class: "ui button primary" %>
+        <% end %>
+      </div>
+
+      <div class="tab tab-search">
+        <%= render_search @conn, include_query_params: true %>
+      </div>
+
+      <div class="tab tab-export">
+        <%= render_export_actions(@conn, available_columns: data_table_available_columns()) %>
+      </div>
+    <% end %>
+
+    <%
+      repositories =
+        @github_issues_all
+        |> Enum.map(&Map.get(&1, "repository"))
+        |> Enum.uniq()
+        |> Enum.sort()
+    %>
+
+    <%= if length(repositories) > 1 do %>
+
+      <h3 style="margin-bottom: 0;">By Repository</h3>
+
+      <div class="ui steps full-width repositories">
+        <%
+          repository_totals =
+            Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
+              repository = github_issue["repository"]
+
+              case repository do
+                nil -> acc
+                _ -> Map.update(acc, repository, 1, &(&1 + 1))
+              end
+            end)
         %>
+        <%= Enum.map repositories, fn name -> %>
+          <% {repository, total} = Enum.find(repository_totals, &(elem(&1, 0) == name)) || {name, 0} %>
+          <div class="step">
+            <div class="content">
+              <div class="title"><%= repository %></div>
+              <div class="description"><%= total %> Open Issues</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
 
-        <%= submit "Update Filters", class: "ui button primary" %>
-      <% end %>
-    </div>
+    <% end %>
 
-    <div class="tab tab-search">
-      <%= render_search @conn, include_query_params: true %>
-    </div>
+    <h3 style="margin-bottom: 0;">By Pipeline</h3>
 
-    <div class="tab tab-export">
-      <%= render_export_actions(@conn, available_columns: data_table_available_columns()) %>
-    </div>
-  <% end %>
-
-  <%
-    repositories =
-      @github_issues_all
-      |> Enum.map(&Map.get(&1, "repository"))
-      |> Enum.uniq()
-      |> Enum.sort()
-  %>
-
-  <%= if length(repositories) > 1 do %>
-
-    <h3 style="margin-bottom: 0;">By Repository</h3>
-
-    <div class="ui steps full-width repositories">
+    <div class="ui steps full-width pipelines">
       <%
-        repository_totals =
+        pipeline_totals =
           Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
-            repository = github_issue["repository"]
+            pipeline = github_issue["zenhub_pipeline"]
 
-            case repository do
+            case pipeline do
               nil -> acc
-              _ -> Map.update(acc, repository, 1, &(&1 + 1))
+              _ -> Map.update(acc, pipeline, 1, &(&1 + 1))
             end
           end)
+
+        pipeline_order =
+          @github_issues_filtered
+          |> Enum.map(&{Map.get(&1, "zenhub_pipeline"), Map.get(&1, "zenhub_pipeline_index")})
+          |> Enum.uniq_by(&elem(&1, 0))
+          |> Enum.sort_by(&elem(&1, 1))
+          |> Enum.filter(&Artemis.Helpers.present?(elem(&1, 0)))
       %>
-      <%= Enum.map repositories, fn name -> %>
-        <% {repository, total} = Enum.find(repository_totals, &(elem(&1, 0) == name)) || {name, 0} %>
+      <%= Enum.map pipeline_order, fn {name, _index} -> %>
+        <% {pipeline, total} = Enum.find(pipeline_totals, &(elem(&1, 0) == name)) %>
         <div class="step">
           <div class="content">
-            <div class="title"><%= repository %></div>
+            <div class="title"><%= pipeline %></div>
             <div class="description"><%= total %> Open Issues</div>
           </div>
         </div>
       <% end %>
     </div>
 
-  <% end %>
+    <h3 style="margin-bottom: 0;">By Age</h3>
 
-  <h3 style="margin-bottom: 0;">By Pipeline</h3>
+    <div class="ui steps full-width created-at">
+      <%
+        created_at_ranges = [
+          "Last 7 Days": Timex.shift(Timex.now(), days: -7) |> DateTime.to_unix(),
+          "7-30 Days": Timex.shift(Timex.now(), days: -30) |> DateTime.to_unix(),
+          "30-90 Days": Timex.shift(Timex.now(), days: -90) |> DateTime.to_unix(),
+          "90-180 Days": Timex.shift(Timex.now(), days: -180) |> DateTime.to_unix(),
+          "+180 Days": Timex.shift(Timex.now(), days: -180) |> DateTime.to_unix()
+        ]
 
-  <div class="ui steps full-width pipelines">
-    <%
-      pipeline_totals =
-        Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
-          pipeline = github_issue["zenhub_pipeline"]
+        created_at_totals =
+          Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
+            created_at =
+              github_issue
+              |> Map.get("created_at")
+              |> DateTime.from_iso8601()
+              |> elem(1)
+              |> DateTime.to_unix()
 
-          case pipeline do
-            nil -> acc
-            _ -> Map.update(acc, pipeline, 1, &(&1 + 1))
-          end
-        end)
+            cond do
+              created_at >= Keyword.get(created_at_ranges, :"Last 7 Days") -> Map.update(acc, :"Last 7 Days", 1, &(&1 + 1))
+              created_at >= Keyword.get(created_at_ranges, :"7-30 Days") -> Map.update(acc, :"7-30 Days", 1, &(&1 + 1))
+              created_at >= Keyword.get(created_at_ranges, :"30-90 Days") -> Map.update(acc, :"30-90 Days", 1, &(&1 + 1))
+              created_at >= Keyword.get(created_at_ranges, :"90-180 Days") -> Map.update(acc, :"90-180 Days", 1, &(&1 + 1))
+              true -> Map.update(acc, :"+180 Days", 1, &(&1 + 1))
+            end
+          end)
+      %>
+      <%= Enum.map created_at_ranges, fn {range, _date} -> %>
+        <%= if item = Enum.find(created_at_totals, &(elem(&1, 0) == range)) do %>
+          <div class="step">
+            <div class="content">
+              <div class="title"><%= elem(item, 0) %></div>
+              <div class="description"><%= elem(item, 1) %> Open Issues</div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
 
-      pipeline_order =
-        @github_issues_filtered
-        |> Enum.map(&{Map.get(&1, "zenhub_pipeline"), Map.get(&1, "zenhub_pipeline_index")})
-        |> Enum.uniq_by(&elem(&1, 0))
-        |> Enum.sort_by(&elem(&1, 1))
-        |> Enum.filter(&Artemis.Helpers.present?(elem(&1, 0)))
-    %>
-    <%= Enum.map pipeline_order, fn {name, _index} -> %>
-      <% {pipeline, total} = Enum.find(pipeline_totals, &(elem(&1, 0) == name)) %>
-      <div class="step">
-        <div class="content">
-          <div class="title"><%= pipeline %></div>
-          <div class="description"><%= total %> Open Issues</div>
-        </div>
-      </div>
-    <% end %>
-  </div>
+    <h3 style="margin-bottom: 0;">By Milestone</h3>
 
-  <h3 style="margin-bottom: 0;">By Age</h3>
+    <div class="ui steps full-width milestones">
+      <%
+        milestone_totals =
+          Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
+            milestone = Artemis.Helpers.deep_get(github_issue, ["milestone", "title"])
 
-  <div class="ui steps full-width created-at">
-    <%
-      created_at_ranges = [
-        "Last 7 Days": Timex.shift(Timex.now(), days: -7) |> DateTime.to_unix(),
-        "7-30 Days": Timex.shift(Timex.now(), days: -30) |> DateTime.to_unix(),
-        "30-90 Days": Timex.shift(Timex.now(), days: -90) |> DateTime.to_unix(),
-        "90-180 Days": Timex.shift(Timex.now(), days: -180) |> DateTime.to_unix(),
-        "+180 Days": Timex.shift(Timex.now(), days: -180) |> DateTime.to_unix()
-      ]
+            case milestone do
+              nil -> acc
+              _ -> Map.update(acc, milestone, 1, &(&1 + 1))
+            end
+          end)
 
-      created_at_totals =
-        Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
-          created_at =
-            github_issue
-            |> Map.get("created_at")
-            |> DateTime.from_iso8601()
-            |> elem(1)
-            |> DateTime.to_unix()
-
-          cond do
-            created_at >= Keyword.get(created_at_ranges, :"Last 7 Days") -> Map.update(acc, :"Last 7 Days", 1, &(&1 + 1))
-            created_at >= Keyword.get(created_at_ranges, :"7-30 Days") -> Map.update(acc, :"7-30 Days", 1, &(&1 + 1))
-            created_at >= Keyword.get(created_at_ranges, :"30-90 Days") -> Map.update(acc, :"30-90 Days", 1, &(&1 + 1))
-            created_at >= Keyword.get(created_at_ranges, :"90-180 Days") -> Map.update(acc, :"90-180 Days", 1, &(&1 + 1))
-            true -> Map.update(acc, :"+180 Days", 1, &(&1 + 1))
-          end
-        end)
-    %>
-    <%= Enum.map created_at_ranges, fn {range, _date} -> %>
-      <%= if item = Enum.find(created_at_totals, &(elem(&1, 0) == range)) do %>
+        milestone_order =
+          @github_issues_filtered
+          |> Enum.map(&{
+            Artemis.Helpers.deep_get(&1, ["milestone", "title"]),
+            Artemis.Helpers.deep_get(&1, ["milestone", "due_on"])
+          })
+          |> Enum.uniq_by(&elem(&1, 0))
+          |> Enum.sort_by(&elem(&1, 1))
+          |> Enum.filter(&Artemis.Helpers.present?(elem(&1, 0)))
+      %>
+      <%= Enum.map milestone_order, fn {name, _index} -> %>
+        <% {milestone, total} = Enum.find(milestone_totals, &(elem(&1, 0) == name)) %>
         <div class="step">
           <div class="content">
-            <div class="title"><%= elem(item, 0) %></div>
-            <div class="description"><%= elem(item, 1) %> Open Issues</div>
+            <div class="title"><%= milestone %></div>
+            <div class="description"><%= total %> Open Issues</div>
           </div>
         </div>
       <% end %>
-    <% end %>
-  </div>
+    </div>
 
-  <h3 style="margin-bottom: 0;">By Milestone</h3>
+    <h3 style="margin-bottom: 1rem;">By Assignee</h3>
 
-  <div class="ui steps full-width milestones">
-    <%
-      milestone_totals =
-        Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
-          milestone = Artemis.Helpers.deep_get(github_issue, ["milestone", "title"])
-
-          case milestone do
-            nil -> acc
-            _ -> Map.update(acc, milestone, 1, &(&1 + 1))
-          end
-        end)
-
-      milestone_order =
-        @github_issues_filtered
-        |> Enum.map(&{
-          Artemis.Helpers.deep_get(&1, ["milestone", "title"]),
-          Artemis.Helpers.deep_get(&1, ["milestone", "due_on"])
-        })
-        |> Enum.uniq_by(&elem(&1, 0))
-        |> Enum.sort_by(&elem(&1, 1))
-        |> Enum.filter(&Artemis.Helpers.present?(elem(&1, 0)))
-    %>
-    <%= Enum.map milestone_order, fn {name, _index} -> %>
-      <% {milestone, total} = Enum.find(milestone_totals, &(elem(&1, 0) == name)) %>
-      <div class="step">
-        <div class="content">
-          <div class="title"><%= milestone %></div>
-          <div class="description"><%= total %> Open Issues</div>
-        </div>
-      </div>
-    <% end %>
-  </div>
-
-  <h3 style="margin-bottom: 1rem;">By Assignee</h3>
-
-  <section>
-    <%
-      by_assignee =
-        @github_issues_filtered
-        |> Enum.reduce(%{}, fn github_issue, acc ->
-            Enum.reduce(github_issue["assignees"], acc, fn assignee, acc ->
-              Map.update(acc, assignee["login"], 1, &(&1 + 1))
+    <section>
+      <%
+        by_assignee =
+          @github_issues_filtered
+          |> Enum.reduce(%{}, fn github_issue, acc ->
+              Enum.reduce(github_issue["assignees"], acc, fn assignee, acc ->
+                Map.update(acc, assignee["login"], 1, &(&1 + 1))
+              end)
             end)
-          end)
-        |> Enum.sort_by(&[elem(&1, 1) * -1, String.downcase(elem(&1, 0))])
+          |> Enum.sort_by(&[elem(&1, 1) * -1, String.downcase(elem(&1, 0))])
 
-      by_assignee =
-        case show_all?(@conn, "assignees") do
-          true -> by_assignee
-          _ -> Enum.slice(by_assignee, 0, 10)
-        end
-    %>
+        by_assignee =
+          case show_all?(@conn, "assignees") do
+            true -> by_assignee
+            _ -> Enum.slice(by_assignee, 0, 10)
+          end
+      %>
 
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Assignee</th>
-          <th>Count</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%= Enum.map by_assignee, fn {assignee, count} -> %>
+      <table class="data-table">
+        <thead>
           <tr>
-            <td>
-              <%= assignee %>
-            </td>
-            <td>
-              <%= count %>
-            </td>
+            <th>Assignee</th>
+            <th>Count</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <%= Enum.map by_assignee, fn {assignee, count} -> %>
+            <tr>
+              <td>
+                <%= assignee %>
+              </td>
+              <td>
+                <%= count %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
 
-    <%= show_all_button @conn, @github_issues_filtered, "assignees" %>
-  </section>
+      <%= show_all_button @conn, @github_issues_filtered, "assignees" %>
+    </section>
 
-  <h3 style="margin-bottom: 1rem;">Github Issues</h3>
+    <h3 style="margin-bottom: 1rem;">Github Issues</h3>
 
-  <section>
-    <%=
-      data_table_records =
-        case show_all?(@conn, "github-issues") do
-          true -> @github_issues_filtered
-          _ -> Enum.slice(@github_issues_filtered, 0, 10)
-        end
+    <section>
+      <%=
+        data_table_records =
+          case show_all?(@conn, "github-issues") do
+            true -> @github_issues_filtered
+            _ -> Enum.slice(@github_issues_filtered, 0, 10)
+          end
 
-      render_data_table(
-        @conn,
-        data_table_records,
-        allowed_columns: data_table_allowed_columns(),
-        default_columns: @default_columns
-      )
-    %>
+        render_data_table(
+          @conn,
+          data_table_records,
+          allowed_columns: data_table_allowed_columns(),
+          default_columns: @default_columns
+        )
+      %>
 
-    <%= show_all_button @conn, @github_issues_filtered, "github-issues" %>
-  </section>
+      <%= show_all_button @conn, @github_issues_filtered, "github-issues" %>
+    </section>
+
+  <% end %>
 </div>
