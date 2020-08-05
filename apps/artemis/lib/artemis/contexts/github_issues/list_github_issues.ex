@@ -17,6 +17,7 @@ defmodule Artemis.ListGithubIssues do
     |> get_records()
     |> search_query(params, user)
     |> filter_query(params, user)
+    |> sort_records(params)
   end
 
   defp get_records(_user) do
@@ -161,5 +162,14 @@ defmodule Artemis.ListGithubIssues do
 
   defp filter(records, "zenhub_pipeline", value) do
     Enum.filter(records, &Enum.member?(split(value), Map.get(&1, "zenhub_pipeline")))
+  end
+
+  defp sort_records(records, _params) do
+    Enum.sort_by(records, fn record ->
+      [
+        Map.get(record, "zenhub_pipeline_index"),
+        Map.get(record, "number")
+      ]
+    end)
   end
 end
