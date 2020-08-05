@@ -141,6 +141,25 @@
               )
             %>
           </div>
+
+          <div class="filter">
+            <label>Zenhub Epic?</label>
+            <%=
+              zenhub_epic_options = [
+                [key: "", value: ""],
+                [key: "Epics Only", value: "true"],
+                [key: "No Epics", value: "false"]
+              ]
+
+              select(
+                f,
+                :is_epic,
+                zenhub_epic_options,
+                class: "enhanced clearable",
+                selected: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "is_epic"])
+              )
+            %>
+          </div>
         </div>
 
         <%=

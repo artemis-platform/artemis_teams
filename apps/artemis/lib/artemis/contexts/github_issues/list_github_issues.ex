@@ -113,6 +113,14 @@ defmodule Artemis.ListGithubIssues do
     end
   end
 
+  defp filter(records, "is_epic", value) do
+    case value do
+      "true" -> Enum.filter(records, &(Map.get(&1, "zenhub_epic") == true))
+      "false" -> Enum.filter(records, &(Map.get(&1, "zenhub_epic") == false))
+      _ -> records
+    end
+  end
+
   defp filter(records, "labels", value) do
     Enum.filter(records, fn record ->
       labels =

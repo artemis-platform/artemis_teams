@@ -7,6 +7,7 @@ defmodule ArtemisWeb.GithubIssueController do
     "number",
     "assignee",
     "zenhub_pipeline",
+    "zenhub_epic",
     "title",
     "labels",
     "comments",

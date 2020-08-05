@@ -6,6 +6,7 @@ defmodule ArtemisWeb.GithubIssueView do
       {"Assignee", "assignee"},
       {"Comments", "comments"},
       {"Created At", "created_at"},
+      {"Epic", "zenhub_epic"},
       {"Labels", "labels"},
       {"Number", "number"},
       {"Title", "title"},
@@ -101,6 +102,16 @@ defmodule ArtemisWeb.GithubIssueView do
           url = String.replace(row["url"], "/api/v3/repos", "")
 
           link(row["title"], to: url, target: "_blank")
+        end
+      ],
+      "zenhub_epic" => [
+        label: fn _conn -> "Epic" end,
+        value: fn _conn, row -> row["zenhub_epic"] end,
+        value_html: fn _conn, row ->
+          case row["zenhub_epic"] do
+            true -> "Epic"
+            false -> nil
+          end
         end
       ],
       "zenhub_pipeline" => [
