@@ -124,6 +124,21 @@
           </div>
 
           <div class="filter">
+            <label>Milestone</label>
+            <%=
+              milestone_options =
+                @github_issues_all
+                |> Enum.map(&Artemis.Helpers.deep_get(&1, ["milestone", "title"]))
+                |> Enum.uniq()
+                |> Enum.filter(&Artemis.Helpers.present?(&1))
+                |> Enum.sort_by(&String.downcase(&1))
+                |> select_options()
+
+              filter_multi_select_field(@conn, f, "Milestone", :milestone, milestone_options)
+            %>
+          </div>
+
+          <div class="filter">
             <label>Comments?</label>
             <%=
               comment_options = [
@@ -289,6 +304,41 @@
           </div>
         </div>
       <% end %>
+    <% end %>
+  </div>
+
+  <h3 style="margin-bottom: 0;">By Milestone</h3>
+
+  <div class="ui steps full-width milestones">
+    <%
+      milestone_totals =
+        Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
+          milestone = Artemis.Helpers.deep_get(github_issue, ["milestone", "title"])
+
+          case milestone do
+            nil -> acc
+            _ -> Map.update(acc, milestone, 1, &(&1 + 1))
+          end
+        end)
+
+      milestone_order =
+        @github_issues_filtered
+        |> Enum.map(&{
+          Artemis.Helpers.deep_get(&1, ["milestone", "title"]),
+          Artemis.Helpers.deep_get(&1, ["milestone", "due_on"])
+        })
+        |> Enum.uniq_by(&elem(&1, 0))
+        |> Enum.sort_by(&elem(&1, 1))
+        |> Enum.filter(&Artemis.Helpers.present?(elem(&1, 0)))
+    %>
+    <%= Enum.map milestone_order, fn {name, _index} -> %>
+      <% {milestone, total} = Enum.find(milestone_totals, &(elem(&1, 0) == name)) %>
+      <div class="step">
+        <div class="content">
+          <div class="title"><%= milestone %></div>
+          <div class="description"><%= total %> Open Issues</div>
+        </div>
+      </div>
     <% end %>
   </div>
 

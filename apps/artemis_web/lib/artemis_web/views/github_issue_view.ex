@@ -8,6 +8,7 @@ defmodule ArtemisWeb.GithubIssueView do
       {"Created At", "created_at"},
       {"Epic", "zenhub_epic"},
       {"Labels", "labels"},
+      {"Milestone", "milestone"},
       {"Number", "number"},
       {"Title", "title"},
       {"Pipeline", "zenhub_pipeline"}
@@ -86,6 +87,10 @@ defmodule ArtemisWeb.GithubIssueView do
           end)
         end
       ],
+      "milestone" => [
+        label: fn _conn -> "Milestone" end,
+        value: fn _conn, row -> Artemis.Helpers.deep_get(row, ["milestone", "title"]) end
+      ],
       "number" => [
         label: fn _conn -> "Number" end,
         value: fn _conn, row -> row["number"] end,
@@ -110,7 +115,7 @@ defmodule ArtemisWeb.GithubIssueView do
         value_html: fn _conn, row ->
           case row["zenhub_epic"] do
             true -> "Epic"
-            false -> nil
+            _ -> nil
           end
         end
       ],

@@ -144,6 +144,14 @@ defmodule Artemis.ListGithubIssues do
     end)
   end
 
+  defp filter(records, "milestone", value) do
+    Enum.filter(records, fn record ->
+      milestone = Artemis.Helpers.deep_get(record, ["milestone", "title"])
+
+      Enum.member?(split(value), milestone)
+    end)
+  end
+
   defp filter(records, "number", value) do
     Enum.filter(records, &Enum.member?(split(value), Map.get(&1, "number")))
   end
