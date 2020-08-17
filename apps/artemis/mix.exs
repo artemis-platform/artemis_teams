@@ -52,6 +52,7 @@ defmodule Artemis.MixProject do
       {:earmark, "~> 1.3"},
       {:html_sanitize_ex, "~> 1.3"},
       {:cocktail, "~> 0.8"},
+      {:progress_bar, "> 0.0.0"},
       {:ex_machina, "~> 2.2"},
       {:faker, "~> 0.11"},
       {:licensir, "~> 0.4", only: :dev, runtime: false},
