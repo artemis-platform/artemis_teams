@@ -365,14 +365,31 @@
 
     <section>
       <%
+        default_totals = %{
+          estimate_total: 0,
+          issue_total: 1
+        }
+
         by_assignee =
           @github_issues_filtered
           |> Enum.reduce(%{}, fn github_issue, acc ->
               Enum.reduce(github_issue["assignees"], acc, fn assignee, acc ->
-                Map.update(acc, assignee["login"], 1, &(&1 + 1))
+                value = assignee["login"]
+                zenhub_estimate = github_issue["zenhub_estimate"] || 0
+                current = Map.get(acc, value, default_totals)
+
+                updated =
+                  current
+                  |> Map.update(:estimate_total, 0, &Artemis.Helpers.decimal_add(&1, zenhub_estimate))
+                  |> Map.update(:issue_total, 1, &(&1 + 1))
+
+                case value do
+                  nil -> acc
+                  _ -> Map.put(acc, value, updated)
+                end
               end)
             end)
-          |> Enum.sort_by(&[elem(&1, 1) * -1, String.downcase(elem(&1, 0))])
+          |> Enum.sort_by(&[Map.get(elem(&1, 1), :issue_total) * -1, String.downcase(elem(&1, 0))])
 
         by_assignee =
           case show_all?(@conn, "assignees") do
@@ -385,17 +402,21 @@
         <thead>
           <tr>
             <th>Assignee</th>
-            <th>Count</th>
+            <th>Open Points</th>
+            <th>Open Issues</th>
           </tr>
         </thead>
         <tbody>
-          <%= Enum.map by_assignee, fn {assignee, count} -> %>
+          <%= Enum.map by_assignee, fn {assignee, totals} -> %>
             <tr>
               <td>
                 <%= assignee %>
               </td>
               <td>
-                <%= count %>
+                <%= trunc Map.get(totals, :estimate_total) %>
+              </td>
+              <td>
+                <%= Map.get(totals, :issue_total) %>
               </td>
             </tr>
           <% end %>
