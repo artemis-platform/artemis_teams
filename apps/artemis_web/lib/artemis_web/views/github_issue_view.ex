@@ -7,6 +7,7 @@ defmodule ArtemisWeb.GithubIssueView do
       {"Comments", "comments"},
       {"Created At", "created_at"},
       {"Epic", "zenhub_epic"},
+      {"Estimate", "zenhub_estimate"},
       {"Labels", "labels"},
       {"Milestone", "milestone"},
       {"Number", "number"},
@@ -119,6 +120,10 @@ defmodule ArtemisWeb.GithubIssueView do
           end
         end
       ],
+      "zenhub_estimate" => [
+        label: fn _conn -> "Estimate" end,
+        value: fn _conn, row -> row["zenhub_estimate"] end
+      ],
       "zenhub_pipeline" => [
         label: fn _conn -> "Pipeline" end,
         value: fn _conn, row -> row["zenhub_pipeline"] end
@@ -152,5 +157,31 @@ defmodule ArtemisWeb.GithubIssueView do
         false -> query_param_button(conn, "Show All", show_all: [key] ++ current)
       end
     end
+  end
+
+  @doc """
+  Total estimate and issues for a list of github issues
+  """
+  def total_estimates_and_issues_by(data, field) do
+    default_totals = %{
+      estimate_total: 0,
+      issue_total: 1
+    }
+
+    Enum.reduce(data, %{}, fn github_issue, acc ->
+      value = Map.get(github_issue, field)
+      zenhub_estimate = github_issue["zenhub_estimate"] || 0
+      current = Map.get(acc, value, default_totals)
+
+      updated =
+        current
+        |> Map.update(:estimate_total, 0, &Artemis.Helpers.decimal_add(&1, zenhub_estimate))
+        |> Map.update(:issue_total, 1, &(&1 + 1))
+
+      case value do
+        nil -> acc
+        _ -> Map.put(acc, value, updated)
+      end
+    end)
   end
 end

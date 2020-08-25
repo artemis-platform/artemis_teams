@@ -1041,6 +1041,14 @@ a.summary-count:hover {
   }
 }
 
+.steps .description span {
+  display: block;
+
+  &.estimate-total {
+    opacity: 0.7;
+  }
+}
+
 .show-all-button {
   margin: 1rem 0 0 0;
 }

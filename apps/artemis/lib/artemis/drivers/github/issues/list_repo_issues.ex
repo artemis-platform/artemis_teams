@@ -117,6 +117,7 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
 
         value = %{
           "zenhub_epic" => Map.get(issue, "is_epic"),
+          "zenhub_estimate" => Artemis.Helpers.deep_get(issue, ["estimate", "value"]),
           "zenhub_pipeline" => pipeline_name,
           "zenhub_pipeline_id" => pipeline_id,
           "zenhub_pipeline_index" => pipeline_index,

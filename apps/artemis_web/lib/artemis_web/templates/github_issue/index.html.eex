@@ -151,25 +151,6 @@
             </div>
 
             <div class="filter">
-              <label>Comments?</label>
-              <%=
-                comment_options = [
-                  [key: "", value: ""],
-                  [key: "Has Comments", value: "true"],
-                  [key: "No Comments", value: "false"]
-                ]
-
-                select(
-                  f,
-                  :has_comments,
-                  comment_options,
-                  class: "enhanced clearable",
-                  selected: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "has_comments"])
-                )
-              %>
-            </div>
-
-            <div class="filter">
               <label>Zenhub Epic?</label>
               <%=
                 zenhub_epic_options = [
@@ -184,6 +165,44 @@
                   zenhub_epic_options,
                   class: "enhanced clearable",
                   selected: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "is_epic"])
+                )
+              %>
+            </div>
+
+            <div class="filter">
+              <label>Zenhub Estimate?</label>
+              <%=
+                zenhub_estimate_options = [
+                  [key: "", value: ""],
+                  [key: "Has Estimate", value: "true"],
+                  [key: "No Estimate", value: "false"]
+                ]
+
+                select(
+                  f,
+                  :has_zenhub_estimate,
+                  zenhub_estimate_options,
+                  class: "enhanced clearable",
+                  selected: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "has_zenhub_estimate"])
+                )
+              %>
+            </div>
+
+            <div class="filter">
+              <label>Comments?</label>
+              <%=
+                comment_options = [
+                  [key: "", value: ""],
+                  [key: "Has Comments", value: "true"],
+                  [key: "No Comments", value: "false"]
+                ]
+
+                select(
+                  f,
+                  :has_comments,
+                  comment_options,
+                  class: "enhanced clearable",
+                  selected: Artemis.Helpers.deep_get(@conn.query_params, ["filters", "has_comments"])
                 )
               %>
             </div>
@@ -221,23 +240,16 @@
       <h3 style="margin-bottom: 0;">By Repository</h3>
 
       <div class="ui steps full-width repositories">
-        <%
-          repository_totals =
-            Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
-              repository = github_issue["repository"]
-
-              case repository do
-                nil -> acc
-                _ -> Map.update(acc, repository, 1, &(&1 + 1))
-              end
-            end)
-        %>
+        <% repository_totals = total_estimates_and_issues_by(@github_issues_filtered, "repository") %>
         <%= Enum.map repositories, fn name -> %>
-          <% {repository, total} = Enum.find(repository_totals, &(elem(&1, 0) == name)) || {name, 0} %>
+          <% {repository, totals} = Enum.find(repository_totals, &(elem(&1, 0) == name)) || {name, %{}} %>
           <div class="step">
             <div class="content">
               <div class="title"><%= repository %></div>
-              <div class="description"><%= total %> Open Issues</div>
+              <div class="description">
+                <span class="issue-total"><%= Map.get(totals, :issue_total, 0) %> Open Issues</span>
+                <span class="estimate-total"><%= trunc Map.get(totals, :estimate_total, 0) %> Open Points</span>
+              </div>
             </div>
           </div>
         <% end %>
@@ -249,15 +261,7 @@
 
     <div class="ui steps full-width pipelines">
       <%
-        pipeline_totals =
-          Enum.reduce(@github_issues_filtered, %{}, fn github_issue, acc ->
-            pipeline = github_issue["zenhub_pipeline"]
-
-            case pipeline do
-              nil -> acc
-              _ -> Map.update(acc, pipeline, 1, &(&1 + 1))
-            end
-          end)
+        pipeline_totals = total_estimates_and_issues_by(@github_issues_filtered, "zenhub_pipeline")
 
         pipeline_order =
           @github_issues_filtered
@@ -267,11 +271,14 @@
           |> Enum.filter(&Artemis.Helpers.present?(elem(&1, 0)))
       %>
       <%= Enum.map pipeline_order, fn {name, _index} -> %>
-        <% {pipeline, total} = Enum.find(pipeline_totals, &(elem(&1, 0) == name)) %>
+        <% {pipeline, totals} = Enum.find(pipeline_totals, &(elem(&1, 0) == name)) %>
         <div class="step">
           <div class="content">
             <div class="title"><%= pipeline %></div>
-            <div class="description"><%= total %> Open Issues</div>
+            <div class="description">
+              <span class="issue-total"><%= Map.get(totals, :issue_total, 0) %> Open Issues</span>
+              <span class="estimate-total"><%= trunc Map.get(totals, :estimate_total, 0) %> Open Points</span>
+            </div>
           </div>
         </div>
       <% end %>

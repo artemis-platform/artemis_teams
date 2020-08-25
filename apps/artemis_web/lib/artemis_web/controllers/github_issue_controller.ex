@@ -12,6 +12,7 @@ defmodule ArtemisWeb.GithubIssueController do
     "labels",
     "comments",
     "milestone",
+    "zenhub_estimate",
     "created_at"
   ]
 

@@ -160,6 +160,18 @@ defmodule Artemis.Helpers do
   end
 
   @doc """
+  Arbitrary addition using Decimal and returning a Float
+  """
+  def decimal_add(first, second) when is_float(first), do: decimal_add(Decimal.from_float(first), second)
+  def decimal_add(first, second) when is_float(second), do: decimal_add(first, Decimal.from_float(second))
+
+  def decimal_add(first, second) do
+    first
+    |> Decimal.add(second)
+    |> Decimal.to_float()
+  end
+
+  @doc """
   Converts an atom or string to an integer
   """
   def to_integer(value) when is_float(value), do: Kernel.trunc(value)
