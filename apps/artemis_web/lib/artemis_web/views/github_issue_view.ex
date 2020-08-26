@@ -3,6 +3,7 @@ defmodule ArtemisWeb.GithubIssueView do
 
   def data_table_available_columns() do
     [
+      {"Actions", "actions"},
       {"Assignee", "assignee"},
       {"Comments", "comments"},
       {"Created At", "created_at"},
@@ -18,6 +19,11 @@ defmodule ArtemisWeb.GithubIssueView do
 
   def data_table_allowed_columns() do
     %{
+      "actions" => [
+        label: fn _conn -> nil end,
+        value: fn _conn, _row -> nil end,
+        value_html: &data_table_actions_column_html/2
+      ],
       "assignee" => [
         label: fn _conn -> "Assignees" end,
         value: fn _conn, row ->
@@ -113,6 +119,26 @@ defmodule ArtemisWeb.GithubIssueView do
     }
   end
 
+  defp data_table_actions_column_html(conn, row) do
+    show_path = Routes.github_issue_path(conn, :show, row["organization"], row["repository"], row["number"])
+
+    allowed_actions = [
+      [
+        verify: has?(conn, "github-issues:show"),
+        link: link("Show", to: show_path)
+      ]
+    ]
+
+    content_tag(:div, class: "actions") do
+      Enum.reduce(allowed_actions, [], fn action, acc ->
+        case Keyword.get(action, :verify) do
+          true -> [acc | Keyword.get(action, :link)]
+          _ -> acc
+        end
+      end)
+    end
+  end
+
   @doc """
   Render labels
   """
@@ -159,7 +185,7 @@ defmodule ArtemisWeb.GithubIssueView do
     content_tag(:div, class: "show-all-button") do
       case show_all?(conn, key) && more?(data, page_size) do
         true -> query_param_button(conn, "Hide All", show_all: List.delete(current, key))
-        false -> query_param_button(conn, "Show All", show_all: [key] ++ current)
+        false -> query_param_button(conn, "Show All (#{length(data)})", show_all: [key] ++ current)
       end
     end
   end

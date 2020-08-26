@@ -184,7 +184,7 @@ defmodule Artemis.ListGithubIssues do
     Enum.sort_by(records, fn record ->
       [
         Map.get(record, "zenhub_pipeline_index"),
-        Map.get(record, "number")
+        Artemis.Helpers.to_integer(Map.get(record, "number")) * -1
       ]
     end)
   end

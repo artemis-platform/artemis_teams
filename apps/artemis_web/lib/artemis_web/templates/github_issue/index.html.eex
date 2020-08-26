@@ -364,7 +364,7 @@
           issue_total: 1
         }
 
-        by_assignee =
+        by_assignee_all =
           @github_issues_filtered
           |> Enum.reduce(%{}, fn github_issue, acc ->
               Enum.reduce(github_issue["assignees"], acc, fn assignee, acc ->
@@ -387,8 +387,8 @@
 
         by_assignee =
           case show_all?(@conn, "assignees") do
-            true -> by_assignee
-            _ -> Enum.slice(by_assignee, 0, 10)
+            true -> by_assignee_all
+            _ -> Enum.slice(by_assignee_all, 0, @default_page_size)
           end
       %>
 
@@ -417,29 +417,79 @@
         </tbody>
       </table>
 
-      <%= show_all_button @conn, @github_issues_filtered, "assignees" %>
+      <%= show_all_button @conn, by_assignee_all, "assignees", @default_page_size %>
     </section>
 
-    <h3 style="margin-bottom: 1rem;">Github Issues</h3>
+    <%= if @zenhub_epics? do %>
 
-    <section>
-      <%=
-        data_table_records =
-          case show_all?(@conn, "github-issues") do
-            true -> @github_issues_filtered
-            _ -> Enum.slice(@github_issues_filtered, 0, 10)
-          end
+      <% {github_epics, github_stories} = Enum.split_with(@github_issues_filtered, &Map.get(&1, "zenhub_epic")) %>
 
-        render_data_table(
-          @conn,
-          data_table_records,
-          allowed_columns: data_table_allowed_columns(),
-          default_columns: @default_columns
-        )
-      %>
+      <h3 style="margin-bottom: 1rem;">Github Epics</h3>
 
-      <%= show_all_button @conn, @github_issues_filtered, "github-issues" %>
-    </section>
+      <section>
+        <%=
+          data_table_records =
+            case show_all?(@conn, "github-epics") do
+              true -> github_epics
+              _ -> Enum.slice(github_epics, 0, @default_page_size)
+            end
+
+          render_data_table(
+            @conn,
+            data_table_records,
+            allowed_columns: data_table_allowed_columns(),
+            default_columns: @default_columns
+          )
+        %>
+
+        <%= show_all_button @conn, github_epics, "github-epics", @default_page_size %>
+      </section>
+
+      <h3 style="margin-bottom: 1rem;">Github Stories</h3>
+
+      <section>
+        <%=
+          data_table_records =
+            case show_all?(@conn, "github-stories") do
+              true -> github_stories
+              _ -> Enum.slice(github_stories, 0, @default_page_size)
+            end
+
+          render_data_table(
+            @conn,
+            data_table_records,
+            allowed_columns: data_table_allowed_columns(),
+            default_columns: @default_columns
+          )
+        %>
+
+        <%= show_all_button @conn, github_stories, "github-stories", @default_page_size %>
+      </section>
+
+    <% else %>
+
+      <h3 style="margin-bottom: 1rem;">Github Issues</h3>
+
+      <section>
+        <%=
+          data_table_records =
+            case show_all?(@conn, "github-issues") do
+              true -> @github_issues_filtered
+              _ -> Enum.slice(@github_issues_filtered, 0, 10)
+            end
+
+          render_data_table(
+            @conn,
+            data_table_records,
+            allowed_columns: data_table_allowed_columns(),
+            default_columns: @default_columns
+          )
+        %>
+
+        <%= show_all_button @conn, @github_issues_filtered, "github-issues", @default_page_size %>
+      </section>
+
+    <% end %>
 
   <% end %>
 </div>

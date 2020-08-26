@@ -5,16 +5,18 @@ defmodule ArtemisWeb.GithubIssueController do
 
   @default_columns [
     "number",
-    "assignee",
+    "milestone",
     "zenhub_pipeline",
-    "zenhub_epic",
+    "zenhub_estimate",
     "title",
     "labels",
+    "assignee",
     "comments",
-    "milestone",
-    "zenhub_estimate",
-    "created_at"
+    "created_at",
+    "actions"
   ]
+
+  @default_page_size 5
 
   def index(conn, params) do
     authorize(conn, "github-issues:list", fn ->
@@ -22,12 +24,15 @@ defmodule ArtemisWeb.GithubIssueController do
       github_repositories = get_github_repositories()
       github_issues_all = ListGithubIssues.call(user)
       github_issues_filtered = ListGithubIssues.call(params, user)
+      zenhub_epics? = Enum.any?(github_issues_all, &Map.get(&1, "zenhub_epic"))
 
       assigns = [
         default_columns: @default_columns,
+        default_page_size: @default_page_size,
         github_issues_all: github_issues_all,
         github_issues_filtered: github_issues_filtered,
-        github_repositories: github_repositories
+        github_repositories: github_repositories,
+        zenhub_epics?: zenhub_epics?
       ]
 
       render_format(conn, "index", assigns)

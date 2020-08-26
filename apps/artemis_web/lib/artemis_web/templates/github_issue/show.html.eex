@@ -19,7 +19,7 @@
         ["Title", @github_issue["title"]],
         ["State", @github_issue["state"]],
         ["Epic?", @github_issue["zenhub_epic"] && "Epic"],
-        ["Milestone", @github_issue["milestone"]],
+        ["Milestone", Artemis.Helpers.deep_get(@github_issue, ["milestone", "title"])],
         ["Labels", render_labels(@github_issue)],
         ["Created At", @github_issue["created_at"]]
       ])

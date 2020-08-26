@@ -38,7 +38,7 @@ defmodule Artemis.Drivers.Github.GetRepoIssue do
     path
     |> Github.Request.get()
     |> parse_response_body()
-		|> Map.take(@fields)
+    |> Map.take(@fields)
     |> Map.put("organization", organization)
     |> Map.put("repository", repository)
   end
@@ -56,29 +56,30 @@ defmodule Artemis.Drivers.Github.GetRepoIssue do
       |> parse_response_body()
 
     zenhub_epic_estimate_total = Artemis.Helpers.deep_get(response, ["total_epic_estimates", "value"])
-		zenhub_epic_issues = Map.get(response, "issues")
+    zenhub_epic_issues = Map.get(response, "issues")
     zenhub_estimate = Artemis.Helpers.deep_get(response, ["estimate", "value"])
     zenhub_pipeline = get_zenhub_pipeline(response)
 
-		zenhub_epic_issues_updated = Enum.map(zenhub_epic_issues, fn issue ->
-			issue_number = Map.get(issue, "issue_number")
-			zenhub_epic = Map.get(issue, "is_epic")
-    	zenhub_estimate = Artemis.Helpers.deep_get(issue, ["estimate", "value"])
-    	zenhub_pipeline = get_zenhub_pipeline(issue)
+    zenhub_epic_issues_updated =
+      Enum.map(zenhub_epic_issues, fn issue ->
+        issue_number = Map.get(issue, "issue_number")
+        zenhub_epic = Map.get(issue, "is_epic")
+        zenhub_estimate = Artemis.Helpers.deep_get(issue, ["estimate", "value"])
+        zenhub_pipeline = get_zenhub_pipeline(issue)
 
-			organization
-			|> get_github_issue(repository, issue_number) 
-			|> Map.put("zenhub_epic", zenhub_epic)
-			|> Map.put("zenhub_estimate", zenhub_estimate)
-			|> Map.put("zenhub_pipeline", zenhub_pipeline)
-		end)
+        organization
+        |> get_github_issue(repository, issue_number)
+        |> Map.put("zenhub_epic", zenhub_epic)
+        |> Map.put("zenhub_estimate", zenhub_estimate)
+        |> Map.put("zenhub_pipeline", zenhub_pipeline)
+      end)
 
     data
-		|> Map.put("zenhub_epic", true)
-		|> Map.put("zenhub_epic_issues", zenhub_epic_issues_updated)
-		|> Map.put("zenhub_epic_estimate_total", zenhub_epic_estimate_total)
-		|> Map.put("zenhub_estimate", zenhub_estimate)
-		|> Map.put("zenhub_pipeline", zenhub_pipeline)
+    |> Map.put("zenhub_epic", true)
+    |> Map.put("zenhub_epic_issues", zenhub_epic_issues_updated)
+    |> Map.put("zenhub_epic_estimate_total", zenhub_epic_estimate_total)
+    |> Map.put("zenhub_estimate", zenhub_estimate)
+    |> Map.put("zenhub_pipeline", zenhub_pipeline)
   rescue
     _ -> data
   end
