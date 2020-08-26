@@ -262,13 +262,7 @@
     <div class="ui steps full-width pipelines">
       <%
         pipeline_totals = total_estimates_and_issues_by(@github_issues_filtered, "zenhub_pipeline")
-
-        pipeline_order =
-          @github_issues_filtered
-          |> Enum.map(&{Map.get(&1, "zenhub_pipeline"), Map.get(&1, "zenhub_pipeline_index")})
-          |> Enum.uniq_by(&elem(&1, 0))
-          |> Enum.sort_by(&elem(&1, 1))
-          |> Enum.filter(&Artemis.Helpers.present?(elem(&1, 0)))
+        pipeline_order = get_zenhub_pipeline_order(@github_issues_filtered)
       %>
       <%= Enum.map pipeline_order, fn {name, _index} -> %>
         <% {pipeline, totals} = Enum.find(pipeline_totals, &(elem(&1, 0) == name)) %>

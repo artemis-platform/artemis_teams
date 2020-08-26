@@ -1,0 +1,79 @@
+<div id="content-header">
+  <header>
+    <h1>Github Issue</h1>
+  </header>
+</div>
+
+<div id="content-navigation">
+  <%= render_breadcrumbs @conn %>
+  <%= render_presence @conn %>
+</div>
+
+<div id="content">
+  <%= render_flash_notifications @conn %>
+
+  <section>
+    <%= h2 "Details" %>
+    <%=
+      render_key_value_list([
+        ["Title", @github_issue["title"]],
+        ["State", @github_issue["state"]],
+        ["Epic?", @github_issue["zenhub_epic"] && "Epic"],
+        ["Milestone", @github_issue["milestone"]],
+        ["Labels", render_labels(@github_issue)],
+        ["Created At", @github_issue["created_at"]]
+      ])
+    %>
+  </section>
+
+  <%= if @github_issue["zenhub_epic_issues"] do %>
+
+    <%= h3 "Epic Status" %>
+
+    <div class="ui steps full-width pipelines">
+      <%
+        zenhub_pipeline_order_lookup =
+          @github_issues
+          |> get_zenhub_pipeline_order()
+          |> Enum.into(%{})
+
+        zenhub_pipeline_totals =
+          @github_issue
+          |> Map.get("zenhub_epic_issues")
+          |> total_estimates_and_issues_by("zenhub_pipeline")
+          |> Enum.map(fn {key, value} ->
+            index = Map.get(zenhub_pipeline_order_lookup, key, 1000)
+            updated = Map.put(value, :zenhub_pipeline_index, index)
+
+            {key, updated}
+          end)
+          |> Enum.sort_by(&Map.get(elem(&1, 1), :zenhub_pipeline_index))
+      %>
+      <%= Enum.map zenhub_pipeline_totals, fn {pipeline, totals} -> %>
+        <div class="step">
+          <div class="content">
+            <div class="title"><%= pipeline %></div>
+            <div class="description">
+              <span class="issue-total"><%= Map.get(totals, :issue_total, 0) %> Issues</span>
+              <span class="estimate-total"><%= trunc Map.get(totals, :estimate_total, 0) %> Points</span>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <%= h3 "Epic Stories" %>
+
+    <section>
+      <%=
+        render_data_table(
+          @conn,
+          @github_issue["zenhub_epic_issues"],
+          allowed_columns: data_table_allowed_columns(),
+          default_columns: @default_columns
+        )
+      %>
+    </section>
+
+  <% end %>
+</div>

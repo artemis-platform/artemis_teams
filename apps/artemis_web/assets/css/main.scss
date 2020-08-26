@@ -1083,6 +1083,32 @@ a.summary-count:hover {
   }
 }
 
+/* === Components - Progress === */
+
+.ui.progress {
+  margin-bottom: 1rem !important;
+}
+
+.ui.progress.multi {
+  display: flex;
+  flex-direction: row;
+
+  .bar {
+    border-radius: 0 !important;
+  }
+
+  .bar:first-child {
+    border-bottom-left-radius: 0.3rem !important;
+    border-top-left-radius: 0.3rem !important;
+  }
+
+  .bar:last-child {
+    border-bottom-right-radius: 0.3rem !important;
+    border-top-right-radius: 0.3rem !important;
+  }
+}
+
+
 /* === Components - Tabs === */
 
 .data-tabs {

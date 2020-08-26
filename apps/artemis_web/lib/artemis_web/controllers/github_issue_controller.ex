@@ -34,6 +34,22 @@ defmodule ArtemisWeb.GithubIssueController do
     end)
   end
 
+  def show(conn, %{"id" => id, "organization" => organization, "repository" => repository}) do
+    authorize(conn, "github-issues:show", fn ->
+      user = current_user(conn)
+      github_issue = Artemis.GetGithubIssue.call(organization, repository, id, user)
+      github_issues = ListGithubIssues.call(user)
+
+      assigns = [
+        default_columns: @default_columns,
+        github_issue: github_issue,
+        github_issues: github_issues
+      ]
+
+      render(conn, "show.html", assigns)
+    end)
+  end
+
   # Helpers
 
   defp get_github_repositories() do

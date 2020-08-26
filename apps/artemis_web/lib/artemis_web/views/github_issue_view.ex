@@ -68,25 +68,7 @@ defmodule ArtemisWeb.GithubIssueView do
           |> Enum.map(&Map.get(&1, "name"))
           |> Enum.join(", ")
         end,
-        value_html: fn _conn, row ->
-          row
-          |> Map.get("labels")
-          |> Enum.sort_by(&String.downcase(&1["name"]))
-          |> Enum.map(fn label ->
-            href = String.replace(label["url"], "/api/v3/repos", "")
-            label_color = label["color"]
-            text_color = get_text_color(label_color)
-
-            content_tag(:div) do
-              content_tag(:a, label["name"],
-                href: href,
-                class: "github-issue-label",
-                style: "background: ##{label_color}; color: #{text_color}",
-                target: "_blank"
-              )
-            end
-          end)
-        end
+        value_html: fn _conn, row -> render_labels(row) end
       ],
       "milestone" => [
         label: fn _conn -> "Milestone" end,
@@ -132,6 +114,29 @@ defmodule ArtemisWeb.GithubIssueView do
   end
 
   @doc """
+  Render labels
+  """
+  def render_labels(github_issue) do
+    github_issue
+    |> Map.get("labels")
+    |> Enum.sort_by(&String.downcase(&1["name"]))
+    |> Enum.map(fn label ->
+      href = String.replace(label["url"], "/api/v3/repos", "")
+      label_color = label["color"]
+      text_color = get_text_color(label_color)
+
+      content_tag(:div) do
+        content_tag(:a, label["name"],
+          href: href,
+          class: "github-issue-label",
+          style: "background: ##{label_color}; color: #{text_color}",
+          target: "_blank"
+        )
+      end
+    end)
+  end
+
+  @doc """
   Return true if there's more than the current page size
   """
   def more?(data, page_size \\ 10), do: length(data) > page_size
@@ -163,15 +168,10 @@ defmodule ArtemisWeb.GithubIssueView do
   Total estimate and issues for a list of github issues
   """
   def total_estimates_and_issues_by(data, field) do
-    default_totals = %{
-      estimate_total: 0,
-      issue_total: 1
-    }
-
     Enum.reduce(data, %{}, fn github_issue, acc ->
       value = Map.get(github_issue, field)
       zenhub_estimate = github_issue["zenhub_estimate"] || 0
-      current = Map.get(acc, value, default_totals)
+      current = Map.get(acc, value, get_default_pipeline_total())
 
       updated =
         current
@@ -183,5 +183,26 @@ defmodule ArtemisWeb.GithubIssueView do
         _ -> Map.put(acc, value, updated)
       end
     end)
+  end
+
+  @doc """
+  Return default pipeline totals
+  """
+  def get_default_pipeline_total() do
+    %{
+      estimate_total: 0,
+      issue_total: 0
+    }
+  end
+
+  @doc """
+  Return pipeline order
+  """
+  def get_zenhub_pipeline_order(github_issues) do
+    github_issues
+    |> Enum.map(&{Map.get(&1, "zenhub_pipeline"), Map.get(&1, "zenhub_pipeline_index")})
+    |> Enum.uniq_by(&elem(&1, 0))
+    |> Enum.sort_by(&elem(&1, 1))
+    |> Enum.filter(&Artemis.Helpers.present?(elem(&1, 0)))
   end
 end

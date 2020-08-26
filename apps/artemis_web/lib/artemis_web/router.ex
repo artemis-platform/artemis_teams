@@ -101,6 +101,8 @@ defmodule ArtemisWeb.Router do
 
       # Github Issues
 
+      get "/github-issues/:organization/:repository/:id", GithubIssueController, :show
+
       resources "/github-issues", GithubIssueController, only: [:index]
 
       # HTTP Requests
