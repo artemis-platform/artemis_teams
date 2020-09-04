@@ -9,9 +9,12 @@ defmodule Artemis.Worker.GithubIssueCacheWarmer do
 
   @impl true
   def call(_data, _config) do
-    result = Artemis.Drivers.Github.ListRepoIssues.call_and_update_cache()
+    task =
+      Task.async(fn ->
+        Artemis.Drivers.Github.ListRepoIssues.call_and_update_cache()
+      end)
 
-    {:ok, result.inserted_at}
+    {:ok, task}
   end
 
   # Helpers
