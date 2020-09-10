@@ -1,4 +1,4 @@
-<div id="<%= @id %>" class="data-table-container data-table-container-<%= @id %>">
+<div id="<%= @id %>" class="data-table-container data-table-container-<%= @id %> <%= @class %>">
   <%= if @selectable do %><form class="ui form selectable" action="#"><% end %>
     <table class="data-table data-table-<%= @id %>">
       <%= if @headers? do %>
