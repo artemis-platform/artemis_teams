@@ -31,6 +31,30 @@ function initializeColumnField() {
   })
 }
 
+function initializeDataTable() {
+  $('.data-table-container').each(function() {
+    var dataTable = $(this)
+
+    var hideButton = $(this).find('.hide-rows')
+    var showButton = $(this).find('.show-rows')
+    var hiddenRows = $(this).find('tr.hide')
+
+    hideButton.on('click', function(event) {
+      event.preventDefault()
+      hiddenRows.hide()
+      hideButton.css('display', 'none')
+      showButton.css('display', 'flex')
+    })
+
+    showButton.on('click', function(event) {
+      event.preventDefault()
+      hiddenRows.show()
+      hideButton.css('display', 'flex')
+      showButton.css('display', 'none')
+    })
+  })
+}
+
 function initializeDataTabs() {
   $('.data-tabs').each(function() {
     var tabs = $(this)
@@ -409,6 +433,7 @@ function initializeWikiSidenav() {
 
 $(document).ready(function() {
   initializeColumnField()
+  initializeDataTable()
   initializeDataTabs()
   initializeDropdowns()
   initializeFilterFields()
