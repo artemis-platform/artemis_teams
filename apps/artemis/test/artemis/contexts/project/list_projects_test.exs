@@ -77,6 +77,47 @@ defmodule Artemis.ListProjectsTest do
       assert response_keys == pagination_keys
     end
 
+    test "query - filters - team_id" do
+      team = insert(:team)
+      project = insert(:project, teams: [team])
+
+      params = %{
+        filters: %{
+          team_id: team.id
+        }
+      }
+
+      results = ListProjects.call(params, Mock.system_user())
+
+      assert length(results) == 1
+      assert hd(results).id == project.id
+    end
+
+    test "query - filters - user_id" do
+      user = insert(:user)
+      team = insert(:team)
+
+      other_user = insert(:user)
+      other_team = insert(:team)
+
+      insert(:user_team, user: user, team: team)
+      insert(:user_team, user: other_user, team: team)
+      insert(:user_team, user: other_user, team: other_team)
+
+      project = insert(:project, teams: [team])
+
+      params = %{
+        filters: %{
+          user_id: user.id
+        }
+      }
+
+      results = ListProjects.call(params, user)
+
+      assert length(results) == 1
+      assert hd(results).id == project.id
+    end
+
     test "query - search" do
       insert(:project, title: "Four Six")
       insert(:project, title: "Four Two")

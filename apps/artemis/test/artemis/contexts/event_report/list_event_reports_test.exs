@@ -55,8 +55,8 @@ defmodule Artemis.ListEventReportsTest do
       event_template = insert(:event_template)
       event_question = insert(:event_question, event_template: event_template, type: "number")
 
-      project1 = insert(:project, team: event_template.team)
-      project2 = insert(:project, team: event_template.team)
+      project1 = insert(:project, teams: [event_template.team])
+      project2 = insert(:project, teams: [event_template.team])
 
       date_current = Date.utc_today()
       date_past = Timex.shift(Date.utc_today(), weeks: -1)

@@ -77,54 +77,70 @@ defmodule Artemis.TeamTest do
 
   describe "associations - projects" do
     setup do
-      team = insert(:team)
-
-      insert_list(3, :project, team: team)
+      projects = insert_list(3, :project)
+      team = insert(:team, projects: projects)
 
       {:ok, team: Repo.preload(team, @preload)}
     end
 
-    test "cannot update associations through parent", %{team: team} do
-      new_project = insert(:project, team: team)
+    test "can update associations through record", %{team: team} do
+      new_project = insert(:project)
 
       team =
         Team
         |> preload(^@preload)
         |> Repo.get(team.id)
 
-      assert length(team.projects) == 4
+      assert length(team.projects) == 3
+
+      # Can append to existing projects
 
       {:ok, updated} =
         team
-        |> Team.changeset(%{projects: [new_project]})
+        |> Team.associations_changeset(%{projects: team.projects ++ [new_project]})
         |> Repo.update()
 
       updated = Repo.preload(updated, @preload)
 
       assert length(updated.projects) == 4
+
+      previous_project_ids =
+        team.projects
+        |> Enum.map(& &1.id)
+        |> MapSet.new()
+
+      updated_project_ids =
+        updated.projects
+        |> Enum.map(& &1.id)
+        |> MapSet.new()
+
+      assert MapSet.subset?(previous_project_ids, updated_project_ids)
+
+      # Can replace existing projects
+
+      {:ok, updated} =
+        team
+        |> Team.associations_changeset(%{projects: [new_project]})
+        |> Repo.update()
+
+      updated = Repo.preload(updated, @preload)
+
+      assert length(updated.projects) == 1
     end
 
-    test "deleting association does not remove record", %{team: team} do
-      assert Repo.get(Team, team.id) != nil
-      assert length(team.projects) == 3
-
-      Enum.map(team.projects, &Repo.delete(&1))
-
-      team =
-        Team
-        |> preload(^@preload)
-        |> Repo.get(team.id)
-
-      assert Repo.get(Team, team.id) != nil
-      assert length(team.projects) == 0
-    end
-
-    test "deleting record deletes associations", %{team: team} do
+    test "deleting record does not delete associations", %{team: team} do
       assert Repo.get(Team, team.id) != nil
       assert length(team.projects) == 3
 
       Enum.map(team.projects, fn project ->
-        assert Repo.get(Project, project.id).team_id == team.id
+        project =
+          Project
+          |> preload([:teams])
+          |> Repo.get(project.id)
+
+        team_ids = Enum.map(project.teams, & &1.id)
+
+        assert Enum.member?(team_ids, team.id)
       end)
 
       Repo.delete(team)
@@ -132,7 +148,14 @@ defmodule Artemis.TeamTest do
       assert Repo.get(Team, team.id) == nil
 
       Enum.map(team.projects, fn project ->
-        assert Repo.get(Project, project.id) == nil
+        project =
+          Project
+          |> preload([:teams])
+          |> Repo.get(project.id)
+
+        team_ids = Enum.map(project.teams, & &1.id)
+
+        refute Enum.member?(team_ids, team.id)
       end)
     end
   end

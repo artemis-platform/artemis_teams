@@ -1,8 +1,9 @@
 defmodule Artemis.CreateProject do
   use Artemis.Context
+  use Assoc.Updater, repo: Artemis.Repo
 
-  alias Artemis.Project
   alias Artemis.Helpers.Markdown
+  alias Artemis.Project
   alias Artemis.Repo
 
   def call!(params, user) do
@@ -16,6 +17,7 @@ defmodule Artemis.CreateProject do
     with_transaction(fn ->
       params
       |> insert_record
+      |> update_associations(params)
       |> Event.broadcast("project:created", params, user)
     end)
   end

@@ -9,7 +9,7 @@ defmodule Artemis.ProjectTest do
   alias Artemis.Project
   alias Artemis.Team
 
-  @preload [:event_answers, :team]
+  @preload [:event_answers, :team, :teams]
 
   describe "attributes - constraints" do
     test "required associations" do
@@ -109,6 +109,91 @@ defmodule Artemis.ProjectTest do
 
       assert Repo.get(Team, project.team.id) != nil
       assert Repo.get(Project, project.id) == nil
+    end
+  end
+
+  describe "associations - teams" do
+    setup do
+      teams = insert_list(3, :team)
+      project = insert(:project, teams: teams)
+
+      {:ok, project: Repo.preload(project, @preload)}
+    end
+
+    test "can update associations through record", %{project: project} do
+      new_team = insert(:team)
+
+      project =
+        Project
+        |> preload(^@preload)
+        |> Repo.get(project.id)
+
+      assert length(project.teams) == 3
+
+      # Can append to existing teams
+
+      {:ok, updated} =
+        project
+        |> Project.associations_changeset(%{teams: project.teams ++ [new_team]})
+        |> Repo.update()
+
+      updated = Repo.preload(updated, @preload)
+
+      assert length(updated.teams) == 4
+
+      previous_team_ids =
+        project.teams
+        |> Enum.map(& &1.id)
+        |> MapSet.new()
+
+      updated_team_ids =
+        updated.teams
+        |> Enum.map(& &1.id)
+        |> MapSet.new()
+
+      assert MapSet.subset?(previous_team_ids, updated_team_ids)
+
+      # Can replace existing teams
+
+      {:ok, updated} =
+        project
+        |> Project.associations_changeset(%{teams: [new_team]})
+        |> Repo.update()
+
+      updated = Repo.preload(updated, @preload)
+
+      assert length(updated.teams) == 1
+    end
+
+    test "deleting record does not delete associations", %{project: project} do
+      assert Repo.get(Project, project.id) != nil
+      assert length(project.teams) == 3
+
+      Enum.map(project.teams, fn team ->
+        team =
+          Team
+          |> preload([:projects])
+          |> Repo.get(team.id)
+
+        project_ids = Enum.map(team.projects, & &1.id)
+
+        assert Enum.member?(project_ids, project.id)
+      end)
+
+      Repo.delete(project)
+
+      assert Repo.get(Project, project.id) == nil
+
+      Enum.map(project.teams, fn team ->
+        team =
+          Team
+          |> preload([:projects])
+          |> Repo.get(team.id)
+
+        project_ids = Enum.map(team.projects, & &1.id)
+
+        refute Enum.member?(project_ids, project.id)
+      end)
     end
   end
 end

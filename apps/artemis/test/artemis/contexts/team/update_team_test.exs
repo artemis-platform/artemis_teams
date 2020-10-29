@@ -81,6 +81,7 @@ defmodule Artemis.UpdateTeamTest do
 
   describe "call - associations" do
     test "adds updatable associations and updates record values" do
+      project = insert(:project)
       team = insert(:team)
       user = insert(:user)
 
@@ -94,6 +95,9 @@ defmodule Artemis.UpdateTeamTest do
       params = %{
         id: team.id,
         name: "Updated Name",
+        projects: [
+          project
+        ],
         user_teams: [
           user_team_params
         ]
@@ -104,15 +108,19 @@ defmodule Artemis.UpdateTeamTest do
       assert updated.name == "Updated Name"
       assert updated.user_teams != []
       assert length(updated.user_teams) == 1
+      assert length(updated.projects) == 1
     end
 
     test "removes associations when explicitly passed an empty value" do
-      team = insert(:team)
+      projects = insert_list(3, :project)
+
+      team = insert(:team, projects: projects)
 
       insert_list(3, :user_team, team: team)
 
-      team = Repo.preload(team, [:user_teams])
+      team = Repo.preload(team, [:projects, :user_teams])
 
+      assert length(team.projects) == 3
       assert length(team.user_teams) == 3
 
       # Keeps existing associations if the association key is not passed
@@ -124,17 +132,20 @@ defmodule Artemis.UpdateTeamTest do
 
       {:ok, updated} = UpdateTeam.call(team.id, params, Mock.system_user())
 
+      assert length(updated.projects) == 3
       assert length(updated.user_teams) == 3
 
       # Only removes associations when the association key is explicitly passed
 
       params = %{
         id: team.id,
+        projects: [],
         user_teams: []
       }
 
       {:ok, updated} = UpdateTeam.call(team.id, params, Mock.system_user())
 
+      assert length(updated.projects) == 0
       assert length(updated.user_teams) == 0
     end
   end

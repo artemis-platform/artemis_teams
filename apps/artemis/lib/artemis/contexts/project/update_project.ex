@@ -1,9 +1,10 @@
 defmodule Artemis.UpdateProject do
   use Artemis.Context
+  use Assoc.Updater, repo: Artemis.Repo
 
-  alias Artemis.Project
   alias Artemis.GetProject
   alias Artemis.Helpers.Markdown
+  alias Artemis.Project
   alias Artemis.Repo
 
   def call!(id, params, user) do
@@ -18,6 +19,7 @@ defmodule Artemis.UpdateProject do
       id
       |> get_record(user)
       |> update_record(params)
+      |> update_associations(params)
       |> Event.broadcast("project:updated", params, user)
     end)
   end

@@ -48,13 +48,19 @@ defmodule Artemis.ListProjects do
   defp filter_query(query, _params, _user), do: query
 
   defp filter(query, "active", value), do: where(query, [i], i.active in ^split(value))
-  defp filter(query, "team_id", value), do: where(query, [i], i.team_id in ^split(value))
+
+  defp filter(query, "team_id", value) do
+    query
+    |> join(:left, [project], teams in assoc(project, :teams))
+    |> where([..., teams], teams.id in ^split(value))
+  end
+
   defp filter(query, "title", value), do: where(query, [i], i.title in ^split(value))
 
   defp filter(query, "user_id", value) do
     query
-    |> join(:left, [project], team in assoc(project, :team))
-    |> join(:left, [..., team], user_teams in assoc(team, :user_teams))
+    |> join(:left, [project], teams in assoc(project, :teams))
+    |> join(:left, [..., teams], user_teams in assoc(teams, :user_teams))
     |> where([..., user_teams], user_teams.user_id in ^split(value))
   end
 

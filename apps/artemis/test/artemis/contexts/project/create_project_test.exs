@@ -15,7 +15,7 @@ defmodule Artemis.CreateProjectTest do
     test "creates a project when passed valid params" do
       team = insert(:team)
 
-      params = params_for(:project, team: team)
+      params = params_for(:project, teams: [team])
 
       project = CreateProject.call!(params, Mock.system_user())
 
@@ -33,7 +33,7 @@ defmodule Artemis.CreateProjectTest do
     test "creates a project when passed valid params" do
       team = insert(:team)
 
-      params = params_for(:project, team: team)
+      params = params_for(:project, teams: [team])
 
       {:ok, project} = CreateProject.call(params, Mock.system_user())
 
@@ -43,12 +43,27 @@ defmodule Artemis.CreateProjectTest do
     test "supports markdown" do
       team = insert(:team)
 
-      params = params_for(:project, description: "# Test", team: team)
+      params = params_for(:project, description: "# Test", teams: [team])
 
       {:ok, project} = CreateProject.call(params, Mock.system_user())
 
       assert project.description == params.description
       assert project.description_html == "<h1>Test</h1>\n"
+    end
+
+    test "creates record with associations - many_to_many" do
+      team = insert(:team)
+
+      params =
+        :project
+        |> params_for
+        |> Map.put(:teams, [team])
+
+      {:ok, project} = CreateProject.call(params, Mock.system_user())
+
+      assert project.title == params.title
+      assert length(project.teams) == 1
+      assert hd(project.teams).id == team.id
     end
   end
 
@@ -58,7 +73,7 @@ defmodule Artemis.CreateProjectTest do
 
       team = insert(:team)
 
-      params = params_for(:project, team: team)
+      params = params_for(:project, teams: [team])
 
       {:ok, project} = CreateProject.call(params, Mock.system_user())
 

@@ -103,8 +103,7 @@ defmodule Artemis.Factories do
       active: true,
       description: description,
       description_html: description,
-      title: sequence(:title, &"#{Faker.Name.name()}-#{&1}"),
-      team: build(:team)
+      title: sequence(:title, &"#{Faker.Name.name()}-#{&1}")
     }
   end
 

@@ -9,9 +9,9 @@ defmodule Artemis.Project do
     field :description_html, :string
     field :title, :string
 
-    belongs_to :team, Artemis.Team, on_replace: :delete
-
     has_many :event_answers, Artemis.EventAnswer, on_delete: :delete_all, on_replace: :delete
+
+    many_to_many :teams, Artemis.Team, join_through: "projects_teams", unique: true, on_replace: :delete
 
     timestamps()
   end
@@ -23,19 +23,17 @@ defmodule Artemis.Project do
       :active,
       :description,
       :description_html,
-      :team_id,
       :title
     ]
 
   def required_fields,
     do: [
-      :team_id,
       :title
     ]
 
   def updatable_associations,
     do: [
-      team: Artemis.Team
+      teams: Artemis.Team
     ]
 
   def event_log_fields,
@@ -51,6 +49,5 @@ defmodule Artemis.Project do
     struct
     |> cast(params, updatable_fields())
     |> validate_required(required_fields())
-    |> foreign_key_constraint(:team_id)
   end
 end

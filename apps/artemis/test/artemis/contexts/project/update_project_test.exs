@@ -89,6 +89,56 @@ defmodule Artemis.UpdateProjectTest do
     end
   end
 
+  describe "call - associations" do
+    test "adds updatable associations and updates record values" do
+      team = insert(:team)
+      project = insert(:project)
+
+      params = %{
+        id: project.id,
+        title: "Updated Title",
+        teams: [
+          team
+        ]
+      }
+
+      {:ok, updated} = UpdateProject.call(project.id, params, Mock.system_user())
+
+      assert updated.title == "Updated Title"
+      assert length(updated.teams) == 1
+    end
+
+    test "removes associations when explicitly passed an empty value" do
+      teams = insert_list(3, :team)
+
+      project = insert(:project, teams: teams)
+
+      assert length(project.teams) == 3
+
+      # Keeps existing associations if the association key is not passed
+
+      params = %{
+        id: project.id,
+        title: "New Title"
+      }
+
+      {:ok, updated} = UpdateProject.call(project.id, params, Mock.system_user())
+
+      assert length(updated.teams) == 3
+
+      # Only removes associations when the association key is explicitly passed
+
+      params = %{
+        id: project.id,
+        teams: []
+      }
+
+      {:ok, updated} = UpdateProject.call(project.id, params, Mock.system_user())
+
+      assert length(updated.teams) == 0
+    end
+  end
+
   describe "broadcast" do
     test "publishes event and record" do
       ArtemisPubSub.subscribe(Artemis.Event.get_broadcast_topic())

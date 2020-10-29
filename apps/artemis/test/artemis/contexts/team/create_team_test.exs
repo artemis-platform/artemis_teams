@@ -36,7 +36,7 @@ defmodule Artemis.CreateTeamTest do
       assert team.name == params.name
     end
 
-    test "creates record with associations" do
+    test "creates record with associations - belongs_to" do
       team = insert(:team)
       user = insert(:user)
 
@@ -58,6 +58,21 @@ defmodule Artemis.CreateTeamTest do
 
       assert team.name == params.name
       assert length(team.user_teams) == 1
+    end
+
+    test "creates record with associations - many_to_many" do
+      project = insert(:project)
+
+      params =
+        :team
+        |> params_for
+        |> Map.put(:projects, [project])
+
+      {:ok, team} = CreateTeam.call(params, Mock.system_user())
+
+      assert team.name == params.name
+      assert length(team.projects) == 1
+      assert hd(team.projects).id == project.id
     end
   end
 

@@ -10,7 +10,7 @@ defmodule ArtemisWeb.ProjectController do
   alias Artemis.ListTeams
   alias Artemis.UpdateProject
 
-  @preload [:team]
+  @preload [:teams]
 
   def index(conn, params) do
     authorize(conn, "projects:list", fn ->
@@ -28,7 +28,7 @@ defmodule ArtemisWeb.ProjectController do
   def new(conn, params) do
     authorize(conn, "projects:create", fn ->
       user = current_user(conn)
-      project = %Project{team_id: Map.get(params, "team_id")}
+      project = %Project{teams: Map.get(params, "teams")}
       changeset = Project.changeset(project)
       team_options = get_related_team_options(user)
 

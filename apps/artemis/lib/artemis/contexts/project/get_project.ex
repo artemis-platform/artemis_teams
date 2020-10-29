@@ -4,7 +4,7 @@ defmodule Artemis.GetProject do
   alias Artemis.Project
   alias Artemis.Repo
 
-  @default_preload [:team]
+  @default_preload [:teams]
 
   def call!(value, _user, options \\ []) do
     get_record(value, options, &Repo.get_by!/2)

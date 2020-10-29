@@ -11,9 +11,10 @@ defmodule Artemis.Team do
 
     has_many :event_templates, Artemis.EventTemplate, on_delete: :delete_all, on_replace: :delete
     has_many :event_questions, through: [:event_templates, :event_questions]
-    has_many :projects, Artemis.Project, on_delete: :delete_all, on_replace: :delete
     has_many :user_teams, Artemis.UserTeam, on_delete: :delete_all, on_replace: :delete
     has_many :users, through: [:user_teams, :user]
+
+    many_to_many :projects, Artemis.Project, join_through: "projects_teams", unique: true, on_replace: :delete
 
     timestamps()
   end
@@ -33,6 +34,7 @@ defmodule Artemis.Team do
 
   def updatable_associations,
     do: [
+      projects: Artemis.Project,
       user_teams: Artemis.UserTeam
     ]
 
