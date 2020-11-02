@@ -5,10 +5,10 @@
     </h1>
 
     <div class="actions">
-      <%= if has?(@conn, "teams:delete") do %>
+      <%= if has?(@conn, "teams:delete") && team_admin?(@conn, @team.id) do %>
         <%= delete_confirmation "Delete", Routes.team_path(@conn, :delete, @team) %>
       <% end %>
-      <%= if has?(@conn, "teams:update") do %>
+      <%= if has?(@conn, "teams:update") && (team_admin?(@conn, @team.id) || team_editor?(@conn, @team.id)) do %>
         <%= action "Edit", to: Routes.team_path(@conn, :edit, @team), color: "green" %>
       <% end %>
     </div>

@@ -1,7 +1,7 @@
 <%= form_for @changeset, @action, [class: "ui form", id: "team-member-form"], fn f -> %>
   <div class="field">
     <%= label_with_errors f, :user_id %>
-    <%= select f, :user_id, [blank_option() | @user_options], class: "enhanced clearable", placeholder: "User" %>
+    <%= select f, :user_id, [blank_option() | @user_options], class: "enhanced clearable search", placeholder: "User" %>
   </div>
 
   <div class="field">

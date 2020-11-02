@@ -7,7 +7,7 @@
 
     <div class="actions">
       <%= if has?(@conn, "user-teams:delete") do %>
-        <%= delete_confirmation "Delete", Routes.team_member_path(@conn, :delete, @user_team.team, @user_team) %>
+        <%= delete_confirmation "Remove from Team", Routes.team_member_path(@conn, :delete, @user_team.team, @user_team), title: "Remove from Team" %>
       <% end %>
       <%= if has?(@conn, "user-teams:update") do %>
         <%= action "Edit", to: Routes.team_member_path(@conn, :edit, @user_team.team, @user_team), color: "green" %>

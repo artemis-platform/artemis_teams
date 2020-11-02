@@ -129,12 +129,25 @@ defmodule ArtemisWeb.EventView do
   end
 
   defp data_table_actions_update_current_event_instance_column_html(conn, row) do
+    contributor? = team_admin?(conn, row.id) || team_editor?(conn, row.id) || team_member?(conn, row.id)
+
+    case has?(conn, "event-answers:update") && contributor? do
+      true -> data_table_action_update(conn, row)
+      false -> data_table_action_view(conn, row)
+    end
+  end
+
+  defp data_table_action_update(conn, row) do
     date = ArtemisWeb.EventInstanceView.get_current_instance_date(row)
 
-    if has?(conn, "event-answers:update") do
-      content_tag(:div, class: "actions-current-event-instance") do
-        action("Update", to: Routes.event_instance_path(conn, :edit, row, date), color: "green", size: "tiny")
-      end
+    content_tag(:div, class: "actions-current-event-instance") do
+      action("Update", to: Routes.event_instance_path(conn, :edit, row, date), color: "green", size: "tiny")
+    end
+  end
+
+  defp data_table_action_view(conn, row) do
+    content_tag(:div, class: "actions-current-event-instance") do
+      action("View", to: Routes.event_instance_path(conn, :index, row), size: "tiny")
     end
   end
 

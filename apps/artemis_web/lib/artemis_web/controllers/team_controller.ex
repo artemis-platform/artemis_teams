@@ -94,7 +94,7 @@ defmodule ArtemisWeb.TeamController do
       team = GetTeam.call!(id, current_user(conn), preload: @preload)
       changeset = Team.changeset(team)
 
-      authorize_in_team(conn, team.id, fn ->
+      authorize_team_editor(conn, team.id, fn ->
         render(conn, "edit.html", changeset: changeset, team: team)
       end)
     end)
@@ -110,7 +110,7 @@ defmodule ArtemisWeb.TeamController do
         |> Map.delete("projects")
         |> Map.delete("user_teams")
 
-      authorize_in_team(conn, team.id, fn ->
+      authorize_team_editor(conn, team.id, fn ->
         case UpdateTeam.call(id, update_params, user) do
           {:ok, team} ->
             conn
