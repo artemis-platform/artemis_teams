@@ -22,6 +22,12 @@ config :artemis, :actions,
     interval: System.get_env("ARTEMIS_ACTION_REPO_RESET_ON_INTERVAL_HOURS")
   ]
 
+config :artemis, Oban,
+  repo: Artemis.Repo,
+  plugins: [{Oban.Plugins.Pruner, max_age: 300}],
+  queues: [default: 10],
+  crontab: []
+
 config :artemis, :users,
   root_user: %{
     name: System.get_env("ARTEMIS_ROOT_USER"),

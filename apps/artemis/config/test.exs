@@ -24,3 +24,5 @@ config :artemis, Artemis.Repo,
   port: System.get_env("ARTEMIS_POSTGRES_PORT"),
   ssl: Enum.member?(["true", "\"true\""], System.get_env("ARTEMIS_POSTGRES_SSL_ENABLED")),
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :artemis, Oban, crontab: false, queues: false, plugins: false
