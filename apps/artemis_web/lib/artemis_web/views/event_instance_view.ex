@@ -159,8 +159,10 @@ defmodule ArtemisWeb.EventInstanceView do
   Return the current event instance date
   """
   def get_current_instance_date(event) do
-    DateTime.utc_now()
-    |> Artemis.Helpers.Schedule.current(event.schedule)
+    start_of_day = Timex.beginning_of_day(Timex.now())
+
+    event.schedule
+    |> Artemis.Helpers.Schedule.current(start_of_day)
     |> Date.to_iso8601()
   end
 

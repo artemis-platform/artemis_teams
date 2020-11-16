@@ -17,10 +17,10 @@
     <%= label_with_errors f, :schedule %>
     <%=
       schedule_options = [
-        [key: "Daily - Monday to Friday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR"],
-        [key: "Daily - Every Day", value: "DTSTART:20200101T000000\nRRULE:FREQ=DAILY"],
-        [key: "Weekly - Every Monday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO"],
-        [key: "Weekly - Every Friday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=FR"]
+        [key: "Daily - Monday to Friday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0;BYSECOND=0"],
+        [key: "Daily - Every Day", value: "DTSTART:20200101T000000\nRRULE:FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0"],
+        [key: "Weekly - Every Monday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO;BYHOUR=9;BYMINUTE=0;BYSECOND=0"],
+        [key: "Weekly - Every Friday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=FR;BYHOUR=9;BYMINUTE=0;BYSECOND=0"]
       ]
 
       select f, :schedule, schedule_options, class: "enhanced", placeholder: "Schedule"

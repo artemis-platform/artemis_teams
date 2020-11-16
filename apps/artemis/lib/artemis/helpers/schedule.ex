@@ -22,6 +22,8 @@ defmodule Artemis.Helpers.Schedule do
     result
   end
 
+  def decode(%Cocktail.Schedule{} = value), do: value
+
   @doc """
   Humanize schedule value
   """
@@ -41,7 +43,9 @@ defmodule Artemis.Helpers.Schedule do
   @doc """
   Returns the current scheduled date
   """
-  def current(start_time, %Cocktail.Schedule{} = schedule) do
+  def current(schedule, start_time \\ Timex.now())
+
+  def current(%Cocktail.Schedule{} = schedule, start_time) do
     schedule
     |> Map.put(:start_time, start_time)
     |> Cocktail.Schedule.occurrences()
@@ -49,7 +53,7 @@ defmodule Artemis.Helpers.Schedule do
     |> hd()
   end
 
-  def current(start_time, schedule) when is_bitstring(schedule) do
-    current(start_time, decode(schedule))
+  def current(schedule, start_time) when is_bitstring(schedule) do
+    current(decode(schedule), start_time)
   end
 end
