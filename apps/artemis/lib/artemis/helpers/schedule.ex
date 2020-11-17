@@ -101,6 +101,8 @@ defmodule Artemis.Helpers.Schedule do
     |> Cocktail.Schedule.to_string()
     |> String.replace("on  ", "on ")
     |> String.replace("on and", "on")
+    |> String.replace(" on the 0th minute of the hour", "")
+    |> String.replace(" on the 0th second of the minute", "")
   end
 
   def humanize(value) when is_bitstring(value) do

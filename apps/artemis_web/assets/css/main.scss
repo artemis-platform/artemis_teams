@@ -763,6 +763,10 @@ ul.timeline {
   .field:last-child {
     margin-top: 1rem;
   }
+
+  .fields .field:last-child {
+    margin-top: 0;
+  }
 }
 
 /* === Components - Inline Fields === */
@@ -830,6 +834,20 @@ ul.timeline {
         }
       }
     }
+  }
+}
+
+/* === Components - Schedule Form Fields === */
+
+.field ul.schedule-days {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    margin: 0 0 0.5rem 0;
   }
 }
 

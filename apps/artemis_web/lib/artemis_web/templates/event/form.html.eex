@@ -27,6 +27,48 @@
     %>
   </div>
 
+  <div class="two fields">
+    <div class="field">
+      <%= label_with_errors f, :days %>
+      <ul class="schedule-days">
+        <%
+          day_options = [
+            "Monday": "monday",
+            "Tuesday": "tuesday",
+            "Wednesday": "wednesday",
+            "Thursday": "thursday",
+            "Friday": "friday",
+            "Saturday": "saturday",
+            "Sunday": "sunday"
+          ]
+
+          day_values = input_value(f, :days) || []
+        %>
+
+        <%= for {key, value} <- day_options do %>
+          <li class="ui toggle checkbox">
+            <input
+              <%= if Enum.member?(day_values, value), do: "checked=\"checked\"" %>
+              id="event_template_days_<%= value %>"
+              type="checkbox"
+              name="event_template[days][]"
+              value="<%= value %>"
+            />
+
+            <label for="event_template_days_<%= value %>">
+              <%= key %>
+            </label>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="field">
+      <%= label_with_errors f, :time %>
+      <%= text_input f, :time, placeholder: "12:00" %>
+    </div>
+  </div>
+
   <div class="field">
     <%= label_with_errors f, :description %>
     <%= textarea f, :description, rows: 3 %>

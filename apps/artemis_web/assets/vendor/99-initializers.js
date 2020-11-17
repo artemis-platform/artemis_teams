@@ -18,6 +18,10 @@ function updateQueryParams(newParams) {
 
 // Initializers
 
+function initializeCheckboxes() {
+  $('.ui.toggle.checkbox').checkbox()
+}
+
 function initializeColumnField() {
   $('select.data-table-columns').on('change', function(event) {
     var selected = $(this).select2('data')
@@ -432,6 +436,7 @@ function initializeWikiSidenav() {
 }
 
 $(document).ready(function() {
+  initializeCheckboxes()
   initializeColumnField()
   initializeDataTable()
   initializeDataTabs()
