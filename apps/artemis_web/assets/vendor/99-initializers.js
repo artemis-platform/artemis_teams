@@ -454,5 +454,6 @@ $(document).ready(function() {
 })
 
 window.vendor_initializers = {
-  select2: initializeSelect2
+  select2: initializeSelect2,
+  semanticUICheckboxes: initializeCheckboxes
 }
