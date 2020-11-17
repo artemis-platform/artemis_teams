@@ -33,7 +33,10 @@
 
     <div class="two fields">
       <div class="field">
-        <%= label_with_errors f, :days %>
+        <label class="label-with-errors">
+          <span>Days</span>
+        </label>
+
         <ul class="schedule-days">
           <%
             day_options = [
@@ -53,7 +56,7 @@
             <li class="ui toggle checkbox">
               <input
                 <%= if Enum.member?(day_values, value), do: "checked=\"checked\"" %>
-                id="event_template_days_<%= value %>"
+                id="event_template_schedule_<%= index %>_days_<%= value %>"
                 type="checkbox"
                 name="event_template[schedule][<%= index %>][days][]"
                 value="<%= value %>"
@@ -68,7 +71,10 @@
       </div>
 
       <div class="field">
-        <%= label_with_errors f, :time %>
+        <label class="label-with-errors">
+          <span>Time</span>
+        </label>
+
         <input
           id="event_template_schedule_<%= index %>_time"
           name="event_template[schedule][<%= index %>][time]"
@@ -77,6 +83,7 @@
           value="<%= get_schedule_time(schedule, index, "9:00") %>"
         />
       </div>
+
     </div>
 
   <% end %>
