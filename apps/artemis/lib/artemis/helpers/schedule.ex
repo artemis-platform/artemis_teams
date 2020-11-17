@@ -61,6 +61,7 @@ defmodule Artemis.Helpers.Schedule do
     time =
       rule
       |> Map.get("time")
+      |> String.pad_leading(5, "0")
       |> Timex.parse!("{h24}:{m}")
 
     {time.hour, time.minute}
@@ -79,10 +80,12 @@ defmodule Artemis.Helpers.Schedule do
 
   def decode(%Cocktail.Schedule{} = value), do: value
 
+  def decode(nil), do: Cocktail.schedule(Timex.now())
+
   @doc """
   Return days of the week from recurrence rule
   """
-  def days_of_the_week(schedule, options \\ []) do
+  def days(schedule, options \\ []) do
     schedule
     |> get_schedule_recurrence_rule_validations(options)
     |> Artemis.Helpers.deep_get([:day, :days])
@@ -199,6 +202,7 @@ defmodule Artemis.Helpers.Schedule do
     index = Keyword.get(options, :index, 0)
 
     schedule
+    |> decode()
     |> Map.get(:recurrence_rules, [])
     |> Enum.at(index)
     |> Kernel.||(%{})

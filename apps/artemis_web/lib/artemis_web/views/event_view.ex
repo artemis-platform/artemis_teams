@@ -179,4 +179,34 @@ defmodule ArtemisWeb.EventView do
   def render_show_link(conn, record) do
     link(record.title, to: Routes.event_path(conn, :show, record))
   end
+
+  @doc """
+  Return the schedule days for a specific recurrence rule
+  """
+  def get_schedule_days(schedule, index, default \\ nil) do
+    days = Artemis.Helpers.Schedule.days(schedule, index: index)
+
+    case days && length(days) > 0 do
+      true -> days
+      _ -> default
+    end
+  end
+
+  @doc """
+  Return the schedule time for a specific recurrence rule
+  """
+  def get_schedule_time(schedule, index, default \\ nil) do
+    hour = Artemis.Helpers.Schedule.hour(schedule, index: index)
+
+    minute =
+      schedule
+      |> Artemis.Helpers.Schedule.minute(index: index)
+      |> Artemis.Helpers.to_string()
+      |> String.pad_leading(2, "0")
+
+    case is_nil(hour) do
+      true -> default
+      _ -> "#{hour}:#{minute}"
+    end
+  end
 end

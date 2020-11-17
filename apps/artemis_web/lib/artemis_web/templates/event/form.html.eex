@@ -25,23 +25,11 @@
 
   <h3>Schedule</h3>
 
-  <div class="field">
-    <%= label_with_errors f, :schedule %>
-    <%=
-      schedule_options = [
-        [key: "Daily - Monday to Friday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0;BYSECOND=0"],
-        [key: "Daily - Every Day", value: "DTSTART:20200101T000000\nRRULE:FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0"],
-        [key: "Weekly - Every Monday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO;BYHOUR=9;BYMINUTE=0;BYSECOND=0"],
-        [key: "Weekly - Every Friday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=FR;BYHOUR=9;BYMINUTE=0;BYSECOND=0"]
-      ]
+  <% schedule = input_value(f, :schedule) %>
 
-      select f, :schedule, schedule_options, class: "enhanced", placeholder: "Schedule"
-    %>
-  </div>
+  <%#= TODO: Show schedule errors here %>
 
   <%= for index <- Range.new(0, 2) do %>
-
-    <%#= TODO: Show schedule errors here %>
 
     <div class="two fields">
       <div class="field">
@@ -58,7 +46,7 @@
               "Sunday": 0
             ]
 
-            day_values = input_value(f, :days) || []
+            day_values = get_schedule_days(schedule, index, [])
           %>
 
           <%= for {key, value} <- day_options do %>
@@ -85,8 +73,8 @@
           id="event_template_schedule_<%= index %>_time"
           name="event_template[schedule][<%= index %>][time]"
           type="text"
-          placeholder="12:00"
-          value=""
+          placeholder="14:00"
+          value="<%= get_schedule_time(schedule, index, "9:00") %>"
         />
       </div>
     </div>

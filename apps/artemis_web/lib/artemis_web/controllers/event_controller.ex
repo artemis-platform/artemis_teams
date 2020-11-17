@@ -11,6 +11,7 @@ defmodule ArtemisWeb.EventController do
   alias Artemis.ListTeams
   alias Artemis.UpdateEventTemplate
 
+  @default_schedule "DTSTART:20170102T100000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0;BYSECOND=0"
   @preload [:event_questions, :team]
 
   def index(conn, params) do
@@ -29,7 +30,7 @@ defmodule ArtemisWeb.EventController do
   def new(conn, params) do
     authorize(conn, "event-templates:create", fn ->
       user = current_user(conn)
-      event_template = %EventTemplate{}
+      event_template = %EventTemplate{schedule: @default_schedule}
       changeset = EventTemplate.changeset(event_template, params)
       team_options = get_related_team_options(user)
 
@@ -46,6 +47,7 @@ defmodule ArtemisWeb.EventController do
   def create(conn, %{"event_template" => params}) do
     authorize(conn, "event-templates:create", fn ->
       user = current_user(conn)
+      params = get_params(params)
 
       case CreateEventTemplate.call(params, user) do
         {:ok, event_template} ->
@@ -114,8 +116,8 @@ defmodule ArtemisWeb.EventController do
   def update(conn, %{"id" => id, "event_template" => params}) do
     authorize(conn, "event-templates:update", fn ->
       user = current_user(conn)
-      event_template = GetEventTemplate.call(id, user, preload: @preload)
       params = get_params(params)
+      event_template = GetEventTemplate.call(id, user, preload: @preload)
 
       authorize_team_editor(conn, event_template.team_id, fn ->
         case UpdateEventTemplate.call(id, params, user) do
