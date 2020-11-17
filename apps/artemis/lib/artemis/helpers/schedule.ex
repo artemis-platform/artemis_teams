@@ -27,69 +27,69 @@ defmodule Artemis.Helpers.Schedule do
   @doc """
   Return days of the week from recurrence rule
   """
-  def days_of_the_week(schedule) do
+  def days_of_the_week(schedule, options \\ []) do
     schedule
-    |> get_schedule_validations()
+    |> get_schedule_recurrence_rule_validations(options)
     |> Artemis.Helpers.deep_get([:day, :days])
   end
 
   @doc """
   Return hours from recurrence rule
   """
-  def hours(schedule) do
+  def hours(schedule, options \\ []) do
     schedule
-    |> get_schedule_validations()
+    |> get_schedule_recurrence_rule_validations(options)
     |> Artemis.Helpers.deep_get([:hour_of_day, :hours], [])
   end
 
   @doc """
   Return hour from recurrence rule
 
-  Note: assumes only one value for a given schedule
+  Note: assumes only one value for a given schedule recurrence rule
   """
-  def hour(schedule) do
+  def hour(schedule, options \\ []) do
     schedule
-    |> hours()
+    |> hours(options)
     |> List.first()
   end
 
   @doc """
   Return minutes from recurrence rule
   """
-  def minutes(schedule) do
+  def minutes(schedule, options \\ []) do
     schedule
-    |> get_schedule_validations()
+    |> get_schedule_recurrence_rule_validations(options)
     |> Artemis.Helpers.deep_get([:minute_of_hour, :minutes], [])
   end
 
   @doc """
   Return minutes from recurrence rule
 
-  Note: assumes only one value for a given schedule
+  Note: assumes only one value for a given schedule recurrence rule
   """
-  def minute(schedule) do
+  def minute(schedule, options \\ []) do
     schedule
-    |> minutes()
+    |> minutes(options)
     |> List.first()
   end
 
   @doc """
   Return seconds from recurrence rule
   """
-  def seconds(schedule) do
+  def seconds(schedule, options \\ []) do
     schedule
-    |> get_schedule_validations()
+    |> get_schedule_recurrence_rule_validations(options)
     |> Artemis.Helpers.deep_get([:second_of_minute, :seconds], [])
   end
 
   @doc """
   Return seconds from recurrence rule
 
-  Note: assumes only one value for a given schedule
+  Note: assumes only one value for a given schedule recurrence rule
   """
-  def second(schedule) do
+  def second(schedule, options \\ []) do
     schedule
-    |> seconds()
+    |> seconds(options)
     |> List.first()
   end
 
@@ -128,12 +128,24 @@ defmodule Artemis.Helpers.Schedule do
     current(decode(schedule), start_time)
   end
 
+  @doc """
+  Returns occurrences of the scheduled date
+  """
+  def occurrences(schedule, start_time \\ Timex.now(), count \\ 10) do
+    schedule
+    |> Map.put(:start_time, start_time)
+    |> Cocktail.Schedule.occurrences()
+    |> Enum.take(count)
+  end
+
   # Helpers
 
-  defp get_schedule_validations(schedule) do
+  defp get_schedule_recurrence_rule_validations(schedule, options) do
+    index = Keyword.get(options, :index, 0)
+
     schedule
     |> Map.get(:recurrence_rules, [])
-    |> List.first()
+    |> Enum.at(index)
     |> Kernel.||(%{})
     |> Map.get(:validations, %{})
   end

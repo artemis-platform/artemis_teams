@@ -12,6 +12,7 @@
       select f, :team_id, team_options, class: "enhanced clearable", placeholder: ""
     %>
   </div>
+
   <div class="field">
     <%= label_with_errors f, :description %>
     <%= textarea f, :description, rows: 3 %>
