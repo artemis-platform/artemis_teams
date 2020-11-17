@@ -12,6 +12,17 @@
       select f, :team_id, team_options, class: "enhanced clearable", placeholder: ""
     %>
   </div>
+  <div class="field">
+    <%= label_with_errors f, :description %>
+    <%= textarea f, :description, rows: 3 %>
+  </div>
+
+  <div class="field">
+    <%= label f, :active %>
+    <%= checkbox f, :active %>
+  </div>
+
+  <h3>Schedule</h3>
 
   <div class="field">
     <%= label_with_errors f, :schedule %>
@@ -69,15 +80,6 @@
     </div>
   </div>
 
-  <div class="field">
-    <%= label_with_errors f, :description %>
-    <%= textarea f, :description, rows: 3 %>
-  </div>
-
-  <div class="field">
-    <%= label f, :active %>
-    <%= checkbox f, :active %>
-  </div>
 
   <div>
     <%= if @changeset.action do %>
