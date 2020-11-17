@@ -8,9 +8,64 @@ defmodule Artemis.Helpers.Schedule do
 
   @doc """
   Encode Cocktail.Schedule struct as iCal string
+
+  Takes an existing Cocktail.Schedule struct or a list of recurrence rules.
   """
   def encode(%Cocktail.Schedule{} = value) do
     Cocktail.Schedule.to_i_calendar(value)
+  end
+
+  def encode(recurrence_rules) when is_list(recurrence_rules) do
+    Timex.now()
+    |> Cocktail.schedule()
+    |> add_recurrence_rules(recurrence_rules)
+    |> encode()
+  end
+
+  defp add_recurrence_rules(schedule, rules) do
+    Enum.reduce(rules, schedule, fn rule, acc ->
+      add_recurrence_rule(acc, rule)
+    end)
+  end
+
+  defp add_recurrence_rule(schedule, rule) do
+    frequency = get_recurrence_rule_frequency(rule)
+    options = get_recurrence_rule_options(rule)
+
+    Cocktail.Schedule.add_recurrence_rule(schedule, frequency, options)
+  end
+
+  defp get_recurrence_rule_frequency(rule) do
+    rule
+    |> Map.get("frequency", "daily")
+    |> Artemis.Helpers.to_atom()
+  end
+
+  defp get_recurrence_rule_options(rule) do
+    days =
+      rule
+      |> Map.get("days", [])
+      |> Enum.map(&Artemis.Helpers.to_integer/1)
+
+    {fallback_hour, fallback_minute} = parse_hours_and_minutes_from_time(rule)
+
+    [
+      days: days,
+      hours: Map.get(rule, "hours", [fallback_hour]),
+      minutes: Map.get(rule, "minutes", [fallback_minute]),
+      seconds: Map.get(rule, "seconds", [0])
+    ]
+  end
+
+  defp parse_hours_and_minutes_from_time(rule) do
+    time =
+      rule
+      |> Map.get("time")
+      |> Timex.parse!("{h24}:{m}")
+
+    {time.hour, time.minute}
+  rescue
+    _ -> {0, 0}
   end
 
   @doc """

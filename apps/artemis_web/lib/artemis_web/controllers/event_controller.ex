@@ -115,6 +115,7 @@ defmodule ArtemisWeb.EventController do
     authorize(conn, "event-templates:update", fn ->
       user = current_user(conn)
       event_template = GetEventTemplate.call(id, user, preload: @preload)
+      params = get_params(params)
 
       authorize_team_editor(conn, event_template.team_id, fn ->
         case UpdateEventTemplate.call(id, params, user) do
@@ -190,5 +191,21 @@ defmodule ArtemisWeb.EventController do
     params
     |> ListTeams.call(user)
     |> Enum.map(&[key: &1.name, value: &1.id])
+  end
+
+  defp get_params(params) do
+    params
+    |> Artemis.Helpers.keys_to_strings()
+    |> parse_schedule_params()
+  end
+
+  defp parse_schedule_params(params) do
+    encoded =
+      params
+      |> Map.get("schedule", %{})
+      |> Map.values()
+      |> Artemis.Helpers.Schedule.encode()
+
+    Map.put(params, "schedule", encoded)
   end
 end
