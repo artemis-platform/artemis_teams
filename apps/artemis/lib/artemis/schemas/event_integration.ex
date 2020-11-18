@@ -8,6 +8,7 @@ defmodule Artemis.EventIntegration do
     field :integration_type, :string
     field :name, :string
     field :notification_type, :string
+    field :schedule, :string
     field :settings, :map
 
     belongs_to :event_template, Artemis.EventTemplate, on_replace: :delete
@@ -26,6 +27,7 @@ defmodule Artemis.EventIntegration do
       :integration_type,
       :notification_type,
       :settings,
+      :schedule,
       :event_template_id
     ]
 

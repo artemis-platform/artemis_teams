@@ -46,6 +46,7 @@ defmodule Artemis.Factories do
       integration_type: "Slack Incoming Webhook",
       name: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
       notification_type: Enum.random(Artemis.EventIntegration.allowed_notification_types()),
+      schedule: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR",
       settings: %{webhook_url: "https://api.slack.com"},
       event_template: build(:event_template)
     }
