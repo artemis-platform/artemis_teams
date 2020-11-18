@@ -15,6 +15,8 @@ defmodule Artemis.Helpers.Schedule do
     Cocktail.Schedule.to_i_calendar(value)
   end
 
+  def encode(value) when is_bitstring(value), do: value
+
   def encode(recurrence_rules) when is_list(recurrence_rules) do
     Timex.now()
     |> Cocktail.schedule()
