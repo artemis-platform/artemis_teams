@@ -40,30 +40,31 @@
         <ul class="schedule-days">
           <%
             day_options = [
-              "Monday": 1,
-              "Tuesday": 2,
-              "Wednesday": 3,
-              "Thursday": 4,
-              "Friday": 5,
-              "Saturday": 6,
-              "Sunday": 0
+              "Su": 0,
+              "Mo": 1,
+              "Tu": 2,
+              "We": 3,
+              "Th": 4,
+              "Fr": 5,
+              "Sa": 6,
             ]
 
             day_values = get_schedule_days(schedule, index, [])
           %>
 
           <%= for {key, value} <- day_options do %>
-            <li class="ui toggle checkbox">
-              <input
-                <%= if Enum.member?(day_values, value), do: "checked=\"checked\"" %>
-                id="event_template_schedule_<%= index %>_days_<%= value %>"
-                type="checkbox"
-                name="event_template[schedule][<%= index %>][days][]"
-                value="<%= value %>"
-              />
-
-              <label for="event_template_days_<%= value %>">
-                <%= key %>
+            <li class="checkbox-button">
+              <label>
+                <input
+                  <%= if Enum.member?(day_values, value), do: "checked=\"checked\"" %>
+                  id="event_template_schedule_<%= index %>_days_<%= value %>"
+                  type="checkbox"
+                  name="event_template[schedule][<%= index %>][days][]"
+                  value="<%= value %>"
+                />
+                <span>
+                  <%= key %>
+                </span>
               </label>
             </li>
           <% end %>

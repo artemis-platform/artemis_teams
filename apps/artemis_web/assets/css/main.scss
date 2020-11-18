@@ -837,17 +837,60 @@ ul.timeline {
   }
 }
 
+/* === Components - Checkbox Button Field === */
+
+.checkbox-button {
+  background-color: #e8e8e8;
+  border-radius: 4px;
+  cursor: pointer;
+  height: 38px;
+  margin: 0.25rem;
+  overflow: hidden;
+  position: relative;
+
+  &:hover {
+    background: #d8d8d8;
+  }
+
+  label {
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    height: 38px;
+    width: 100%;
+
+    span {
+      display: block;
+      height: 38px;
+      line-height: 38px;
+      text-align: center;
+    }
+  }
+
+  input {
+    position: absolute;
+    top: -3rem;
+  }
+
+  input:checked + span {
+    background-color: $blue_muted;
+    color:#fff;
+  }
+}
+
 /* === Components - Schedule Form Fields === */
 
-.field ul.schedule-days {
+form ul.schedule-days {
   display: flex;
-  flex-direction: column;
   list-style: none;
   margin: 0;
   padding: 0;
 
   li {
-    margin: 0 0 0.5rem 0;
+    display: flex;
+    margin: 0 0.5rem 0 0;
+    height: 38px;
+    width: 38px;
   }
 }
 
