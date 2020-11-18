@@ -23,76 +23,96 @@
     <%= checkbox f, :active %>
   </div>
 
-  <h3>Schedule</h3>
+  <div class="schedule-fields-container field">
+    <h3>Schedule</h3>
 
-  <% schedule = input_value(f, :schedule) %>
+    <%
+      schedule = input_value(f, :schedule)
 
-  <%= for index <- Range.new(0, @schedule_rules_count - 1) do %>
+      schedule_field_error =
+        f.errors
+        |> Keyword.get_values(:schedule)
+        |> List.first()
+    %>
 
-    <div class="two fields">
-      <div class="field">
-        <label class="label-with-errors">
-          <span>Days</span>
-        </label>
-
-        <ul class="schedule-days">
-          <%
-            day_options = [
-              "Su": 0,
-              "Mo": 1,
-              "Tu": 2,
-              "We": 3,
-              "Th": 4,
-              "Fr": 5,
-              "Sa": 6,
-            ]
-
-            day_values = get_schedule_days(schedule, index, [])
-          %>
-
-          <%= for {key, value} <- day_options do %>
-            <li class="checkbox-button">
-              <label>
-                <input
-                  <%= if Enum.member?(day_values, value), do: "checked=\"checked\"" %>
-                  id="event_template_schedule_<%= index %>_days_<%= value %>"
-                  type="checkbox"
-                  name="event_template[schedule][<%= index %>][days][]"
-                  value="<%= value %>"
-                />
-                <span>
-                  <%= key %>
-                </span>
-              </label>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-
-      <div class="field">
-        <label class="label-with-errors">
-          <span>Time</span>
-        </label>
-
-        <input
-          id="event_template_schedule_<%= index %>_time"
-          name="event_template[schedule][<%= index %>][time]"
-          type="text"
-          placeholder="14:00"
-          value="<%= get_schedule_time(schedule, index, "9:00") %>"
-        />
-      </div>
-
-    </div>
-
-  <% end %>
-
-  <div class="field">
-    <label>Additional Schedule Rules</label>
-    <%= query_param_button @conn, "+ Add Schedule Rule", schedule_rules_count: @schedule_rules_count + 1 %>
-    <%= if @schedule_rules_count > 1 do %>
-      <%= query_param_button @conn, "– Remove Last Schedule Rule", schedule_rules_count: @schedule_rules_count - 1 %>
+    <%= if @changeset.action && schedule_field_error do %>
+      <%= render_notification :error, body: "Error: #{elem(schedule_field_error, 0)}", header?: false, icon?: false %>
     <% end %>
+
+    <%= if @schedule_rules_count >= 1 do %>
+      <%= for index <- Range.new(0, @schedule_rules_count - 1) do %>
+
+        <div class="two fields">
+          <div class="field">
+            <label class="label-with-errors">
+              <span>Days</span>
+            </label>
+
+            <ul class="schedule-days">
+              <%
+                day_options = [
+                  "Su": 0,
+                  "Mo": 1,
+                  "Tu": 2,
+                  "We": 3,
+                  "Th": 4,
+                  "Fr": 5,
+                  "Sa": 6,
+                ]
+
+                day_values = get_schedule_days(schedule, index, [])
+              %>
+
+              <%= for {key, value} <- day_options do %>
+                <li class="checkbox-button">
+                  <label>
+                    <input
+                      <%= if Enum.member?(day_values, value), do: "checked=\"checked\"" %>
+                      id="event_template_schedule_<%= index %>_days_<%= value %>"
+                      type="checkbox"
+                      name="event_template[schedule][<%= index %>][days][]"
+                      value="<%= value %>"
+                    />
+                    <span>
+                      <%= key %>
+                    </span>
+                  </label>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+
+          <div class="field" style="width: 9.5rem;">
+            <label class="label-with-errors">
+              <span>Time</span>
+            </label>
+
+            <div class="ui right labeled input">
+              <input
+                id="event_template_schedule_<%= index %>_time"
+                name="event_template[schedule][<%= index %>][time]"
+                type="text"
+                placeholder="14:00"
+                value="<%= get_schedule_time(schedule, index, "9:00") %>"
+              />
+
+              <div class="ui label">
+                UTC
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <% end %>
+    <% end %>
+
+    <div class="field">
+      <label>Additional Schedule Rules</label>
+      <%= query_param_button @conn, "+ Add Schedule Rule", schedule_rules_count: @schedule_rules_count + 1 %>
+      <%= if @schedule_rules_count > 1 do %>
+        <%= query_param_button @conn, "– Remove Last Schedule Rule", schedule_rules_count: @schedule_rules_count - 1 %>
+      <% end %>
+    </div>
   </div>
 
   <h3>Actions</h3>

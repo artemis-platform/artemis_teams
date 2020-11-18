@@ -217,15 +217,9 @@ defmodule ArtemisWeb.EventController do
       |> Artemis.Helpers.Schedule.recurrence_rules()
       |> length()
 
-    count =
-      case query_param do
-        nil -> current_count
-        _ -> Artemis.Helpers.to_integer(query_param)
-      end
-
-    cond do
-      count < 1 -> 1
-      true -> count
+    case query_param do
+      nil -> current_count
+      _ -> Artemis.Helpers.to_integer(query_param)
     end
   end
 
@@ -242,6 +236,15 @@ defmodule ArtemisWeb.EventController do
       |> Map.values()
       |> Artemis.Helpers.Schedule.encode()
 
-    Map.put(params, "schedule", encoded)
+    has_recurrence_rules? =
+      encoded
+      |> Artemis.Helpers.Schedule.recurrence_rules()
+      |> length()
+      |> Kernel.>=(1)
+
+    case has_recurrence_rules? do
+      true -> Map.put(params, "schedule", encoded)
+      false -> Map.put(params, "schedule", nil)
+    end
   end
 end

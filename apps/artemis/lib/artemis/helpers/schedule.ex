@@ -178,6 +178,8 @@ defmodule Artemis.Helpers.Schedule do
     |> humanize()
   end
 
+  def humanize(nil), do: nil
+
   @doc """
   Returns the current scheduled date
   """
@@ -200,6 +202,7 @@ defmodule Artemis.Helpers.Schedule do
   """
   def occurrences(schedule, start_time \\ Timex.now(), count \\ 10) do
     schedule
+    |> decode()
     |> Map.put(:start_time, start_time)
     |> Cocktail.Schedule.occurrences()
     |> Enum.take(count)

@@ -894,6 +894,15 @@ form ul.schedule-days {
   }
 }
 
+/* === Components - Schedule === */
+
+.schedule-occurrences,
+.schedule-summary {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 /* === Components - Summary Count === */
 
 ul.summary-counts {

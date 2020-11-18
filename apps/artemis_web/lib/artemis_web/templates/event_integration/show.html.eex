@@ -17,6 +17,8 @@
         ["Name", render_event_integration_name(@event_integration)],
         ["Active", @event_integration.active],
         ["Event", ArtemisWeb.EventView.render_show_link(@conn, @event_integration.event_template)],
+        ["Schedule", get_schedule_summary(@event_integration.schedule)],
+        ["Upcoming", get_schedule_occurrences(@event_integration.schedule, Timex.now(), 3)]
       ])
     %>
   </section>

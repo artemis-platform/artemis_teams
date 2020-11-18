@@ -9,7 +9,9 @@ defmodule ArtemisWeb.EventIntegrationView do
       {"Active", "active"},
       {"Integration", "integration_type"},
       {"Name", "name"},
-      {"Notification Type", "notification_type"}
+      {"Notification Type", "notification_type"},
+      {"Schedule", "schedule"},
+      {"Upcoming", "upcoming"}
     ]
   end
 
@@ -67,6 +69,14 @@ defmodule ArtemisWeb.EventIntegrationView do
             false -> row.notification_type
           end
         end
+      ],
+      "schedule" => [
+        label: fn _conn -> "Schedule" end,
+        value: fn _conn, row -> get_schedule_summary(row.schedule) end
+      ],
+      "upcoming" => [
+        label: fn _conn -> "Upcoming" end,
+        value: fn _conn, row -> get_schedule_occurrences(row.schedule, Timex.now(), 3) end
       ]
     }
   end

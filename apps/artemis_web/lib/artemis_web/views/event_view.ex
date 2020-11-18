@@ -34,6 +34,7 @@ defmodule ArtemisWeb.EventView do
       {"Schedule", "schedule"},
       {"Team", "team"},
       {"Title", "title"},
+      {"Upcoming", "upcoming"},
       {"Update Current Instance", "actions_update_current_event_instance"},
       {"View Current Instance", "actions_view_current_event_instance"}
     ]
@@ -78,7 +79,7 @@ defmodule ArtemisWeb.EventView do
       ],
       "schedule" => [
         label: fn _conn -> "Schedule" end,
-        value: fn _conn, row -> Artemis.Helpers.Schedule.humanize(row.schedule) end
+        value: fn _conn, row -> get_schedule_summary(row.schedule) end
       ],
       "team" => [
         label: fn _conn -> "Team" end,
@@ -102,6 +103,10 @@ defmodule ArtemisWeb.EventView do
             false -> row.title
           end
         end
+      ],
+      "upcoming" => [
+        label: fn _conn -> "Upcoming" end,
+        value: fn _conn, row -> get_schedule_occurrences(row.schedule, Timex.now(), 3) end
       ]
     }
   end
@@ -178,35 +183,5 @@ defmodule ArtemisWeb.EventView do
 
   def render_show_link(conn, record) do
     link(record.title, to: Routes.event_path(conn, :show, record))
-  end
-
-  @doc """
-  Return the schedule days for a specific recurrence rule
-  """
-  def get_schedule_days(schedule, index, default \\ nil) do
-    days = Artemis.Helpers.Schedule.days(schedule, index: index)
-
-    case days && length(days) > 0 do
-      true -> days
-      _ -> default
-    end
-  end
-
-  @doc """
-  Return the schedule time for a specific recurrence rule
-  """
-  def get_schedule_time(schedule, index, default \\ nil) do
-    hour = Artemis.Helpers.Schedule.hour(schedule, index: index)
-
-    minute =
-      schedule
-      |> Artemis.Helpers.Schedule.minute(index: index)
-      |> Artemis.Helpers.to_string()
-      |> String.pad_leading(2, "0")
-
-    case is_nil(hour) do
-      true -> default
-      _ -> "#{hour}:#{minute}"
-    end
   end
 end
