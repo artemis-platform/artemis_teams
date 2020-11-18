@@ -27,9 +27,7 @@
 
   <% schedule = input_value(f, :schedule) %>
 
-  <%#= TODO: Show schedule errors here %>
-
-  <%= for index <- Range.new(0, 2) do %>
+  <%= for index <- Range.new(0, @schedule_rules_count - 1) do %>
 
     <div class="two fields">
       <div class="field">
@@ -88,6 +86,16 @@
     </div>
 
   <% end %>
+
+  <div class="field">
+    <label>Additional Schedule Rules</label>
+    <%= query_param_button @conn, "+ Add Schedule Rule", schedule_rules_count: @schedule_rules_count + 1 %>
+    <%= if @schedule_rules_count > 1 do %>
+      <%= query_param_button @conn, "– Remove Last Schedule Rule", schedule_rules_count: @schedule_rules_count - 1 %>
+    <% end %>
+  </div>
+
+  <h3>Actions</h3>
 
   <div>
     <%= if @changeset.action do %>

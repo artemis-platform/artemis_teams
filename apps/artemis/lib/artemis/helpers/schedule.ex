@@ -83,6 +83,15 @@ defmodule Artemis.Helpers.Schedule do
   def decode(nil), do: Cocktail.schedule(Timex.now())
 
   @doc """
+  Return recurrence rules
+  """
+  def recurrence_rules(schedule) do
+    schedule
+    |> decode()
+    |> Map.get(:recurrence_rules, [])
+  end
+
+  @doc """
   Return days of the week from recurrence rule
   """
   def days(schedule, options \\ []) do
