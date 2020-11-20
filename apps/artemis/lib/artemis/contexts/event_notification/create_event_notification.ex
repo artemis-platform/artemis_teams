@@ -6,7 +6,7 @@ defmodule Artemis.CreateEventNotification do
   alias Artemis.Drivers.Slack
 
   @moduledoc """
-  Creates a vCD Management API request
+  Creates a Slack Event Notification
   """
 
   def call!(params, user) do
