@@ -7,6 +7,7 @@ defmodule ArtemisNotify.Worker.EventIntegrationNotifier do
 
   alias Artemis.GetSystemUser
   alias Artemis.ListEventIntegrations
+  alias ArtemisNotify.CreateEventIntegrationNotification
 
   # Callbacks
 
@@ -21,6 +22,7 @@ defmodule ArtemisNotify.Worker.EventIntegrationNotifier do
 
   def send_notifications(timestamp) do
     user = GetSystemUser.call!()
+    date = Timex.format!(Timex.now(), "{YYYY}-{0M}-{0D}")
 
     params = %{
       filters: %{
@@ -32,8 +34,8 @@ defmodule ArtemisNotify.Worker.EventIntegrationNotifier do
     params
     |> ListEventIntegrations.call(user)
     |> Enum.filter(&current?(&1, timestamp))
-    |> Enum.map(fn _ ->
-      true
+    |> Enum.map(fn event_integration ->
+      CreateEventIntegrationNotification.call(event_integration.id, date, user)
     end)
   end
 
