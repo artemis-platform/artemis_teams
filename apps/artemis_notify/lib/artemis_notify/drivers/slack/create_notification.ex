@@ -1,17 +1,17 @@
-defmodule Artemis.CreateEventNotification do
-  use Artemis.Context
+defmodule ArtemisNotify.Drivers.Slack.CreateNotification do
+  defmodule Error do
+    defexception message: "Error"
+  end
 
   require Logger
 
-  alias Artemis.Drivers.Slack
-
   @moduledoc """
-  Creates a vCD Management API request
+  Create a Slack Notification
   """
 
   def call!(params, user) do
     case call(params, user) do
-      {:error, _} -> raise(Artemis.Context.Error, "Error creating event notification")
+      {:error, _} -> raise(ArtemisNotify.Drivers.Slack.CreateNotification.Error, "Error creating slack notification")
       {:ok, result} -> result
     end
   end
@@ -29,7 +29,7 @@ defmodule Artemis.CreateEventNotification do
     url = Map.get(params, "url")
     payload = Map.get(params, "payload")
 
-    Slack.Request.post(url, payload)
+    ArtemisNotify.Drivers.Slack.Request.post(url, payload)
   end
 
   defp parse_response({_, %HTTPoison.Response{} = response}) do

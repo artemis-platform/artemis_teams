@@ -132,19 +132,6 @@ defmodule ArtemisWeb.EventInstanceView do
 
   def render_value_percent_html(_), do: nil
 
-  def render_value_slack(%{type: "number"} = record) do
-    case record.value_percent do
-      nil -> "#{record.value_number || record.value}"
-      _ -> "#{record.value_number} _(#{render_value_percent(record.value_percent)}%)_"
-    end
-  end
-
-  def render_value_slack(record) do
-    convert_html_to_slack_markdown!(record.value_html)
-  rescue
-    _ -> record.value
-  end
-
   def render_event_instance_date(date) when is_bitstring(date) do
     date
     |> Date.from_iso8601!()
