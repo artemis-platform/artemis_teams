@@ -1,5 +1,5 @@
-defmodule Artemis.Worker.EventIntegrationNotifier do
-  use Artemis.IntervalWorker,
+defmodule ArtemisNotify.Worker.EventIntegrationNotifier do
+  use ArtemisNotify.IntervalWorker,
     enabled: enabled?(),
     interval: :next_minute,
     delayed_start: :next_full_minute,
@@ -46,7 +46,7 @@ defmodule Artemis.Worker.EventIntegrationNotifier do
   end
 
   defp enabled?() do
-    :artemis
+    :artemis_notify
     |> Application.fetch_env!(:actions)
     |> Keyword.fetch!(:event_integration_notifier)
     |> Keyword.fetch!(:enabled)

@@ -203,7 +203,7 @@ defmodule Artemis.Helpers.Schedule do
   """
   def occurrences(schedule, start_time \\ Timex.now(), count \\ 10)
 
-  def occurrences(nil, start_time, count), do: []
+  def occurrences(nil, _start_time, _count), do: []
 
   def occurrences(schedule, start_time, count) do
     schedule
