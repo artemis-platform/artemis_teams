@@ -41,6 +41,21 @@ select[multiple] {
   max-height: 1em !important;
 }
 
+.ui.inline.centered.loader {
+  margin: 1rem 0;
+}
+
+.centered,
+.centered .select2-selection>span,
+.centered .dropdown.selection .text {
+  text-align: center;
+  width: 100%;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
 /* === General Classes === */
 
 .label-with-errors {

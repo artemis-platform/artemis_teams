@@ -60,7 +60,7 @@
                   "Sa": 6,
                 ]
 
-                day_values = get_schedule_days(schedule, index, [])
+                day_values = get_schedule_days(schedule, index, [1, 2, 3, 4, 5])
               %>
 
               <%= for {key, value} <- day_options do %>
@@ -107,10 +107,16 @@
     <% end %>
 
     <div class="field">
-      <label>Additional Schedule Rules</label>
-      <%= query_param_button @conn, "+ Add Schedule Rule", schedule_rules_count: @schedule_rules_count + 1 %>
+      <a class="ui button basic small" href="<%= @form_url %>?schedule_rules_count=<%= @schedule_rules_count + 1 %>">
+        <i class="ui icon plus"></i>
+        <span>Add Schedule Rule</span>
+      </a>
+
       <%= if @schedule_rules_count > 1 do %>
-        <%= query_param_button @conn, "– Remove Last Schedule Rule", schedule_rules_count: @schedule_rules_count - 1 %>
+        <a class="ui button basic small" href="<%= @form_url %>?schedule_rules_count=<%= @schedule_rules_count - 1 %>">
+          <i class="ui icon trash"></i>
+          Remove Last Schedule Rule
+        </a>
       <% end %>
     </div>
   </div>

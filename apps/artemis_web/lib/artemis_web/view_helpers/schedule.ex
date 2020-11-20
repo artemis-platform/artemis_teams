@@ -58,7 +58,7 @@ defmodule ArtemisWeb.ViewHelper.Schedule do
       |> Enum.map(&ArtemisWeb.ViewHelper.Print.render_date_time(&1, format))
 
     content_tag(:ul, class: "schedule-occurrences") do
-      Enum.map(occurrences, &content_tag(:li, &1))
+      Enum.map(occurrences, &content_tag(:li, &1, class: "no-wrap"))
     end
   end
 end

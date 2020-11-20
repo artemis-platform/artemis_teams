@@ -3,9 +3,9 @@ defmodule Artemis.ListEventIntegrationsTest do
 
   import Artemis.Factories
 
+  alias Artemis.EventIntegration
   alias Artemis.ListEventIntegrations
   alias Artemis.Repo
-  alias Artemis.EventIntegration
 
   setup do
     Repo.delete_all(EventIntegration)
@@ -42,6 +42,29 @@ defmodule Artemis.ListEventIntegrationsTest do
       event_integration = insert(:event_integration)
 
       {:ok, event_integration: event_integration}
+    end
+
+    test "filters - schedule_not" do
+      Repo.delete_all(EventIntegration)
+
+      with_schedule = insert_list(3, :event_integration)
+      without_schedule = insert_list(2, :event_integration, schedule: nil)
+
+      result = ListEventIntegrations.call(Mock.system_user())
+
+      assert length(result) == length(with_schedule) + length(without_schedule)
+
+      # With filter
+
+      params = %{
+        filters: %{
+          schedule_not: nil
+        }
+      }
+
+      result = ListEventIntegrations.call(params, Mock.system_user())
+
+      assert length(result) == length(with_schedule)
     end
 
     test "order" do

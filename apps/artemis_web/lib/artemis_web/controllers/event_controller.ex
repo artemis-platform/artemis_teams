@@ -32,7 +32,7 @@ defmodule ArtemisWeb.EventController do
       user = current_user(conn)
       event_template = %EventTemplate{schedule: @default_schedule}
       changeset = EventTemplate.changeset(event_template, params)
-      schedule_rules_count = get_schedule_rules_count(conn, params)
+      schedule_rules_count = get_schedule_rules_count(conn, event_template)
       team_options = get_related_team_options(user)
 
       assigns = [

@@ -80,9 +80,7 @@ defmodule Artemis.Helpers.Schedule do
     result
   end
 
-  def decode(%Cocktail.Schedule{} = value), do: value
-
-  def decode(nil), do: Cocktail.schedule(Timex.now())
+  def decode(value), do: value
 
   @doc """
   Return recurrence rules
@@ -90,6 +88,7 @@ defmodule Artemis.Helpers.Schedule do
   def recurrence_rules(schedule) do
     schedule
     |> decode()
+    |> Kernel.||(%{})
     |> Map.get(:recurrence_rules, [])
   end
 
@@ -99,7 +98,7 @@ defmodule Artemis.Helpers.Schedule do
   def days(schedule, options \\ []) do
     schedule
     |> get_schedule_recurrence_rule_validations(options)
-    |> Artemis.Helpers.deep_get([:day, :days])
+    |> Artemis.Helpers.deep_get([:day, :days], [])
   end
 
   @doc """
@@ -202,7 +201,11 @@ defmodule Artemis.Helpers.Schedule do
   @doc """
   Returns occurrences of the scheduled date
   """
-  def occurrences(schedule, start_time \\ Timex.now(), count \\ 10) do
+  def occurrences(schedule, start_time \\ Timex.now(), count \\ 10)
+
+  def occurrences(nil, start_time, count), do: []
+
+  def occurrences(schedule, start_time, count) do
     schedule
     |> decode()
     |> Map.put(:start_time, start_time)
@@ -214,12 +217,14 @@ defmodule Artemis.Helpers.Schedule do
 
   defp get_schedule_recurrence_rule_validations(schedule, options) do
     index = Keyword.get(options, :index, 0)
+    decoded_schedule = decode(schedule)
 
-    schedule
-    |> decode()
-    |> Map.get(:recurrence_rules, [])
-    |> Enum.at(index)
-    |> Kernel.||(%{})
-    |> Map.get(:validations, %{})
+    if decoded_schedule do
+      decoded_schedule
+      |> Map.get(:recurrence_rules, [])
+      |> Enum.at(index)
+      |> Kernel.||(%{})
+      |> Map.get(:validations, %{})
+    end
   end
 end

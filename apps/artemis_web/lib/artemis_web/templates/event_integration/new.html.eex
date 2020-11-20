@@ -23,6 +23,7 @@
         assigns
         |> Map.put(:action, Routes.event_integration_path(@conn, :create, @event_template))
         |> Map.put(:event_template, @event_template)
+        |> Map.put(:form_url, Routes.event_integration_path(@conn, :new, @event_template))
 
       render "form.html", form_assigns
     %>

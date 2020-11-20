@@ -19,6 +19,13 @@
   <%= render_event_log_notifications @conn, "EventTemplate", @event_template.id %>
 
   <section>
-    <%= render "form.html", Map.put(assigns, :action, Routes.event_path(@conn, :update, @event_template)) %>
+    <%=
+      form_assigns =
+        assigns
+        |> Map.put(:action, Routes.event_path(@conn, :update, @event_template))
+        |> Map.put(:form_url, Routes.event_path(@conn, :edit, @event_template))
+
+      render "form.html", form_assigns
+    %>
   </section>
 </div>
