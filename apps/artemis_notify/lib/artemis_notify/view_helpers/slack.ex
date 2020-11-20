@@ -1,4 +1,4 @@
-defmodule ArtemisWeb.ViewHelper.Slack do
+defmodule ArtemisNotify.ViewHelper.Slack do
   @doc """
   Converts HTML bitstring to slack markdown
   """

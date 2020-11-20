@@ -1,4 +1,4 @@
-defmodule Artemis.Drivers.Slack.Request do
+defmodule ArtemisNotify.Drivers.Slack.Request do
   use HTTPoison.Base
 
   def process_request_headers(headers) do
