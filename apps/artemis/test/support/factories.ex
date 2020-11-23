@@ -48,6 +48,7 @@ defmodule Artemis.Factories do
       notification_type: Enum.random(Artemis.EventIntegration.allowed_notification_types()),
       schedule: "DTSTART:20200101T100000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0;BYSECOND=0",
       settings: %{webhook_url: "https://api.slack.com"},
+      visibility: "team_viewer",
       event_template: build(:event_template)
     }
   end

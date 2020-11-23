@@ -56,6 +56,14 @@ defmodule Artemis.UserAccess do
     Enum.any?(user_teams(user), &(&1.team_id == team_id && &1.type == type))
   end
 
+  @doc """
+  A contributor is defined as any team member with write access. For example,
+  admin, editor, and member are all contributors. Viewers are not.
+  """
+  def team_contributor?(user, team) do
+    team_member?(user, team) || team_editor?(user, team) || team_admin?(user, team)
+  end
+
   # Helpers
 
   defp user_permissions(user) do

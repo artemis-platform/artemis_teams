@@ -53,6 +53,23 @@ defmodule Artemis.EventIntegrationTest do
       assert errors_on(changeset) == %{notification_type: ["is invalid"]}
     end
 
+    test "visibility must in allowed visibilities" do
+      event_template = insert(:event_template)
+
+      params =
+        params_for(:event_integration,
+          event_template: event_template,
+          visibility: "test-invalid-visibility"
+        )
+
+      {:error, changeset} =
+        %EventIntegration{}
+        |> EventIntegration.changeset(params)
+        |> Repo.insert()
+
+      assert errors_on(changeset) == %{visibility: ["is invalid"]}
+    end
+
     test "validations on settings map field - Slack Incoming Webhook" do
       # With Invalid Params
 

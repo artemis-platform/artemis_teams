@@ -11,13 +11,18 @@ defmodule ArtemisNotify.CreateEventIntegrationNotification do
     url = Artemis.Helpers.deep_get(event_integration, [:settings, "webhook_url"])
 
     case event_integration.notification_type do
-      "Reminder" -> create_reminder_notification(event_template, date, url, user)
-      "Summary - Overview" -> create_summary_overview(event_template, date, url, user)
-      "Summary - By Project" -> create_summary_by_project_notification(event_template, date, url, user)
+      "Reminder" ->
+        create_reminder_notification(event_integration, event_template, date, url, user)
+
+      "Summary - Overview" ->
+        create_summary_overview(event_integration, event_template, date, url, user)
+
+      "Summary - By Project" ->
+        create_summary_by_project_notification(event_integration, event_template, date, url, user)
     end
   end
 
-  defp create_reminder_notification(event_template, date, url, user) do
+  defp create_reminder_notification(_event_integration, event_template, date, url, user) do
     module = ArtemisNotify.EventInstanceView
     template = "show/reminder.slack"
 
@@ -32,8 +37,8 @@ defmodule ArtemisNotify.CreateEventIntegrationNotification do
     CreateNotification.call(%{payload: payload, url: url}, user)
   end
 
-  defp create_summary_overview(event_template, date, url, user) do
-    event_answers = get_event_answers(event_template, date, user)
+  defp create_summary_overview(event_integration, event_template, date, url, user) do
+    event_answers = get_event_answers(event_integration, event_template, date, user)
     respondents = get_respondents(event_template.team_id, event_answers, user)
 
     # Summary Overview Section
@@ -54,8 +59,8 @@ defmodule ArtemisNotify.CreateEventIntegrationNotification do
     CreateNotification.call(%{payload: payload, url: url}, user)
   end
 
-  defp create_summary_by_project_notification(event_template, date, url, user) do
-    event_answers = get_event_answers(event_template, date, user)
+  defp create_summary_by_project_notification(event_integration, event_template, date, url, user) do
+    event_answers = get_event_answers(event_integration, event_template, date, user)
     respondents = get_respondents(event_template.team_id, event_answers, user)
 
     # Summary Overview Section
@@ -96,12 +101,8 @@ defmodule ArtemisNotify.CreateEventIntegrationNotification do
     {:ok, true}
   end
 
-  defp get_event_answers(event_template, date, user) do
-    event_question_visibility_filter =
-      ArtemisWeb.EventQuestionView.get_event_question_visibility(
-        event_template.team_id,
-        user
-      )
+  defp get_event_answers(event_integration, event_template, date, user) do
+    event_question_visibility_filter = Artemis.EventQuestion.get_visibilities(event_integration.visibility)
 
     params = %{
       filters: %{

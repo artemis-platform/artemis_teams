@@ -134,9 +134,7 @@ defmodule ArtemisWeb.EventView do
   end
 
   defp data_table_actions_update_current_event_instance_column_html(conn, row) do
-    contributor? = team_admin?(conn, row.id) || team_editor?(conn, row.id) || team_member?(conn, row.id)
-
-    case has?(conn, "event-answers:update") && contributor? do
+    case has?(conn, "event-answers:update") && team_contributor?(conn, row) do
       true -> data_table_action_update(conn, row)
       false -> data_table_action_view(conn, row)
     end

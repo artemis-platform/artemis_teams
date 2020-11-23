@@ -6,10 +6,10 @@
     </h1>
 
     <div class="actions">
-      <%= if has?(@conn, "event-answers:delete") do %>
+      <%= if has?(@conn, "event-answers:delete") && team_contributor?(@conn, @event_template) do %>
         <%= delete_confirmation "Delete My Answers", Routes.event_instance_path(@conn, :delete, @event_template, @date) %>
       <% end %>
-      <%= if has?(@conn, "event-answers:update") do %>
+      <%= if has?(@conn, "event-answers:update") && team_contributor?(@conn, @event_template) do %>
         <%= action "Update My Answers", to: Routes.event_instance_path(@conn, :edit, @event_template, @date), color: "green" %>
       <% end %>
     </div>
