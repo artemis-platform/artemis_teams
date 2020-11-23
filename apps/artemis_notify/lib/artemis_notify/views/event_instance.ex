@@ -26,4 +26,17 @@ defmodule ArtemisNotify.EventInstanceView do
     |> Kernel.*(100)
     |> Float.round(1)
   end
+
+  @doc """
+  Render event instance date
+  """
+  def render_event_instance_date(date) when is_bitstring(date) do
+    date
+    |> Date.from_iso8601!()
+    |> render_event_instance_date()
+  end
+
+  def render_event_instance_date(date) do
+    Timex.format!(date, "{WDfull}, {Mfull} {D}, {YYYY}")
+  end
 end

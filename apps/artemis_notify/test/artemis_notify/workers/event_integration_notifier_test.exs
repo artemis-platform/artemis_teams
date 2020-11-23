@@ -1,11 +1,11 @@
-defmodule Artemis.Worker.EventIntegrationNotifierTest do
-  use Artemis.DataCase
+defmodule ArtemisNotify.Worker.EventIntegrationNotifierTest do
+  use ArtemisNotify.ConnCase
 
   import Artemis.Factories
 
   alias Artemis.EventIntegration
   alias Artemis.Repo
-  alias Artemis.Worker.EventIntegrationNotifier
+  alias ArtemisNotify.Worker.EventIntegrationNotifier
 
   @config %{}
   @data %{}
