@@ -20,19 +20,21 @@
           <%= h2 "Questions" %>
 
           <%= Enum.map @event_questions, fn event_question -> %>
-            <div class="event-question">
-              <h4>
-                <%= event_question.title %>
-              </h4>
-              <%= raw event_question.description_html %>
-            </div>
-
             <%
               matching_event_answers =
                 @event_answers
                 |> Enum.filter(&(&1.event_question_id == event_question.id))
                 |> Enum.sort_by(&(&1.user_id))
             %>
+
+            <%= if length(matching_event_answers) > 0 do %>
+              <div class="event-question">
+                <h4>
+                  <%= event_question.title %>
+                </h4>
+                <%= raw event_question.description_html %>
+              </div>
+            <% end %>
 
             <ul class="event-answers">
               <%= Enum.map matching_event_answers, fn event_answer -> %>
