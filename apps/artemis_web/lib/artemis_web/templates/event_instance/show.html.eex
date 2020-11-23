@@ -27,14 +27,12 @@
                 |> Enum.sort_by(&(&1.user_id))
             %>
 
-            <%= if length(matching_event_answers) > 0 do %>
-              <div class="event-question">
-                <h4>
-                  <%= event_question.title %>
-                </h4>
-                <%= raw event_question.description_html %>
-              </div>
-            <% end %>
+            <div class="event-question">
+              <h4>
+                <%= event_question.title %>
+              </h4>
+              <%= raw event_question.description_html %>
+            </div>
 
             <ul class="event-answers">
               <%= Enum.map matching_event_answers, fn event_answer -> %>
