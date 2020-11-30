@@ -16,7 +16,7 @@ defmodule ArtemisWeb.EventInstanceController do
       user = current_user(conn)
       today = Date.to_iso8601(Date.utc_today())
       event_template = get_event_template!(event_template_id, user)
-      event_questions = get_event_questions(event_template_id, user)
+      event_questions = get_event_questions(event_template, user)
       event_answers = get_event_answers_for_index(event_template, params, user)
       event_answers_by_date = get_event_answers_by_date(event_answers)
       event_instance_layout = Map.get(conn.query_params, "layout", "date")
@@ -44,7 +44,7 @@ defmodule ArtemisWeb.EventInstanceController do
       event_template = get_event_template!(event_template_id, user)
       event_answers = get_event_answers_for_show(event_template, date, params, user)
       event_integrations = get_event_integrations(event_template_id, user)
-      event_questions = get_event_questions(event_template_id, user)
+      event_questions = get_event_questions(event_template, user)
       event_instance_layout = Map.get(conn.query_params, "layout", "date")
       filter_data = get_filter_data(event_template, user)
 
@@ -68,7 +68,7 @@ defmodule ArtemisWeb.EventInstanceController do
     authorize(conn, "event-answers:update", fn ->
       user = current_user(conn)
       event_template = get_event_template!(event_template_id, user)
-      event_questions = get_event_questions(event_template_id, user)
+      event_questions = get_event_questions(event_template, user)
       event_answers = get_event_answers_for_update(event_template_id, date, user)
       projects = get_active_projects(event_template.team_id, user)
 
@@ -91,7 +91,7 @@ defmodule ArtemisWeb.EventInstanceController do
     authorize(conn, "event-answers:update", fn ->
       user = current_user(conn)
       event_template = get_event_template!(event_template_id, user)
-      event_questions = get_event_questions(event_template_id, user)
+      event_questions = get_event_questions(event_template, user)
       event_answer_params = get_event_answer_params(params)
 
       authorize_in_team(conn, event_template.team_id, fn ->
@@ -287,10 +287,10 @@ defmodule ArtemisWeb.EventInstanceController do
   end
 
   # TODO: update questions with a deleted_at date field. Then only return those in range.
-  defp get_event_questions(event_template_id, user) do
+  defp get_event_questions(event_template, user) do
     params = %{
       filters: %{
-        event_template_id: event_template_id
+        event_template_id: event_template.id
       },
       preload: [:event_template]
     }

@@ -46,7 +46,9 @@ defmodule Artemis.Factories do
       integration_type: "Slack Incoming Webhook",
       name: sequence(:name, &"#{Faker.Name.name()}-#{&1}"),
       notification_type: Enum.random(Artemis.EventIntegration.allowed_notification_types()),
+      schedule: "DTSTART:20200101T100000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0;BYSECOND=0",
       settings: %{webhook_url: "https://api.slack.com"},
+      visibility: "team_viewer",
       event_template: build(:event_template)
     }
   end
@@ -58,8 +60,8 @@ defmodule Artemis.Factories do
       active: true,
       description: description,
       description_html: description,
-      order: 1,
       multiple: true,
+      order: 1,
       required: true,
       title: sequence(:title, &"#{Faker.Name.name()}-#{&1}"),
       type: "text",
@@ -75,7 +77,7 @@ defmodule Artemis.Factories do
       active: true,
       description: description,
       description_html: description,
-      schedule: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR",
+      schedule: "DTSTART:20200101T100000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0;BYSECOND=0",
       title: sequence(:title, &"#{Faker.Name.name()}-#{&1}"),
       team: build(:team)
     }

@@ -9,3 +9,5 @@ use Mix.Config
 #   :warn
 #
 config :logger, level: :info
+
+config :artemis_notify, :actions, event_integration_notifier: [enabled: "false"]

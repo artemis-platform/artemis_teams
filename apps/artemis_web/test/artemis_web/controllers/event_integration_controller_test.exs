@@ -30,15 +30,15 @@ defmodule ArtemisWeb.EventIntegrationControllerTest do
 
   describe "create event_integration" do
     test "redirects to show when data is valid", %{conn: conn, event_template: event_template} do
-      params = params_for(:event_integration, event_template: event_template)
+      params = params_for(:event_integration, event_template: event_template, schedule: nil)
 
       conn = post(conn, Routes.event_integration_path(conn, :create, event_template), event_integration: params)
 
-      assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == Routes.event_path(conn, :show, event_template)
+      assert %{event_id: id} = redirected_params(conn)
+      assert redirected_to(conn) == Routes.event_integration_path(conn, :index, event_template)
 
-      conn = get(conn, Routes.event_path(conn, :show, event_template))
-      assert html_response(conn, 200) =~ "Details"
+      conn = get(conn, Routes.event_integration_path(conn, :index, event_template))
+      assert html_response(conn, 200) =~ "Integrations"
     end
 
     test "renders errors when data is invalid", %{conn: conn, event_template: event_template} do
@@ -76,9 +76,9 @@ defmodule ArtemisWeb.EventIntegrationControllerTest do
       conn =
         put(conn, Routes.event_integration_path(conn, :update, event_template, record), event_integration: @update_attrs)
 
-      assert redirected_to(conn) == Routes.event_path(conn, :show, event_template)
+      assert redirected_to(conn) == Routes.event_integration_path(conn, :index, event_template)
 
-      conn = get(conn, Routes.event_path(conn, :show, event_template))
+      conn = get(conn, Routes.event_integration_path(conn, :index, event_template))
       assert html_response(conn, 200) =~ "some updated name"
     end
 
@@ -97,7 +97,7 @@ defmodule ArtemisWeb.EventIntegrationControllerTest do
 
     test "deletes chosen event_integration", %{conn: conn, event_template: event_template, record: record} do
       conn = delete(conn, Routes.event_integration_path(conn, :delete, event_template, record))
-      assert redirected_to(conn) == Routes.event_path(conn, :show, event_template)
+      assert redirected_to(conn) == Routes.event_integration_path(conn, :index, event_template)
 
       assert_error_sent 404, fn ->
         get(conn, Routes.event_integration_path(conn, :show, event_template, record))

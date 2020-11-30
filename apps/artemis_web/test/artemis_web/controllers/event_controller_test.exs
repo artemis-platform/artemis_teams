@@ -30,7 +30,17 @@ defmodule ArtemisWeb.EventControllerTest do
 
       insert(:user_team, type: "admin", team: team, user: Mock.system_user())
 
-      params = params_for(:event_template, team: team)
+      schedule_params = %{
+        rule_01: %{
+          days: [0, 2, 3],
+          time: "9:00"
+        }
+      }
+
+      params =
+        :event_template
+        |> params_for(team: team)
+        |> Map.put(:schedule, schedule_params)
 
       conn = post(conn, Routes.event_path(conn, :create), event_template: params)
 
@@ -69,7 +79,16 @@ defmodule ArtemisWeb.EventControllerTest do
     setup [:create_record]
 
     test "redirects when data is valid", %{conn: conn, record: record} do
-      conn = put(conn, Routes.event_path(conn, :update, record), event_template: @update_attrs)
+      schedule_params = %{
+        rule_01: %{
+          days: [0, 2, 3],
+          time: "9:00"
+        }
+      }
+
+      params = Map.merge(@update_attrs, %{schedule: schedule_params})
+
+      conn = put(conn, Routes.event_path(conn, :update, record), event_template: params)
       assert redirected_to(conn) == Routes.event_path(conn, :show, record)
 
       conn = get(conn, Routes.event_path(conn, :show, record))

@@ -8,7 +8,9 @@ defmodule Artemis.EventIntegration do
     field :integration_type, :string
     field :name, :string
     field :notification_type, :string
+    field :schedule, :string
     field :settings, :map
+    field :visibility, :string
 
     belongs_to :event_template, Artemis.EventTemplate, on_replace: :delete
 
@@ -22,17 +24,20 @@ defmodule Artemis.EventIntegration do
   def updatable_fields,
     do: [
       :active,
-      :name,
+      :event_template_id,
       :integration_type,
+      :name,
       :notification_type,
+      :schedule,
       :settings,
-      :event_template_id
+      :visibility
     ]
 
   def required_fields,
     do: [
       :integration_type,
-      :notification_type
+      :notification_type,
+      :visibility
     ]
 
   def updatable_associations,
@@ -68,6 +73,7 @@ defmodule Artemis.EventIntegration do
     |> validate_required(required_fields())
     |> validate_inclusion(:integration_type, allowed_integration_types())
     |> validate_inclusion(:notification_type, allowed_notification_types())
+    |> validate_inclusion(:visibility, Artemis.EventQuestion.allowed_visibilities())
     |> validate_settings()
     |> foreign_key_constraint(:event_template_id)
   end

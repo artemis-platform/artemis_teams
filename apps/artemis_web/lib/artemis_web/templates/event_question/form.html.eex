@@ -24,13 +24,7 @@
     <div class="field" style="min-width: 150px;">
       <%= label_with_errors f, :visibility %>
       <%
-        visibility_options = [
-          [key: "Entire Team", value: "team_viewer"],
-          [key: "Only Team Members and Above", value: "team_member"],
-          [key: "Only Team Editors and Above", value: "team_editor"],
-          [key: "Only Team Admins", value: "team_admin"]
-        ]
-
+        visibility_options = get_visibility_options()
         selected_visibility = Artemis.Helpers.deep_get(f, [:data, :visibility]) || "team_viewer"
       %>
       <%= select f, :visibility, visibility_options, class: "enhanced", placeholder: "", selected: selected_visibility %>

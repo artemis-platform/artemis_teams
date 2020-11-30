@@ -14,10 +14,10 @@
       <section>
         <%= h2 @event_template.title %>
         <%= raw @event_template.description_html %>
-        <%= if has?(@conn, "event-answers:update") do %>
+        <%= if has?(@conn, "event-answers:update") && team_contributor?(@conn, @event_template) do %>
           <%= action "Update My Answers", to: Routes.event_instance_path(@conn, :edit, @event_template, get_current_instance_date(@event_template)), color: "green", size: "tiny" %>
         <% end %>
-        <%= if has?(@conn, "event-answers:show") do %>
+        <%= if has?(@conn, "event-answers:show") && team_contributor?(@conn, @event_template) do %>
           <%= action "View My Answers", to: Routes.event_instance_path(@conn, :show, @event_template, get_current_instance_date(@event_template)), color: "blue", size: "tiny" %>
         <% end %>
       </section>

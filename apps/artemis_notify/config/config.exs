@@ -7,6 +7,12 @@ config :artemis_notify,
   release_branch: System.cmd("git", ["rev-parse", "--abbrev-ref", "HEAD"]) |> elem(0) |> String.trim(),
   release_hash: System.cmd("git", ["rev-parse", "--short", "HEAD"]) |> elem(0) |> String.trim()
 
+config :artemis_notify, :actions,
+  # NOTE: When adding action entries, also update `config/test.exs`
+  event_integration_notifier: [
+    enabled: System.get_env("ARTEMIS_NOTIFY_ACTION_EVENT_INTEGRATION_NOTIFIER_ENABLED")
+  ]
+
 config :logger, :console,
   format: "$time $metadata[$level] $levelpad$message\n",
   metadata: [:request_id]

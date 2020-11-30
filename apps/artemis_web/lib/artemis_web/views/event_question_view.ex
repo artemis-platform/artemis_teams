@@ -121,11 +121,23 @@ defmodule ArtemisWeb.EventQuestionView do
   """
   def get_event_question_visibility(team_id, user) do
     cond do
-      team_admin?(user, team_id) -> ["team_viewer", "team_member", "team_editor", "team_admin"]
-      team_editor?(user, team_id) -> ["team_viewer", "team_member", "team_editor"]
-      team_member?(user, team_id) -> ["team_viewer", "team_member"]
-      team_viewer?(user, team_id) -> ["team_viewer"]
+      team_admin?(user, team_id) -> Artemis.EventQuestion.get_visibilities("team_admin")
+      team_editor?(user, team_id) -> Artemis.EventQuestion.get_visibilities("team_editor")
+      team_member?(user, team_id) -> Artemis.EventQuestion.get_visibilities("team_member")
+      team_viewer?(user, team_id) -> Artemis.EventQuestion.get_visibilities("team_viewer")
       true -> []
     end
+  end
+
+  @doc """
+  Return visibility options
+  """
+  def get_visibility_options() do
+    [
+      [key: "Entire Team", value: "team_viewer"],
+      [key: "Only Team Members and Above", value: "team_member"],
+      [key: "Only Team Editors and Above", value: "team_editor"],
+      [key: "Only Team Admins", value: "team_admin"]
+    ]
   end
 end

@@ -11,6 +11,7 @@ defmodule ArtemisWeb.EventController do
   alias Artemis.ListTeams
   alias Artemis.UpdateEventTemplate
 
+  @default_schedule "DTSTART:20170102T100000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0;BYSECOND=0"
   @preload [:event_questions, :team]
 
   def index(conn, params) do
@@ -29,13 +30,15 @@ defmodule ArtemisWeb.EventController do
   def new(conn, params) do
     authorize(conn, "event-templates:create", fn ->
       user = current_user(conn)
-      event_template = %EventTemplate{}
+      event_template = %EventTemplate{schedule: @default_schedule}
       changeset = EventTemplate.changeset(event_template, params)
+      schedule_rules_count = get_schedule_rules_count(conn, event_template)
       team_options = get_related_team_options(user)
 
       assigns = [
         changeset: changeset,
         event_template: event_template,
+        schedule_rules_count: schedule_rules_count,
         team_options: team_options
       ]
 
@@ -46,6 +49,7 @@ defmodule ArtemisWeb.EventController do
   def create(conn, %{"event_template" => params}) do
     authorize(conn, "event-templates:create", fn ->
       user = current_user(conn)
+      params = get_params(params)
 
       case CreateEventTemplate.call(params, user) do
         {:ok, event_template} ->
@@ -55,11 +59,13 @@ defmodule ArtemisWeb.EventController do
 
         {:error, %Ecto.Changeset{} = changeset} ->
           event_template = %EventTemplate{}
+          schedule_rules_count = get_schedule_rules_count(conn, params)
           team_options = get_related_team_options(user)
 
           assigns = [
             changeset: changeset,
             event_template: event_template,
+            schedule_rules_count: schedule_rules_count,
             team_options: team_options
           ]
 
@@ -97,11 +103,13 @@ defmodule ArtemisWeb.EventController do
       user = current_user(conn)
       event_template = GetEventTemplate.call(id, user, preload: @preload)
       changeset = EventTemplate.changeset(event_template)
+      schedule_rules_count = get_schedule_rules_count(conn, event_template)
       team_options = get_related_team_options(user)
 
       assigns = [
         changeset: changeset,
         event_template: event_template,
+        schedule_rules_count: schedule_rules_count,
         team_options: team_options
       ]
 
@@ -114,6 +122,7 @@ defmodule ArtemisWeb.EventController do
   def update(conn, %{"id" => id, "event_template" => params}) do
     authorize(conn, "event-templates:update", fn ->
       user = current_user(conn)
+      params = get_params(params)
       event_template = GetEventTemplate.call(id, user, preload: @preload)
 
       authorize_team_editor(conn, event_template.team_id, fn ->
@@ -124,11 +133,13 @@ defmodule ArtemisWeb.EventController do
             |> redirect(to: Routes.event_path(conn, :show, event_template))
 
           {:error, %Ecto.Changeset{} = changeset} ->
+            schedule_rules_count = get_schedule_rules_count(conn, params)
             team_options = get_related_team_options(user)
 
             assigns = [
               changeset: changeset,
               event_template: event_template,
+              schedule_rules_count: schedule_rules_count,
               team_options: team_options
             ]
 
@@ -190,5 +201,50 @@ defmodule ArtemisWeb.EventController do
     params
     |> ListTeams.call(user)
     |> Enum.map(&[key: &1.name, value: &1.id])
+  end
+
+  defp get_schedule_rules_count(conn, %Artemis.EventTemplate{} = params) do
+    get_schedule_rules_count(conn, Map.from_struct(params))
+  end
+
+  defp get_schedule_rules_count(conn, params) do
+    query_param = Map.get(conn.query_params, "schedule_rules_count")
+
+    current_count =
+      params
+      |> Artemis.Helpers.keys_to_strings()
+      |> Map.get("schedule")
+      |> Artemis.Helpers.Schedule.recurrence_rules()
+      |> length()
+
+    case query_param do
+      nil -> current_count
+      _ -> Artemis.Helpers.to_integer(query_param)
+    end
+  end
+
+  defp get_params(params) do
+    params
+    |> Artemis.Helpers.keys_to_strings()
+    |> parse_schedule_params()
+  end
+
+  defp parse_schedule_params(params) do
+    encoded =
+      params
+      |> Map.get("schedule", %{})
+      |> Map.values()
+      |> Artemis.Helpers.Schedule.encode()
+
+    has_recurrence_rules? =
+      encoded
+      |> Artemis.Helpers.Schedule.recurrence_rules()
+      |> length()
+      |> Kernel.>=(1)
+
+    case has_recurrence_rules? do
+      true -> Map.put(params, "schedule", encoded)
+      false -> Map.put(params, "schedule", nil)
+    end
   end
 end

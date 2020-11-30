@@ -3,7 +3,7 @@ import hljs from "highlight.js"
 import jquery from "jquery"
 import qs from "qs"
 import "phoenix_html"
-import "./am_charts"
+import "./helpers/am_charts"
 import "./live_view"
 
 global.$ = jquery

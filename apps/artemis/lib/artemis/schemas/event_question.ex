@@ -72,6 +72,16 @@ defmodule Artemis.EventQuestion do
       "team_viewer"
     ]
 
+  def get_visibilities(key) do
+    case key do
+      "team_admin" -> ["team_viewer", "team_member", "team_editor", "team_admin"]
+      "team_editor" -> ["team_viewer", "team_member", "team_editor"]
+      "team_member" -> ["team_viewer", "team_member"]
+      "team_viewer" -> ["team_viewer"]
+      true -> []
+    end
+  end
+
   # Changesets
 
   def changeset(struct, params \\ %{}) do

@@ -34,6 +34,7 @@ defmodule ArtemisWeb.EventView do
       {"Schedule", "schedule"},
       {"Team", "team"},
       {"Title", "title"},
+      {"Upcoming", "upcoming"},
       {"Update Current Instance", "actions_update_current_event_instance"},
       {"View Current Instance", "actions_view_current_event_instance"}
     ]
@@ -78,7 +79,7 @@ defmodule ArtemisWeb.EventView do
       ],
       "schedule" => [
         label: fn _conn -> "Schedule" end,
-        value: fn _conn, row -> Artemis.Helpers.Schedule.humanize(row.schedule) end
+        value: fn _conn, row -> get_schedule_summary(row.schedule) end
       ],
       "team" => [
         label: fn _conn -> "Team" end,
@@ -102,6 +103,10 @@ defmodule ArtemisWeb.EventView do
             false -> row.title
           end
         end
+      ],
+      "upcoming" => [
+        label: fn _conn -> "Upcoming" end,
+        value: fn _conn, row -> get_schedule_occurrences(row.schedule, Timex.now(), 3) end
       ]
     }
   end
@@ -129,9 +134,7 @@ defmodule ArtemisWeb.EventView do
   end
 
   defp data_table_actions_update_current_event_instance_column_html(conn, row) do
-    contributor? = team_admin?(conn, row.id) || team_editor?(conn, row.id) || team_member?(conn, row.id)
-
-    case has?(conn, "event-answers:update") && contributor? do
+    case has?(conn, "event-answers:update") && team_contributor?(conn, row) do
       true -> data_table_action_update(conn, row)
       false -> data_table_action_view(conn, row)
     end

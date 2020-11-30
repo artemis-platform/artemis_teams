@@ -1,7 +1,8 @@
 import {Socket} from "phoenix"
 import LiveSocket from "phoenix_live_view"
-import AmChartHelpers from "./am_charts"
-import Select2Helpers from "./select2"
+import AmChartHelpers from "./helpers/am_charts"
+import Select2Helpers from "./helpers/select2"
+import SemanticUICheckboxHelpers from "./helpers/semantic_ui_checkboxes"
 
 // LiveView Browser Polyfills
 
@@ -18,6 +19,7 @@ const LiveViewHooks = {}
 
 LiveViewHooks.AmCharts = AmChartHelpers.live_view_hooks
 LiveViewHooks.Select2 = Select2Helpers.live_view_hooks
+LiveViewHooks.SemanticUICheckboxes = SemanticUICheckboxHelpers.live_view_hooks
 
 // LiveView Initialization
 

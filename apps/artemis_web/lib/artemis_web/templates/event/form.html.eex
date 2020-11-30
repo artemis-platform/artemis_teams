@@ -14,20 +14,6 @@
   </div>
 
   <div class="field">
-    <%= label_with_errors f, :schedule %>
-    <%=
-      schedule_options = [
-        [key: "Daily - Monday to Friday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0;BYSECOND=0"],
-        [key: "Daily - Every Day", value: "DTSTART:20200101T000000\nRRULE:FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0"],
-        [key: "Weekly - Every Monday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO;BYHOUR=9;BYMINUTE=0;BYSECOND=0"],
-        [key: "Weekly - Every Friday", value: "DTSTART:20200101T000000\nRRULE:FREQ=WEEKLY;BYDAY=FR;BYHOUR=9;BYMINUTE=0;BYSECOND=0"]
-      ]
-
-      select f, :schedule, schedule_options, class: "enhanced", placeholder: "Schedule"
-    %>
-  </div>
-
-  <div class="field">
     <%= label_with_errors f, :description %>
     <%= textarea f, :description, rows: 3 %>
   </div>
@@ -36,6 +22,106 @@
     <%= label f, :active %>
     <%= checkbox f, :active %>
   </div>
+
+  <div class="schedule-fields-container field">
+    <h3>Schedule</h3>
+
+    <%
+      schedule = input_value(f, :schedule)
+
+      schedule_field_error =
+        f.errors
+        |> Keyword.get_values(:schedule)
+        |> List.first()
+    %>
+
+    <%= if @changeset.action && schedule_field_error do %>
+      <%= render_notification :error, body: "Error: #{elem(schedule_field_error, 0)}", header?: false, icon?: false %>
+    <% end %>
+
+    <%= if @schedule_rules_count >= 1 do %>
+      <%= for index <- Range.new(0, @schedule_rules_count - 1) do %>
+
+        <div class="two fields">
+          <div class="field">
+            <label class="label-with-errors">
+              <span>Days</span>
+            </label>
+
+            <ul class="schedule-days">
+              <%
+                day_options = [
+                  "Su": 0,
+                  "Mo": 1,
+                  "Tu": 2,
+                  "We": 3,
+                  "Th": 4,
+                  "Fr": 5,
+                  "Sa": 6,
+                ]
+
+                day_values = get_schedule_days(schedule, index, [1, 2, 3, 4, 5])
+              %>
+
+              <%= for {key, value} <- day_options do %>
+                <li class="checkbox-button">
+                  <label>
+                    <input
+                      <%= if Enum.member?(day_values, value), do: "checked=\"checked\"" %>
+                      id="event_template_schedule_<%= index %>_days_<%= value %>"
+                      type="checkbox"
+                      name="event_template[schedule][<%= index %>][days][]"
+                      value="<%= value %>"
+                    />
+                    <span>
+                      <%= key %>
+                    </span>
+                  </label>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+
+          <div class="field" style="width: 9.5rem;">
+            <label class="label-with-errors">
+              <span>Time</span>
+            </label>
+
+            <div class="ui right labeled input">
+              <input
+                id="event_template_schedule_<%= index %>_time"
+                name="event_template[schedule][<%= index %>][time]"
+                type="text"
+                placeholder="14:00"
+                value="<%= get_schedule_time(schedule, index, "9:00") %>"
+              />
+
+              <div class="ui label">
+                UTC
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <% end %>
+    <% end %>
+
+    <div class="field">
+      <a class="ui button basic small" href="<%= @form_url %>?schedule_rules_count=<%= @schedule_rules_count + 1 %>">
+        <i class="ui icon plus"></i>
+        <span>Add Schedule Rule</span>
+      </a>
+
+      <%= if @schedule_rules_count > 1 do %>
+        <a class="ui button basic small" href="<%= @form_url %>?schedule_rules_count=<%= @schedule_rules_count - 1 %>">
+          <i class="ui icon trash"></i>
+          Remove Last Schedule Rule
+        </a>
+      <% end %>
+    </div>
+  </div>
+
+  <h3>Actions</h3>
 
   <div>
     <%= if @changeset.action do %>

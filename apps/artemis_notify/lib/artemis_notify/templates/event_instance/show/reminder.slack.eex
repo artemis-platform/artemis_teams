@@ -8,11 +8,11 @@
       "fields": [
         {
           "type": "mrkdwn",
-          "text": "*Event Reminder*:\n<<%= ArtemisWeb.Router.Helpers.event_instance_url(ArtemisWeb.Endpoint, :show, @event_template, @date) %>|<%= @event_template.title %>>"
+          "text": "*Event Reminder*:\n<<%= "/events/#{@event_template.id}/instances/#{@date}" %>|<%= @event_template.title %>>"
         },
         {
           "type": "mrkdwn",
-          "text": "*Date:*\n<%= ArtemisWeb.EventInstanceView.render_event_instance_date(@date) %>"
+          "text": "*Date:*\n<%= render_event_instance_date(@date) %>"
         }
       ]
     },
@@ -27,7 +27,7 @@
             "emoji": true
           },
           "style": "primary",
-          "url": "<%= ArtemisWeb.Router.Helpers.event_instance_url(ArtemisWeb.Endpoint, :edit, @event_template, @date) %>"
+          "url": "<%= "/events/#{@event_template.id}/instances/#{@date}/edit" %>"
         },
         {
           "type": "button",
@@ -36,7 +36,7 @@
             "text": "View Answers",
             "emoji": true
           },
-          "url": "<%= ArtemisWeb.Router.Helpers.event_instance_url(ArtemisWeb.Endpoint, :show, @event_template, @date) %>"
+          "url": "<%= "/events/#{@event_template.id}/instances/#{@date}" %>"
         }
       ]
     },

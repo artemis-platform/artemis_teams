@@ -15,8 +15,9 @@
         ["Title", @event_template.title],
         ["Active", @event_template.active],
         ["Team", ArtemisWeb.TeamView.render_show_link(@conn, @event_template.team)],
-        ["Schedule", Artemis.Helpers.Schedule.humanize(@event_template.schedule)],
-        ["Description", raw @event_template.description_html]
+        ["Description", raw @event_template.description_html],
+        ["Schedule", get_schedule_summary(@event_template.schedule)],
+        ["Upcoming", get_schedule_occurrences(@event_template.schedule, Timex.now(), 3)]
       ])
     %>
   </section>
@@ -53,7 +54,7 @@
           @conn,
           @event_integrations,
           allowed_columns: ArtemisWeb.EventIntegrationView.data_table_allowed_columns(),
-          default_columns: ["name", "actions"],
+          default_columns: ["name", "integration_type", "notification_type", "schedule", "actions"],
           headers: false
         )
       %>
