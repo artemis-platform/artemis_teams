@@ -1,7 +1,7 @@
 use Mix.Config
 
 config :artemis_notify,
-  artemis_web_url: "https://#{System.get_env("ARTEMIS_WEB_HOSTNAME")}",
+  artemis_web_url: System.get_env("ARTEMIS_WEB_HOSTNAME"),
   ecto_repos: [Artemis.Repo],
   generators: [context_app: :artemis],
   namespace: ArtemisNotify,
