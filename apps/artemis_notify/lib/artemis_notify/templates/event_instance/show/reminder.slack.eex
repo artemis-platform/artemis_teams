@@ -8,7 +8,7 @@
       "fields": [
         {
           "type": "mrkdwn",
-          "text": "*Event Reminder*:\n<<%= "/events/#{@event_template.id}/instances/#{@date}" %>|<%= @event_template.title %>>"
+          "text": "*Event Reminder*:\n<<%= artemis_web_url "/events/#{@event_template.id}/instances/#{@date}" %>|<%= @event_template.title %>>"
         },
         {
           "type": "mrkdwn",
@@ -27,7 +27,7 @@
             "emoji": true
           },
           "style": "primary",
-          "url": "<%= "/events/#{@event_template.id}/instances/#{@date}/edit" %>"
+          "url": "<%= artemis_web_url "/events/#{@event_template.id}/instances/#{@date}/edit" %>"
         },
         {
           "type": "button",
@@ -36,7 +36,7 @@
             "text": "View Answers",
             "emoji": true
           },
-          "url": "<%= "/events/#{@event_template.id}/instances/#{@date}" %>"
+          "url": "<%= artemis_web_url "/events/#{@event_template.id}/instances/#{@date}" %>"
         }
       ]
     },
