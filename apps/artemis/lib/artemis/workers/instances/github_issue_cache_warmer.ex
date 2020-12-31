@@ -9,12 +9,17 @@ defmodule Artemis.Worker.GithubIssueCacheWarmer do
 
   @impl true
   def call(_data, _config) do
-    task =
-      Task.async(fn ->
-        Artemis.Drivers.Github.ListRepoIssues.call_and_update_cache()
+    tasks =
+      Enum.map(get_github_repositories(), fn config ->
+        organization = Keyword.get(config, :organization)
+        repository = Keyword.get(config, :repository)
+
+        Task.async(fn ->
+          Artemis.Drivers.Github.ListRepoIssues.call_and_update_cache(organization, repository)
+        end)
       end)
 
-    {:ok, task}
+    {:ok, tasks}
   end
 
   # Helpers
@@ -26,5 +31,11 @@ defmodule Artemis.Worker.GithubIssueCacheWarmer do
     |> Keyword.fetch!(:enabled)
     |> String.downcase()
     |> String.equivalent?("true")
+  end
+
+  defp get_github_repositories() do
+    :artemis
+    |> Application.fetch_env!(:github)
+    |> Keyword.fetch!(:repositories)
   end
 end

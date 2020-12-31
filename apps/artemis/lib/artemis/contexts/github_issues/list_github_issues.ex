@@ -21,9 +21,18 @@ defmodule Artemis.ListGithubIssues do
   end
 
   defp get_records(_user) do
-    result = Artemis.Drivers.Github.ListRepoIssues.call_with_cache()
+    Enum.reduce(get_github_repositories(), [], fn config, acc ->
+      get_records_for_repository(config) ++ acc
+    end)
+  end
 
-    Map.get(result, :data)
+  defp get_records_for_repository(config) do
+    organization = Keyword.get(config, :organization)
+    repository = Keyword.get(config, :repository)
+
+    organization
+    |> Artemis.Drivers.Github.ListRepoIssues.call_with_cache(repository)
+    |> Map.get(:data)
   end
 
   defp search_query(records, %{"query" => search}, _user) do
@@ -187,5 +196,13 @@ defmodule Artemis.ListGithubIssues do
         Artemis.Helpers.to_integer(Map.get(record, "number")) * -1
       ]
     end)
+  end
+
+  # Helpers - Config
+
+  defp get_github_repositories() do
+    :artemis
+    |> Application.fetch_env!(:github)
+    |> Keyword.fetch!(:repositories)
   end
 end

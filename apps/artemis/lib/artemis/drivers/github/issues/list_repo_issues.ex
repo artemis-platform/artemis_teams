@@ -26,52 +26,51 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
     "user"
   ]
 
-  def call() do
-    Enum.reduce(get_repositories(), [], fn repository, acc ->
-      get_issues_for_repository(repository) ++ acc
-    end)
+  def call(organization, repository) do
+    request = create_request_params(organization, repository)
+
+    request
+    |> get_all_pages()
+    |> process_issues(request)
+    |> add_zenhub_pipelines(request)
   end
 
   # Helpers
 
-  defp get_issues_for_repository(repository) do
-    organization = Keyword.get(repository, :organization)
-    repository = Keyword.get(repository, :repository)
-    path = "/repos/#{organization}/#{repository}"
+  defp create_request_params(organization, repository) do
+    repository_path = "/repos/#{organization}/#{repository}"
+    path = "/repos/#{organization}/#{repository}/issues"
 
     query_params = %{
       state: "open",
       per_page: @default_page_size
     }
 
-    request = %{
-      query_params: query_params,
+    %{
       organization: organization,
       path: path,
-      repository: repository
+      query_params: query_params,
+      repository: repository,
+      repository_path: repository_path
     }
-
-    request
-    |> get_pages()
-    |> process_issues(request)
-    |> add_zenhub_pipelines(request)
   end
 
-  defp get_pages(request, acc \\ [], page \\ 1) do
+  defp get_all_pages(request_params, acc \\ [], current_page \\ 1) do
     encoded_query_params =
-      request.query_params
-      |> Map.put(:page, page)
+      request_params
+      |> Map.get(:query_params)
+      |> Map.put(:page, current_page)
       |> Plug.Conn.Query.encode()
 
     {:ok, response} =
-      "#{request.path}/issues?#{encoded_query_params}"
+      "#{request_params.path}?#{encoded_query_params}"
       |> Github.Request.get()
       |> parse_response()
 
     acc = response.body ++ acc
 
     case length(response.body) >= @default_page_size do
-      true -> get_pages(request, acc, page + 1)
+      true -> get_all_pages(request_params, acc, current_page + 1)
       false -> acc
     end
   end
@@ -140,7 +139,8 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
 
   defp get_repository_id(request) do
     {:ok, response} =
-      request.path
+      request
+      |> Map.get(:repository_path)
       |> Github.Request.get()
       |> parse_response()
 
@@ -156,11 +156,5 @@ defmodule Artemis.Drivers.Github.ListRepoIssues do
       |> Map.put("organization", request.organization)
       |> Map.put("repository", request.repository)
     end)
-  end
-
-  defp get_repositories() do
-    :artemis
-    |> Application.fetch_env!(:github)
-    |> Keyword.fetch!(:repositories)
   end
 end

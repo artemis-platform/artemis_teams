@@ -3,7 +3,7 @@ defmodule Artemis.Drivers.Github.Request do
 
   def process_request_headers(headers) do
     [
-      Accept: "application/vnd.github.v3+json",
+      Accept: "application/vnd.github.inertia-preview+json",
       Authorization: "Basic #{get_github_token()}",
       "Content-Type": "application/json"
     ] ++ headers
