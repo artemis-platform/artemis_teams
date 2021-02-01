@@ -213,6 +213,43 @@ defmodule Artemis.Helpers.Schedule do
     |> Enum.take(count)
   end
 
+  @doc """
+  Return the start date for a given schedule. Attemps to parse a `DTSTART`
+  clause in an iCal encoded entry. Returns `nil` if not found.
+  """
+  def start_date(schedule, options \\ []), do: parse_date_from_ical(schedule, "DTSTART", options)
+
+  @doc """
+  Return the end date for a given schedule. Attemps to parse a `DTEND`
+  clause in an iCal encoded entry. Returns `nil` if not found.
+  """
+  def end_date(schedule, options \\ []), do: parse_date_from_ical(schedule, "DTEND", options)
+
+  defp parse_date_from_ical(schedule, key, options) do
+    format = Keyword.get(options, :format, "{YYYY}{0M}{0D}T{h24}{m}{s}")
+    regex = Keyword.get(options, :regex, ~r/[0-9]{8}T[0-9]{6}/)
+
+    start_section =
+      schedule
+      |> encode()
+      |> String.split("\n")
+      |> Enum.find(&(&1 =~ key))
+      |> Kernel.||("")
+
+    timestamp =
+      regex
+      |> Regex.run(start_section)
+      |> Kernel.||([])
+      |> List.first()
+      |> Kernel.||("")
+
+    timestamp
+    |> Timex.parse!(format)
+    |> Timex.Timezone.convert("Etc/UTC")
+  rescue
+    _error in Timex.Parse.ParseError -> nil
+  end
+
   # Helpers
 
   defp get_schedule_recurrence_rule_validations(schedule, options) do
