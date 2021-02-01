@@ -59,7 +59,9 @@ defmodule Artemis.Helpers.ScheduleTest do
 
       simple = "DTSTART=#{date}"
       complex = "DTSTART;TZID=Etc/UTC:#{date}"
-      multiline = "DTEND=20301215T120000\nDTSTART;TZID=Etc/UTC:#{date}\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=14;BYMINUTE=45"
+
+      multiline =
+        "DTEND=20301215T120000\nDTSTART;TZID=Etc/UTC:#{date}\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=14;BYMINUTE=45"
 
       assert Schedule.start_date(simple) == @timestamp
       assert Schedule.start_date(complex) == @timestamp
@@ -98,7 +100,9 @@ defmodule Artemis.Helpers.ScheduleTest do
 
       simple = "DTEND=#{date}"
       complex = "DTEND;TZID=Etc/UTC:#{date}"
-      multiline = "DTSTART=20301215T120000\nDTEND;TZID=Etc/UTC:#{date}\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=14;BYMINUTE=45"
+
+      multiline =
+        "DTSTART=20301215T120000\nDTEND;TZID=Etc/UTC:#{date}\nRRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=14;BYMINUTE=45"
 
       assert Schedule.end_date(simple) == @timestamp
       assert Schedule.end_date(complex) == @timestamp
