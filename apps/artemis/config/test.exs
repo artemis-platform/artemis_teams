@@ -12,6 +12,7 @@ config :logger, level: :info
 
 config :artemis, :actions,
   github_issue_cache_warmer: [enabled: "false"],
+  key_value_cleaner: [enabled: "false"],
   repo_delete_all: [enabled: "false"],
   repo_generate_filler_data: [enabled: "false"],
   repo_reset_on_interval: [enabled: "false"]

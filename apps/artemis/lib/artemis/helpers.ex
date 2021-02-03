@@ -1,4 +1,6 @@
 defmodule Artemis.Helpers do
+  require Logger
+
   @doc """
   Generate a random string
   """
@@ -13,8 +15,8 @@ defmodule Artemis.Helpers do
   Detect if value is truthy
   """
   def present?(nil), do: false
-  def present?(""), do: false
   def present?(0), do: false
+  def present?(value) when is_bitstring(value), do: String.trim(value) != ""
   def present?(_value), do: true
 
   @doc """
@@ -269,22 +271,26 @@ defmodule Artemis.Helpers do
     }
 
   """
-  def async_await_many(tasks) when is_list(tasks) do
-    tasks
-    |> Enum.map(&Task.async(&1))
-    |> Enum.map(&Task.await/1)
-  end
+  def async_await_many(tasks, options \\ [])
 
-  def async_await_many(tasks) when is_map(tasks) do
+  def async_await_many(tasks, options) when is_map(tasks) do
     values =
       tasks
       |> Map.values()
-      |> async_await_many
+      |> async_await_many(options)
 
     tasks
     |> Map.keys()
     |> Enum.zip(values)
     |> Enum.into(%{})
+  end
+
+  def async_await_many(tasks, options) when is_list(options) do
+    timeout = Keyword.get(options, :timeout, :timer.hours(1))
+
+    tasks
+    |> Enum.map(&Task.async(&1))
+    |> Enum.map(&Task.await(&1, timeout))
   end
 
   @doc """
@@ -425,6 +431,101 @@ defmodule Artemis.Helpers do
   def keys_to_strings(value, _), do: value
 
   @doc """
+  Searches a map for a matching atom or bitstring key, then returns the value.
+
+  Warning! This is an unsafe action and assumes the map does not have the same
+  key as a bitstring and an atom. Raises an exception when this case is found.
+
+  Example:
+
+    indifferent_get(%{"hello" => "world"}, :hello)
+
+  Returns:
+
+    "world"
+
+  Example:
+
+    indifferent_get(%{hello: "world"}, "other key", "fallback")
+
+  Returns:
+
+    "fallback value"
+
+  Example:
+
+    indifferent_get(%{"hello" => "world", hello: "world"}, :hello)
+
+  Returns:
+
+    <no return - raises an exception>
+
+  """
+  def indifferent_get(map, field, fallback \\ nil) when is_map(map) do
+    field_as_atom = Artemis.Helpers.to_atom(field)
+    field_as_string = Artemis.Helpers.to_string(field)
+
+    atom? = Map.has_key?(map, field_as_atom)
+    string? = Map.has_key?(map, field_as_string)
+
+    error_message = "Indifferent get cannot be used on a map with both atom and string keys"
+
+    cond do
+      atom? && string? -> raise(ArgumentError, error_message)
+      atom? -> Map.get(map, field_as_atom, fallback)
+      true -> Map.get(map, field_as_string, fallback)
+    end
+  end
+
+  @doc """
+  Searches a map for a matching atom or bitstring key, then updates the value.
+
+  Warning! This is an unsafe action and assumes the map does not have the same
+  key as a bitstring and an atom. Raises an exception when this case is found.
+
+  Example:
+
+    indifferent_put(%{"hello" => "world"}, :hello, "updated!")
+
+  Returns:
+
+    %{"hello" => "updated!"}
+
+  Example:
+
+    indifferent_put(%{hello: "world"}, "new key", "new value")
+
+  Returns:
+
+    %{hello: "world", "new key" => "new value"}
+
+  Example:
+
+    indifferent_put(%{"hello" => "world", hello: "world"}, :hello, "updated!")
+
+  Returns:
+
+    <no return - raises an exception>
+
+  """
+  def indifferent_put(map, field, value) when is_map(map) do
+    field_as_atom = Artemis.Helpers.to_atom(field)
+    field_as_string = Artemis.Helpers.to_string(field)
+
+    atom? = Map.has_key?(map, field_as_atom)
+    string? = Map.has_key?(map, field_as_string)
+
+    error_message = "Indifferent put cannot be used on a map with both atom and string keys"
+
+    cond do
+      atom? && string? -> raise(ArgumentError, error_message)
+      atom? -> Map.put(map, field_as_atom, value)
+      string? -> Map.put(map, field_as_string, value)
+      true -> Map.put(map, field, value)
+    end
+  end
+
+  @doc """
   Serialize process id (pid) number to string
   """
   def serialize_pid(pid) when is_pid(pid) do
@@ -442,34 +543,6 @@ defmodule Artemis.Helpers do
     string
     |> :erlang.binary_to_list()
     |> :erlang.list_to_pid()
-  end
-
-  @doc """
-  Get a map or struct value by either atom or string key
-
-  Example:
-
-    my_struct = %MyStruct{ hello: "world" }
-
-    indifferent_get(my_struct, "hello")
-
-  Returns:
-
-    "world"
-
-  """
-  def indifferent_get(%_{} = struct, key) do
-    struct
-    |> Map.from_struct()
-    |> indifferent_get(key)
-  end
-
-  def indifferent_get(map, key) when is_atom(key), do: indifferent_get(map, Atom.to_string(key))
-
-  def indifferent_get(map, key) when is_bitstring(key) do
-    map
-    |> keys_to_strings()
-    |> Map.get(key)
   end
 
   @doc """
@@ -607,28 +680,54 @@ defmodule Artemis.Helpers do
   def deep_get(_data, _, default), do: default
 
   @doc """
-  A version of `Kernel.put_in/3` with added support for creating keys that
-  don't exist.
+  Recursive version of `Map.fetch/2`. Adds support for nested values:
 
   Example:
 
     map = %{
-      simple: "simple"
+      simple: "simple",
+      nested: %{example: "value", other: "value"}
     }
 
-    deep_put(map, [:nested, :example], "value")
+    deep_fetch(map, [:nested, :example])
 
   Returns:
 
-    map = %{
-      simple: "simple",
-      nested: %{example: "value"}
-    }
+    "value"
 
-  See: https://elixirforum.com/t/put-update-deep-inside-nested-maps-and-auto-create-intermediate-keys/7993/8
   """
-  def deep_put(map, keys, value) do
-    put_in(map, Enum.map(keys, &Access.key(&1, %{})), value)
+  def deep_fetch(data, keys, default \\ nil)
+
+  def deep_fetch(data, [current_key | remaining_keys], default) when is_map(data) do
+    value = Map.get(data, current_key)
+
+    case remaining_keys do
+      [] -> value
+      _ -> deep_fetch(value, remaining_keys, default)
+    end
+  end
+
+  def deep_fetch(_data, _, default), do: default
+
+  @doc """
+  Recursive version of `Kernel.put_in`. Adds support for nested values that do
+  not already exist:
+
+  Example:
+
+    current = %{one: 1}
+    keys = [:two, :three, :four]
+
+    deep_put(current, keys, "hello")
+
+  Returns:
+
+    %{one: 1, two: %{three: %{four: "hello"}}}
+
+  From: https://elixirforum.com/t/put-update-deep-inside-nested-maps-and-auto-create-intermediate-keys/7993/8
+  """
+  def deep_put(current \\ %{}, keys, value) do
+    put_in(current, Enum.map(keys, &Access.key(&1, %{})), value)
   end
 
   @doc """
@@ -732,4 +831,86 @@ defmodule Artemis.Helpers do
   def print(value) do
     IO.inspect(value, limit: :infinity, printable_limit: :infinity)
   end
+
+  @doc """
+  Print entire value without truncation
+  """
+  def benchmark(key \\ nil, callback) do
+    start_time = Timex.now()
+    result = callback.()
+    end_time = Timex.now()
+    duration = Timex.diff(end_time, start_time, :milliseconds)
+
+    log(
+      type: "Benchmark",
+      key: key,
+      duration: "#{duration}ms"
+    )
+
+    result
+  end
+
+  @doc """
+  Send values to Logger
+  """
+  def log(values) when is_list(values) do
+    message = format_log_message(values)
+
+    Logger.info(message)
+  end
+
+  def log(message), do: Logger.info(message)
+
+  defp format_log_message(values) do
+    values
+    |> Enum.map(fn {key, value} ->
+      case is_nil(value) do
+        true -> nil
+        false -> "[#{key}: #{value}]"
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join(" ")
+  end
+
+  @doc """
+  Log rescued errors
+  """
+  def rescue_log(stacktrace \\ nil, caller, error) do
+    default_values = [
+      caller: serialize_caller(caller),
+      error: Map.get(error, :__struct__),
+      message: Map.get(error, :message, inspect(error)),
+      stacktrace: serialize_stacktrace(stacktrace)
+    ]
+
+    log_message = format_log_message(default_values)
+
+    Logger.error(log_message)
+  end
+
+  defp serialize_caller(caller) when is_map(caller), do: Map.get(caller, :__struct__)
+  defp serialize_caller(caller), do: caller
+
+  defp serialize_stacktrace(nil), do: nil
+
+  defp serialize_stacktrace(stacktrace) do
+    stracktrace =
+      stacktrace
+      |> Enum.map(&inspect(&1))
+      |> Enum.join("\n    ")
+
+    "\n    " <> stracktrace
+  end
+
+  @doc """
+  Send values to Error
+  """
+  def error(values) when is_list(values) do
+    message = format_log_message(values)
+
+    Logger.error(message)
+  end
+
+  def error(message), do: Logger.error(message: message)
 end
