@@ -1,4 +1,6 @@
 defmodule Artemis.GetEventTemplate do
+  use Artemis.Context
+
   import Ecto.Query
 
   alias Artemis.EventTemplate
@@ -20,6 +22,7 @@ defmodule Artemis.GetEventTemplate do
 
   defp get_record(value, options, get_by) do
     EventTemplate
+    |> select_query(EventTemplate, options)
     |> preload(^Keyword.get(options, :preload, @default_preload))
     |> get_by.(value)
   end
