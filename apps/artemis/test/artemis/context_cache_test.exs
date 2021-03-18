@@ -4,7 +4,7 @@ defmodule Artemis.ContextCacheTest do
   defmodule DefaultContext do
     use Artemis.ContextCache
 
-    def call(_params \\ %{}, _user), do: true
+    def call(_params \\ %{}, _user), do: Ecto.UUID.generate()
   end
 
   defmodule CacheResetContext do
@@ -117,6 +117,70 @@ defmodule Artemis.ContextCacheTest do
 
       assert first_result.inserted_at == second_result.inserted_at
       assert first_result.inserted_at != third_result.inserted_at
+    end
+  end
+
+  describe "call with cache" do
+    test "returns cached response if it exists, fetching then caching it if not" do
+      user = Mock.system_user()
+
+      first_result = DefaultContext.call_with_cache(user)
+      second_result = DefaultContext.call_with_cache(user)
+
+      DefaultContext.reset_cache()
+
+      third_result = DefaultContext.call_with_cache(user)
+
+      assert first_result.data == second_result.data
+      assert first_result.data != third_result.data
+    end
+  end
+
+  describe "call and update cache" do
+    test "always fetches the latest data then caches it" do
+      user = Mock.system_user()
+
+      first_result = DefaultContext.call_and_update_cache(user)
+      second_result = DefaultContext.call_and_update_cache(user)
+      get_result = DefaultContext.call_with_cache(user)
+
+      assert first_result.data != second_result.data
+      assert second_result.data == get_result.data
+    end
+  end
+
+  describe "call with cache then update" do
+    test "if in cache, it returns current cached value and asynchronously updates cache for the next call" do
+      user = Mock.system_user()
+
+      set_cache_result = DefaultContext.call_with_cache(user)
+      original_cached_result = DefaultContext.call_with_cache_then_update(user)
+
+      :timer.sleep(1_000)
+
+      updated_cached_result = DefaultContext.call_with_cache(user)
+
+      assert original_cached_result.data == set_cache_result.data
+      assert original_cached_result.data != updated_cached_result.data
+    end
+
+    test "if not in the cache, it fetches it, caches it, and returns it" do
+      user = Mock.system_user()
+
+      original_cached_result = DefaultContext.call_with_cache_then_update(user)
+      original_get_result = DefaultContext.call_with_cache(user)
+
+      second_cached_result = DefaultContext.call_with_cache_then_update(user)
+
+      :timer.sleep(1_000)
+
+      second_get_result = DefaultContext.call_with_cache(user)
+      third_get_result = DefaultContext.call_with_cache(user)
+
+      assert original_cached_result.data == original_get_result.data
+      assert second_cached_result.data == original_get_result.data
+      assert second_cached_result.data != second_get_result.data
+      assert third_get_result.data == second_get_result.data
     end
   end
 end
