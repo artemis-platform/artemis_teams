@@ -12,7 +12,7 @@ defmodule ArtemisNotify.IntervalSupervisor do
   @impl true
   def init(:ok) do
     children = [
-      {ArtemisNotify.Worker.EventIntegrationNotifier, []}
+      # {ArtemisNotify.Worker.ExampleNotifier, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

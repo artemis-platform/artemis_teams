@@ -5,78 +5,81 @@
       <strong>Artemis</strong>
       Teams
     </a>
-    <nav id="primary-navigation" role="navigation">
-      <% nav_items = primary_nav_items_for_current_user(@user) %>
-      <ul>
-        <li>
-          <a title="Home" href="/">
-            Home
-          </a>
-        </li>
-        <%= if render_primary_nav_section?(nav_items, ["Recognitions"]) do %>
+
+    <%= render_from_cache_then_update("Primary Navigation", @user) do %>
+      <nav id="primary-navigation" role="navigation">
+        <% nav_items = primary_nav_items_for_current_user(@user) %>
+        <ul>
           <li>
-            <a title="Recognitions" href="<%= Routes.recognition_path(@conn, :index) %>">
-              Recognitions
+            <a title="Home" href="/">
+              Home
             </a>
           </li>
-        <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Teams"]) do %>
-          <li>
-            <a href="<%= Routes.team_path(@conn, :index) %>">
-              Teams
+          <%= if render_primary_nav_section?(nav_items, ["Recognitions"]) do %>
+            <li>
+              <a title="Recognitions" href="<%= Routes.recognition_path(@conn, :index) %>">
+                Recognitions
+              </a>
+            </li>
+          <% end %>
+          <%= if render_primary_nav_section?(nav_items, ["Teams"]) do %>
+            <li>
+              <a href="<%= Routes.team_path(@conn, :index) %>">
+                Teams
+              </a>
+            </li>
+          <% end %>
+          <%= if render_primary_nav_section?(nav_items, ["Events"]) do %>
+            <li>
+              <a href="<%= Routes.event_path(@conn, :index) %>">
+                Events
+              </a>
+            </li>
+          <% end %>
+          <%= if render_primary_nav_section?(nav_items, ["Projects", "Github Issues"]) do %>
+            <li class="with-dropdown">
+              <a href="<%= Routes.project_path(@conn, :index) %>">
+                Projects
+                <i class="angle down icon dropdown"></i>
+              </a>
+              <div class="dropdown">
+                <content>
+                  <header>
+                    <h3>Projects</h3>
+                    <p>Tools for managing projects</p>
+                  </header>
+                  <%= render_primary_nav_section(@conn, @user, nav_items, ["Projects", "Github Issues"]) %>
+                </content>
+                <footer></footer>
+              </div>
+            </li>
+          <% end %>
+          <%= if render_primary_nav_section?(nav_items, ["Users", "Roles", "Permissions", "Features", "Event Logs", "HTTP Request Logs", "Sessions", "Tags", "Application"]) do %>
+            <li class="with-dropdown">
+              <a href="<%= Routes.user_path(@conn, :index) %>">
+                Admin
+                <i class="angle down icon dropdown"></i>
+              </a>
+              <div class="dropdown">
+                <content>
+                  <header>
+                    <h3>Admin</h3>
+                    <p>Administrative tools to manage the site.</p>
+                  </header>
+                  <%= render_primary_nav_section(@conn, @user, nav_items, ["Users", "Roles", "Permissions", "Features", "Event Log", "HTTP Request Logs", "Sessions", "Tags", "Application"]) %>
+                </content>
+                <footer></footer>
+              </div>
+            </li>
+          <% end %>
+          <li class="primary-navigation-link">
+            <a href="#open-sidebar-primary-navigation" class="open-sidebar-primary-navigation">
+              <i class="bars icon"></i>
             </a>
           </li>
-        <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Events"]) do %>
-          <li>
-            <a href="<%= Routes.event_path(@conn, :index) %>">
-              Events
-            </a>
-          </li>
-        <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Projects", "Github Issues"]) do %>
-          <li class="with-dropdown">
-            <a href="<%= Routes.project_path(@conn, :index) %>">
-              Projects
-              <i class="angle down icon dropdown"></i>
-            </a>
-            <div class="dropdown">
-              <content>
-                <header>
-                  <h3>Projects</h3>
-                  <p>Tools for managing projects</p>
-                </header>
-                <%= render_primary_nav_section(@conn, @user, nav_items, ["Projects", "Github Issues"]) %>
-              </content>
-              <footer></footer>
-            </div>
-          </li>
-        <% end %>
-        <%= if render_primary_nav_section?(nav_items, ["Users", "Roles", "Permissions", "Features", "Event Logs", "HTTP Request Logs", "Sessions", "Tags", "Application"]) do %>
-          <li class="with-dropdown">
-            <a href="<%= Routes.user_path(@conn, :index) %>">
-              Admin
-              <i class="angle down icon dropdown"></i>
-            </a>
-            <div class="dropdown">
-              <content>
-                <header>
-                  <h3>Admin</h3>
-                  <p>Administrative tools to manage the site.</p>
-                </header>
-                <%= render_primary_nav_section(@conn, @user, nav_items, ["Users", "Roles", "Permissions", "Features", "Event Log", "HTTP Request Logs", "Sessions", "Tags", "Application"]) %>
-              </content>
-              <footer></footer>
-            </div>
-          </li>
-        <% end %>
-        <li class="primary-navigation-link">
-          <a href="#open-sidebar-primary-navigation" class="open-sidebar-primary-navigation">
-            <i class="bars icon"></i>
-          </a>
-        </li>
-      </ul>
-    </nav>
+        </ul>
+      </nav>
+    <% end %>
 
     <div class="expanding-container">
       <%= if active_feature?("global-search") do %>

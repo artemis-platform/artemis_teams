@@ -10,8 +10,8 @@ config :artemis_notify,
 
 config :artemis_notify, :actions,
   # NOTE: When adding action entries, also update `config/test.exs`
-  event_integration_notifier: [
-    enabled: System.get_env("ARTEMIS_NOTIFY_ACTION_EVENT_INTEGRATION_NOTIFIER_ENABLED")
+  placeholder: [
+    enabled: System.get_env("ARTEMIS_NOTIFY_ACTION_PLACEHOLDER_ENABLED")
   ]
 
 config :logger, :console,

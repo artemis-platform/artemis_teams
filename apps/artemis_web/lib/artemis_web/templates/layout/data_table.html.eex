@@ -6,7 +6,7 @@
           <tr>
             <%= Enum.map @columns, fn (column) -> %>
               <th>
-                <%= render_data_table_label(@conn, column, :html) %>
+                <%= render_data_table_label(@conn_or_socket, column, :html) %>
               </th>
             <% end %>
           </tr>
@@ -22,7 +22,7 @@
           <tr class="row-<%= index %> <%= row_visibility %>">
             <%= Enum.map @columns, fn (column) -> %>
               <td>
-                <%= render_data_table_value(@conn, column, row, :html) %>
+                <%= render_data_table_value(@conn_or_socket, column, row, :html) %>
               </td>
             <% end %>
           </tr>
