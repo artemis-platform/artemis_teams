@@ -110,6 +110,17 @@ defmodule Artemis.Factories do
     }
   end
 
+  def key_value_factory do
+    value = sequence(:value, &"#{Faker.Name.name()}-#{&1}")
+
+    %Artemis.KeyValue{
+      expire_at: Timex.now(),
+      key: sequence(:key, &"#{Faker.Name.name()}-#{&1}"),
+      size: byte_size(value),
+      value: value
+    }
+  end
+
   def reaction_factory do
     %Artemis.Reaction{
       resource_id: "1",

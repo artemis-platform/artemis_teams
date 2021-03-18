@@ -144,14 +144,6 @@ defmodule Artemis.ListEventAnswersTest do
       assert key == [params]
     end
 
-    test "uses default context cache options" do
-      defaults = Artemis.CacheInstance.default_cachex_options()
-      cachex_options = Artemis.CacheInstance.get_cachex_options(ListEventAnswers)
-
-      assert cachex_options[:expiration] == Keyword.fetch!(defaults, :expiration)
-      assert cachex_options[:limit] == Keyword.fetch!(defaults, :limit)
-    end
-
     test "returns a cached result" do
       initial_call = ListEventAnswers.call_with_cache(Mock.system_user())
 

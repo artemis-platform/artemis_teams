@@ -6,7 +6,6 @@ defmodule Artemis.ContextCache do
 
   Takes the following options:
 
-    :cache_reset_on_cloudant_changes - Optional. List. Cloudant events that reset cache
     :cache_reset_on_events - Optional. List. Events that reset cache.
     :cache_driver - Optional. String. Allows a specific cache to use a different cache driver
       than the global default
@@ -242,7 +241,6 @@ defmodule Artemis.ContextCache do
 
           false ->
             child_options = [
-              cache_reset_on_cloudant_changes: Keyword.get(unquote(options), :cache_reset_on_cloudant_changes, []),
               cache_reset_on_events: Keyword.get(unquote(options), :cache_reset_on_events, []),
               cache_driver: Keyword.get(unquote(options), :cache_driver),
               cache_options: Keyword.get(unquote(options), :cache_options, []),

@@ -23,6 +23,7 @@ defmodule Artemis.ListEventIntegrations do
     params = default_params(params)
 
     EventIntegration
+    |> select_query(EventIntegration, params)
     |> distinct_query(params, default: true)
     |> preload(^Map.get(params, "preload"))
     |> filter_query(params, user)

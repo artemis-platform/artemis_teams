@@ -14,6 +14,7 @@ defmodule Artemis.IntervalSupervisor do
     children = [
       {Artemis.Worker.GithubIssueCacheWarmer, []},
       {Artemis.Worker.IBMCloudIAMAccessToken, []},
+      {Artemis.Worker.KeyValueCleaner, []},
       {Artemis.Worker.RepoResetOnInterval, []}
     ]
 
