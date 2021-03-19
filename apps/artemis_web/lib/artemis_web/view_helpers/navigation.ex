@@ -95,8 +95,20 @@ defmodule ArtemisWeb.ViewHelper.Navigation do
   @doc """
   Lists all secondary navigation
   """
-  def render_secondary_navigation(conn, user, items, options \\ []) do
-    request_path = ArtemisWeb.ViewHelper.Path.get_request_path(conn, options)
+  def render_secondary_navigation(conn_or_assigns, user, items, options \\ [])
+
+  def render_secondary_navigation(%Plug.Conn{} = conn, user, items, options) do
+    assigns = %{
+      conn: conn,
+      query_params: conn.query_params,
+      request_path: conn.request_path
+    }
+
+    render_secondary_navigation(assigns, user, items, options)
+  end
+
+  def render_secondary_navigation(assigns, user, items, options) do
+    conn_or_socket = assigns[:conn] || assigns[:socket] || assigns[:conn_or_socket]
 
     verified_items =
       Enum.filter(items, fn item ->
@@ -105,12 +117,19 @@ defmodule ArtemisWeb.ViewHelper.Navigation do
         verify.(user)
       end)
 
+    request_path =
+      assigns
+      |> Map.get(:request_path)
+      |> Kernel.||(ArtemisWeb.ViewHelper.Path.get_request_path(conn_or_socket, options))
+      |> String.trim()
+      |> String.trim_trailing("/")
+
     entries =
       Enum.map(verified_items, fn item ->
         label = Keyword.get(item, :label)
         path = Keyword.get(item, :path)
         path_match_type = Keyword.get(item, :path_match_type)
-        to = path.(conn)
+        to = path.(conn_or_socket)
 
         active? =
           case path_match_type do
@@ -142,9 +161,20 @@ defmodule ArtemisWeb.ViewHelper.Navigation do
   @doc """
   Render secondary navigation comment label
   """
-  def render_secondary_navigation_live_comment_count_label(conn, resource_type, resource_id, options \\ []) do
+  def render_secondary_navigation_live_comment_count_label(conn, resource_type, resource_id, options \\ [])
+
+  def render_secondary_navigation_live_comment_count_label(%Plug.Conn{} = conn, resource_type, resource_id, options) do
+    assigns = %{
+      user: current_user(conn)
+    }
+
+    render_secondary_navigation_live_comment_count_label(assigns, resource_type, resource_id, options)
+  end
+
+  def render_secondary_navigation_live_comment_count_label(assigns, resource_type, resource_id, options) do
     id = "secondary-navigation-comment-count-label-#{resource_type}-#{resource_id}"
-    user = Keyword.get(options, :user) || current_user(conn)
+    conn_or_socket = assigns[:conn] || assigns[:socket] || assigns[:conn_or_socket]
+    user = assigns[:user] || Keyword.get(options, :user) || current_user(conn_or_socket)
 
     session = %{
       "resource_id" => resource_id,
@@ -152,6 +182,6 @@ defmodule ArtemisWeb.ViewHelper.Navigation do
       "user" => user
     }
 
-    Phoenix.LiveView.Helpers.live_render(conn, ArtemisWeb.CommentCountLabelLive, id: id, session: session)
+    Phoenix.LiveView.Helpers.live_render(conn_or_socket, ArtemisWeb.CommentCountLabelLive, session: session)
   end
 end

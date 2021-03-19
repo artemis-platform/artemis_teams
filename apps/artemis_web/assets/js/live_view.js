@@ -1,6 +1,10 @@
 import {Socket} from "phoenix"
 import LiveSocket from "phoenix_live_view"
 import AmChartHelpers from "./helpers/am_charts"
+import BulkActionHelpers from "./helpers/bulk_actions"
+import ColumnFieldsHelpers from "./helpers/column_fields"
+import DataTableHelpers from "./helpers/data_table"
+import FormHistoryHelpers from "./helpers/form_history"
 import Select2Helpers from "./helpers/select2"
 import SemanticUICheckboxHelpers from "./helpers/semantic_ui_checkboxes"
 
@@ -18,7 +22,11 @@ import "formdata-polyfill"
 const LiveViewHooks = {}
 
 LiveViewHooks.AmCharts = AmChartHelpers.live_view_hooks
+LiveViewHooks.ColumnFields = ColumnFieldsHelpers.live_view_hooks
+LiveViewHooks.DataTable = DataTableHelpers.live_view_hooks
+LiveViewHooks.FormHistory = FormHistoryHelpers.live_view_hooks
 LiveViewHooks.Select2 = Select2Helpers.live_view_hooks
+LiveViewHooks.BulkAction = BulkActionHelpers.live_view_hooks
 LiveViewHooks.SemanticUICheckboxes = SemanticUICheckboxHelpers.live_view_hooks
 
 // LiveView Initialization

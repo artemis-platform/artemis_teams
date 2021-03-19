@@ -7,13 +7,38 @@ function getQueryParams() {
   return currentParams
 }
 
-function updateQueryParams(newParams) {
+function serializeQueryParams(newParams) {
   var currentParams = getQueryParams()
   var encodingOptions = { arrayFormat: 'brackets', encodeValuesOnly: true }
   var nextParams = $.extend({}, currentParams, newParams)
-  var nextQueryString = qs.stringify(nextParams, encodingOptions)
+
+  return qs.stringify(nextParams, encodingOptions)
+}
+
+function updateQueryParams(newParams) {
+  var nextQueryString = serializeQueryParams(newParams)
 
   window.location = window.location.pathname + '?' + nextQueryString
+}
+
+function getFormValues(form) {
+  var asArray = form.serializeArray()
+
+  var asFlatObject = asArray.reduce(function(obj, item) {
+    var is_public = item.name.charAt(0) !== "_"
+
+    if (is_public) {
+      obj[item.name] = item.value ? item.value.trim() : item.value
+    }
+
+    return obj
+  }, {})
+
+  var queryParamOptions = { arrayFormat: 'brackets', encodeValuesOnly: true }
+  var asQueryString = qs.stringify(asFlatObject, queryParamOptions)
+  var asNestedObject = qs.parse(asQueryString)
+
+  return asNestedObject
 }
 
 // Initializers
@@ -22,8 +47,8 @@ function initializeCheckboxes() {
   $('.ui.toggle.checkbox').checkbox()
 }
 
-function initializeColumnField() {
-  $('select.data-table-columns').on('change', function(event) {
+function initializeColumnFields() {
+  $('select.data-table-columns').off('change').on('change', function(event) {
     var selected = $(this).select2('data')
     var columns = []
 
@@ -43,14 +68,14 @@ function initializeDataTable() {
     var showButton = $(this).find('.show-rows')
     var hiddenRows = $(this).find('tr.hide')
 
-    hideButton.on('click', function(event) {
+    hideButton.off('click').on('click', function(event) {
       event.preventDefault()
       hiddenRows.hide()
       hideButton.css('display', 'none')
       showButton.css('display', 'flex')
     })
 
-    showButton.on('click', function(event) {
+    showButton.off('click').on('click', function(event) {
       event.preventDefault()
       hiddenRows.show()
       hideButton.css('display', 'flex')
@@ -92,12 +117,32 @@ function initializeDropdowns() {
   $('.ui.dropdown.hover').dropdown({on: 'hover'})
 }
 
+function initializeFormHistory() {
+  $('form.form-history').off('change').on('change', function(e) {
+    var form = $(this)
+    var root = form.closest('div[data-phx-root-id]')
+    var isConnected = root && root.hasClass && root.hasClass('phx-connected')
+    var formValues = getFormValues(form)
+
+    if (isConnected) {
+      var state = {}
+      var title = window.document.title
+      var updatedQueryParams = serializeQueryParams(formValues)
+      var url = window.location.pathname + '?' + updatedQueryParams
+
+      window.history.pushState(state, title, url)
+    } else {
+      updateQueryParams(formValues)
+    }
+  })
+}
+
 function initializeFilterFields() {
-  $('.filter-form').on('submit', function(event) {
+  $('.filter-form').off('submit').on('submit', function(event) {
     event.preventDefault()
   })
 
-  $('.filter-form .filter-input-field').on('change', function(event) {
+  $('.filter-form .filter-input-field').off('change').on('change', function(event) {
     var nextParams = getQueryParams()
     var field = ($(this).attr('name') || '').replace('[]', '')
     var value = $(this).val() || undefined
@@ -109,7 +154,7 @@ function initializeFilterFields() {
     updateQueryParams(nextParams)
   })
 
-  $('.filter-form .filter-multi-select').on('change', function(event) {
+  $('.filter-form .filter-select, .filter-form .filter-multi-select').off('change').on('change', function(event) {
     var nextParams = getQueryParams()
     var field = ($(this).attr('name') || '').replace('[]', '')
     var selected = $(this).select2('data')
@@ -117,7 +162,9 @@ function initializeFilterFields() {
     var values = []
 
     selected.forEach(function(element) {
-      values.push(element.id)
+      if (element && element.id) {
+        values.push(element.id)
+      }
     })
 
     nextParams.filters = nextParams.filters || {}
@@ -178,12 +225,27 @@ function initializeModals() {
     }
   }
 
-  $('.modal-trigger').on('click', function(event) {
+  $('.modal-trigger').off('click').on('click', function(event) {
     event.preventDefault()
 
     var target = $(this).data('target')
 
+    console.log("clicking!", target, $(target))
+
     $(target).modal(settings).modal('show')
+  })
+}
+
+function initializePopups() {
+  var requiredSettings = {
+    on: 'hover'
+  }
+
+  $('.popup-trigger').each(function() {
+    var target = $(this).data('target')
+    var settings = Object.assign({popup: target}, requiredSettings)
+
+    $(this).popup(settings)
   })
 }
 
@@ -204,20 +266,19 @@ function initializeSelect2() {
     var item = $(this)
     var classes = item.attr('class').split(' ')
     var options = {}
-    var initialized = classes.includes('select2-hidden-accessible')
 
-    if (!initialized) {
-      var hasClearable = classes.includes('clearable')
-      var hasCreate = classes.includes('creatable') || classes.includes('tags')
-      var hasSearch = classes.includes('search')
+    // Options
+    var hasClearable = classes.includes('clearable')
+    var hasCreate = classes.includes('creatable') || classes.includes('tags')
+    var hasSearch = classes.includes('search')
 
-      options.allowClear = hasClearable
-      options.minimumResultsForSearch = hasSearch ? 0 : Infinity
-      options.tags = hasCreate
-      options.placeholder = item.attr('placeholder') || ''
+    options.allowClear = hasClearable
+    options.minimumResultsForSearch = hasSearch ? 0 : Infinity
+    options.tags = hasCreate
+    options.placeholder = item.attr('placeholder') || ''
 
-      item.select2(options)
-    }
+    // Initialize
+    item.select2(options)
   })
 }
 
@@ -277,7 +338,7 @@ function initializeSelectTableRow() {
 
     update_bulk_actions_button(table)
 
-    input.click(function(event) {
+    input.off('click').click(function(event) {
       var checked = $(this).prop('checked')
 
       rows.each(function(index) {
@@ -295,7 +356,7 @@ function initializeSelectTableRow() {
     var table = input.closest('table')
     var row = input.closest('tr')
 
-    row.click(function(event) {
+    row.off('click').click(function(event) {
       var is_row_background = (event.target.nodeName === 'TD')
 
       if (is_row_background) {
@@ -435,17 +496,24 @@ function initializeWikiSidenav() {
   updateHighlight()
 }
 
+function reinitializeBulkActions() {
+  initializeModals()
+  initializeSelectTableRow()
+}
+
 $(document).ready(function() {
   initializeCheckboxes()
-  initializeColumnField()
+  initializeColumnFields()
   initializeDataTable()
-  initializeDataTabs()
+	initializeDataTabs()
   initializeDropdowns()
+  initializeFormHistory()
   initializeFilterFields()
   // initializeHighlightJs()
   initializeInlineForm()
   initializeMarkdownTextarea()
   initializeModals()
+  initializePopups()
   initializeSelect2()
   initializeSidebars()
   initializeSearchSubmit()
@@ -453,7 +521,13 @@ $(document).ready(function() {
   initializeWikiSidenav()
 })
 
-window.vendor_initializers = {
+window.vendorInitializers = {
+  bulkActions: reinitializeBulkActions,
+  columnFields: initializeColumnFields,
+  dataTable: initializeDataTable,
+  formHistory: initializeFormHistory,
   select2: initializeSelect2,
-  semanticUICheckboxes: initializeCheckboxes
+  semanticUICheckboxes: initializeCheckboxes,
+  semanticUIDropdowns: initializeDropdowns,
+  semanticUIPopups: initializePopups
 }

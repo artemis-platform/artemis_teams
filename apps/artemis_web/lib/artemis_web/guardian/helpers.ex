@@ -4,7 +4,7 @@ defmodule ArtemisWeb.Guardian.Helpers do
   alias ArtemisWeb.ErrorView
 
   @doc """
-  Returns the logged in user
+  Returns the logged in user from conn or assigns
   """
   def current_user(%{"guardian_default_token" => token}) do
     ArtemisWeb.Guardian
@@ -12,15 +12,22 @@ defmodule ArtemisWeb.Guardian.Helpers do
     |> elem(1)
   end
 
-  def current_user(conn) do
+  def current_user(%Plug.Conn{} = conn) do
     ArtemisWeb.Guardian.Plug.current_resource(conn)
+  end
+
+  def current_user(assigns) do
+    cond do
+      user = Map.get(assigns, :user) -> user
+      conn = Map.get(assigns, :conn) -> current_user(conn)
+    end
   end
 
   @doc """
   Returns boolean if user is logged in
   """
-  def current_user?(conn) do
-    case current_user(conn) do
+  def current_user?(conn_or_assigns) do
+    case current_user(conn_or_assigns) do
       nil -> false
       _ -> true
     end
