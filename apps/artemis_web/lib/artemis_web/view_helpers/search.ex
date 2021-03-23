@@ -52,20 +52,4 @@ defmodule ArtemisWeb.ViewHelper.Search do
   end
 
   defp search_present?(_), do: false
-
-  defp filters_present?(%Plug.Conn{} = conn) do
-    filters_present?(conn.query_params)
-  end
-
-  defp filters_present?(%{query_params: query_params}) do
-    filters_present?(query_params)
-  end
-
-  defp filters_present?(query_params) when is_map(query_params) do
-    query_params
-    |> Map.get("filters")
-    |> Artemis.Helpers.present?()
-  end
-
-  defp filters_present?(_), do: false
 end

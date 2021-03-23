@@ -183,6 +183,6 @@ defmodule ArtemisWeb.ViewHelper.Navigation do
       "user" => user
     }
 
-    Phoenix.LiveView.Helpers.live_render(conn_or_socket, ArtemisWeb.CommentCountLabelLive, session: session)
+    Phoenix.LiveView.Helpers.live_render(conn_or_socket, ArtemisWeb.CommentCountLabelLive, id: id, session: session)
   end
 end
