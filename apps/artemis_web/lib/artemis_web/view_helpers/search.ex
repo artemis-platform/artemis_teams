@@ -18,6 +18,7 @@ defmodule ArtemisWeb.ViewHelper.Search do
 
   def render_search(%Plug.Conn{} = conn, options) do
     assigns = %{
+      conn: conn,
       query_params: conn.query_params,
       request_path: conn.request_path
     }
