@@ -1,3 +1,3 @@
-<%= form_for @conn, "", [class: "ui form filter-form"], fn form -> %>
-  <%= filter_multi_select_field @conn, form, @label, @value, @available %>
+<%= form_for ArtemisWeb.Endpoint, "", [class: "ui form filter-form"], fn form -> %>
+  <%= filter_multi_select_field assigns, form, @label, @value, @available %>
 <% end %>
