@@ -213,48 +213,10 @@ defmodule ArtemisWeb do
         pattern: "**/*"
 
       # Import convenience functions from controllers
-      import Phoenix.Controller, only: [get_flash: 1, get_flash: 2, view_module: 1]
-      import Phoenix.LiveView.Helpers
+      import Phoenix.Controller, only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
 
-      # Use all HTML functionality (forms, tags, etc)
-      use Phoenix.HTML
-
-      import ArtemisWeb.Gettext
-      import ArtemisWeb.Guardian.Helpers
-      import ArtemisWeb.UserAccess
-      import ArtemisWeb.ViewHelper.Async
-      import ArtemisWeb.ViewHelper.Breadcrumbs
-      import ArtemisWeb.ViewHelper.BulkActions
-      import ArtemisWeb.ViewHelper.Cache
-      import ArtemisWeb.ViewHelper.Colors
-      import ArtemisWeb.ViewHelper.Conditionals
-      import ArtemisWeb.ViewHelper.Emoji
-      import ArtemisWeb.ViewHelper.Errors
-      import ArtemisWeb.ViewHelper.Events
-      import ArtemisWeb.ViewHelper.Export
-      import ArtemisWeb.ViewHelper.Filter
-      import ArtemisWeb.ViewHelper.Form
-      import ArtemisWeb.ViewHelper.HTML
-      import ArtemisWeb.ViewHelper.Loading
-      import ArtemisWeb.ViewHelper.Navigation
-      import ArtemisWeb.ViewHelper.Notifications
-      import ArtemisWeb.ViewHelper.Numbers
-      import ArtemisWeb.ViewHelper.Pagination
-      import ArtemisWeb.ViewHelper.Path
-      import ArtemisWeb.ViewHelper.Presence
-      import ArtemisWeb.ViewHelper.Print
-      import ArtemisWeb.ViewHelper.QueryParams
-      import ArtemisWeb.ViewHelper.Routes
-      import ArtemisWeb.ViewHelper.Schedule
-      import ArtemisWeb.ViewHelper.Search
-      import ArtemisWeb.ViewHelper.Status
-      import ArtemisWeb.ViewHelper.Tables
-      import ArtemisWeb.ViewHelper.Tabs
-      import ArtemisWeb.ViewHelper.User
-      import ArtemisWeb.ViewHelper.Values
-
-      alias ArtemisWeb.Router.Helpers, as: Routes
-      alias ArtemisWeb.ViewHelper.BulkActions.BulkAction
+      # Include shared imports and aliases for views
+      unquote(view_helpers())
 
       # Delay the rendering of `do` blocks through macros
 
@@ -294,6 +256,72 @@ defmodule ArtemisWeb do
           end
         end
       end
+    end
+  end
+
+  def live_view do
+    quote do
+      use Phoenix.LiveView, layout: {ArtemisWeb.LayoutView, "live.html"}
+
+      unquote(view_helpers())
+    end
+  end
+
+  def live_component do
+    quote do
+      use Phoenix.LiveComponent
+
+      unquote(view_helpers())
+    end
+  end
+
+  defp view_helpers do
+    quote do
+      # Use all HTML functionality (forms, tags, etc)
+      use Phoenix.HTML
+
+      # Import LiveView helpers (live_render, live_component, live_patch, etc)
+      import Phoenix.LiveView.Helpers
+
+      # Import basic rendering functionality (render, render_layout, etc)
+      import Phoenix.View
+
+      import ArtemisWeb.Gettext
+      import ArtemisWeb.Guardian.Helpers
+      import ArtemisWeb.UserAccess
+      import ArtemisWeb.ViewHelper.Async
+      import ArtemisWeb.ViewHelper.Breadcrumbs
+      import ArtemisWeb.ViewHelper.BulkActions
+      import ArtemisWeb.ViewHelper.Cache
+      import ArtemisWeb.ViewHelper.Colors
+      import ArtemisWeb.ViewHelper.Conditionals
+      import ArtemisWeb.ViewHelper.Emoji
+      import ArtemisWeb.ViewHelper.Errors
+      import ArtemisWeb.ViewHelper.Events
+      import ArtemisWeb.ViewHelper.Export
+      import ArtemisWeb.ViewHelper.Filter
+      import ArtemisWeb.ViewHelper.Form
+      import ArtemisWeb.ViewHelper.HTML
+      import ArtemisWeb.ViewHelper.Loading
+      import ArtemisWeb.ViewHelper.Navigation
+      import ArtemisWeb.ViewHelper.Notifications
+      import ArtemisWeb.ViewHelper.Numbers
+      import ArtemisWeb.ViewHelper.Pagination
+      import ArtemisWeb.ViewHelper.Path
+      import ArtemisWeb.ViewHelper.Presence
+      import ArtemisWeb.ViewHelper.Print
+      import ArtemisWeb.ViewHelper.QueryParams
+      import ArtemisWeb.ViewHelper.Routes
+      import ArtemisWeb.ViewHelper.Schedule
+      import ArtemisWeb.ViewHelper.Search
+      import ArtemisWeb.ViewHelper.Status
+      import ArtemisWeb.ViewHelper.Tables
+      import ArtemisWeb.ViewHelper.Tabs
+      import ArtemisWeb.ViewHelper.User
+      import ArtemisWeb.ViewHelper.Values
+
+      alias ArtemisWeb.Router.Helpers, as: Routes
+      alias ArtemisWeb.ViewHelper.BulkActions.BulkAction
     end
   end
 
