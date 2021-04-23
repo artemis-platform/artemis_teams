@@ -135,6 +135,10 @@ defmodule ArtemisWeb.Router do
 
       resources "/projects", ProjectController
 
+      # Project Status
+
+      live "/project-status", ProjectStatusControllerLive
+
       # Recognitions
 
       resources "/recognitions", RecognitionController, except: [:create, :update] do
